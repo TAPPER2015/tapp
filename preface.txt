@@ -1,0 +1,40 @@
+[preface]
+Preface
+-------
+
+The goal of this book is to cover the fundamental concepts of parallel
+computing, including models of computation, parallel algorithms, and
+techniques for implementing and evaluating parallel algorithms.
+
+Our primany focus will be hardware-shared memory parallelism.
+
+For implementations, we use a Clatexmath:[++] library, called *PASL*,
+which we have been developing over the past 5 years. PASL stands for
+Parallel Algorithm Scheduling Library. It also sounds a bit like the
+French phrase "pas seul" (pronounced "pa-sole"), meaning "not alone".
+
+The library provides several scheduling algorithms for executing
+parallel programs on modern multicores and provides a range of
+utilities for inspecting the empirical behavior of parallel programs.
+We expect that the instructions in this book to allow the reader to
+write performant parallel programs at a relatively high level
+(essentially at the same level of C++ code) without having to worry
+too much about lower level details such as machine specific
+optimizations, which might otherwise be necessary.
+
+All code that discussed in this book can be found at the Github
+repository linked by the following URL:
+
+https://github.com/deepsea-inria/pasl/tree/edu[https://github.com/deepsea-inria/pasl/tree/edu]
+
+This code-base includes the examples presented in the book,  see file
+`minicourse/examples.hpp`.
+
+Some of the material in this book is based on the course,
+http://www.cs.cmu.edu/\~15210/[15-210], co-taught with
+http://www.cs.cmu.edu/\~guyb/[Guy Blelloch] at CMU.  
+The interested reader can find more details on this material in
+http://www.parallel-algorithms-book.com/[this book.]
+
+Starting point for this book was 
+http://www.cs.cmu.edu/~15210/pasl.html[this book on PASL.]

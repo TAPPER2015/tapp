@@ -1,0 +1,1684 @@
+Chapter: Simple Parallel Arrays
+-------------------------------
+
+Arrays are a fundamental data structure in sequential and parallel
+computing.  When computing sequentially, arrays can sometimes be
+replaced by linked lists, especially because linked lists are more
+flexible.  Unfortunately, linked lists are deadly for parallelism,
+because they require serial traversals to find elements; this makes
+arrays all the more important in parallel computing. 
+
+
+
+////////
+
+For example, from this point on, every program that we consider in
+this book involves arrays.
+
+////////
+
+
+Unfortunately, it is difficult to find a good treatment of parallel
+arrays in Clatexmath:[++]: the various array implementations provided
+by Clatexmath:[++] have been designed primarily for sequential
+computing. Each one has various pitfalls for parallel use.
+
+.Clatexmath:[++] arrays
+========
+
+By default, Clatexmath:[++] arrays that are created by the `new[]`
+operator are initialized sequentially. Therefore, the work and span
+cost of the call `new[n]` is `n`. But we have seen already that we
+can initialize an array more efficiently by using parallelism to
+achieve logarithmic span in the number of items.
+
+========
+
+.STL vectors
+========
+
+The "vector" data structure that is provided by the Standard Template
+Library has similar issues.  The STL vector implements a dynamically
+resizable array that provides push, pop, and indexing operations. The
+push and pop operations take amortized constant time and the indexing
+operation constant time.  As with Clatexmath:[++] arrays,
+initialization of vectors can require linear work and span.  The STL
+vector also provides the method `resize(n)` which changes the size of
+the array to be `n`. The resize operation takes, in the worst case,
+linear work and span in proportion to the new size, `n`. In other
+words, the resize function uses a sequential algorithm to fill the
+cells in the vector. The resize operation is therefore inefficient for
+the same reason as for the default Clatexmath:[++] arrays.
+
+////////
+You might be tempted to think that there is an efficient parallel
+algorithm to initialize an STL vector, but unfortunately, the
+sequential bottleneck imposed by the resize operation defeats
+efficient parallel solutions.
+
+////////
+
+=========
+
+Such sequential loops that exist behind the wall of abstraction of a
+data structure can harm parallel performance by introducing implicit
+sequential dependencies. Moreover, finding the source of such
+sequential bottlenecks can be time consuming, because they are hidden
+behind the abstraction boundary of the native array abstraction that
+is provided by the programming language.
+
+We can easily avoid such pitfalls by carefully designing our own array
+data structure. Because array implementations are quite subtle, we
+consider our own implementation of parallel arrays, which makes
+explicit the cost of array operation, allowing us to control them
+quite carefully.  Specifically, we disallow implicit copy operations
+on arrays, because copy operations can greatly harm performance (their
+asymptotic work cost is linear).
+
+Interface and cost model
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+The key components of our array data structure, `sparray`, are shown
+by the code snippet below. For simplicity, in this course, our arrays
+can store 64-bit words only; in particular, our arrays are monomorphic
+and fixed to values of type `long`. 
+
+[source,{cpp}]
+----
+using value_type = long;
+  
+class sparray {
+public:
+
+  // n: size to give to the array; by default 0
+  sparray(unsigned long n = 0);
+
+  // constructor from list
+  sparray(std::initializer_list<value_type> xs);
+
+  // indexing operator
+  value_type& operator[](unsigned long i);
+
+  // size of the array
+  unsigned long size() const;
+
+};
+----
+
+The class `sparray` provides two constructors.  The first one takes in
+the size of the array (set to 0 by default) and allocates an
+unitialized array of the specified size (`nullptr` if size is 0).  The
+second constructor takes in a list specified by curly braces and
+allocates an array with the same size.  Since the argument to this
+constructor must be specified explicitly in the program, its size is
+constant by definition.
+
+NOTE: Generalizing our parallel arrays to store values of any given
+type can be achieved by use of Clatexmath:[++] templates.  We stick to
+monomorphic arrays here to simplify the presentation.
+
+
+The cost model guaranteed by our implementation of parallel array is
+as follows:
+
+- *Constructors/Allocation:* The work and span of simply allocating an
+  array on the heap, without initialization, is constant.  The second
+  constructor performs initialization, of constant size, and thus also
+  has constant work and span.
+
+- *Array indexing:* Each array-indexing operation, that is the
+  operation which accesses an individual cell, requires constant work and
+  constant span.
+
+- *Size operation:* The work and the span of accessing the size of the
+  array is constant.
+
+- *Destructors/Deallocation:* Not shown, the class includes a
+   destructor that frees the array.  Combined with the "move
+   assignment operator" that Clatexmath:[++] allows us to define,
+   destructors can be used to deallocate arrays when they are out of
+   scope. The destructor takes constant time because the contents of
+   the array are just bits that do not need to be destructed
+   individually.
+
+- *Move assignment operator:* Not shown, the class includes a
+   move-assignment operator that gets fired when an array is assigned
+   to a variable.  This operator moves the contents of the right-hand
+   side of the assigned array into that of the left-hand side. This
+   operation takes constant time.
+
+- *Copy constructor:* The copy constructor of `sparray` is disabled.
+   This prohibits copying an array unintentionally, for example, by
+   passing the array by value to a function.
+
+NOTE: The constructors of our array class do not perform
+initializations that involve non-constant work.  If desired, the
+programmer can write an initializer that performs linear work and
+logarithmic span (if the values used for initialization have
+non-constant time cost, these bounds may need to be scaled
+accordingly).
+
+
+.Simple use of arrays
+=====
+
+This program below shows a basic use `sparray`'s. The first line
+allocates and initializes the contents of the array to be three
+numbers. The second uses the familiar indexing operator to access the
+item at the second position in the array. The third line extracts the
+size of the array. The fourth line assigns to the second cell the
+value 5. The fifth prints the contents of the cell.
+
+
+[source,{cpp}]
+----
+sparray xs = { 1, 2, 3 };
+std::cout << "xs[1] = " << xs[1] << std::endl;
+std::cout << "xs.size() = " << xs.size() << std::endl;
+xs[2] = 5;
+std::cout << "xs[2] = " << xs[2] << std::endl;
+----
+
+Output:
+
+----
+xs[1] = 2
+xs.size() = 3
+xs[2] = 5
+----
+
+==========
+
+
+
+Allocation and deallocation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Arrays can be allocated by specifying the size of the array.
+
+.Allocation and deallocation
+=====
+[source,{cpp}]
+----
+sparray zero_length = sparray();
+sparray another_zero_length = sparray(0);
+sparray yet_another_zero_length;
+sparray length_five = sparray(5);    // contents uninitialized
+std::cout << "|zero_length| = " << zero_length.size() << std::endl;
+std::cout << "|another_zero_length| = " << another_zero_length.size() << std::endl;
+std::cout << "|yet_another_zero_length| = " << yet_another_zero_length.size() << std::endl;
+std::cout << "|length_five| = " << length_five.size() << std::endl;
+----
+
+Output:
+
+----
+|zero_length| = 0
+|another_zero_length| = 0
+|yet_another_zero_length| = 0
+|length_five| = 5
+----
+
+=====
+
+Just after creation, the array contents consist of uninitialized
+bits. We use this convention because the programmer needs flexibility
+to decide the parallelization strategy to initialize the contents.
+Internally, the `sparray` class consists of a size field and a pointer
+to the first item in the array. The contents of the array are heap
+allocated (automatically) by constructor of the `sparray` class.
+Deallocation occurs when the array's destructor is called.  The
+destructor can be called by the programmer or by run-time system (of
+Clatexmath:[++]) if an object storing the array is destructed.  Since
+Clatexmath:[++] destructs (stack allocated) variables that go out of
+scope when a function returns, we can combine the stack discipline
+with heap-allocated arrays to manage the deallocation of arrays mostly
+automatically.  We give several examples of this automatic
+deallocation scheme below.
+
+.Automatic deallocation of arrays upon return
+========
+In the function below, the `sparray` object that is allocated on the
+frame of `foo` is deallocated just before `foo` returns, because the
+ variable `xs`  containing it goes out of scope.
+
+[source,{cpp}]
+----
+void foo() {
+  sparray xs = sparray(10);
+  // array deallocated just before foo() returns
+}
+----
+========
+
+
+.Dangling pointers in arrays
+===============
+
+Care must be taken when managing arrays, because nothing prevents the
+programmer from returning a dangling pointer.
+
+[source,{cpp}]
+----
+value_type* foo() {
+  sparray xs = sparray(10);
+  ...
+  // array deallocated just before foo() returns
+  return &xs[0]
+}
+
+...
+
+std::cout << "contents of deallocated memory: " << *foo() << std::endl;
+----
+
+Output:
+
+----
+contents of deallocated memory: .... (undefined)
+----
+
+===============
+
+It is safe, however, to take a pointer to a cell in the array, when
+the array itself is still in scope.  For example, in the code below,
+the contents of the array are used strictly when the array is in scope.
+
+===============
+
+[source,{cpp}]
+----
+void foo() {
+  sparray xs = sparray(10);
+  xs[0] = 34;
+  bar(&xs[0]);
+  ...
+  // array deallocated just before foo() returns
+}
+
+void bar(value_type* p) {
+  std::cout << "xs[0] = " << *p << std::endl;
+}
+----
+
+Output:
+
+----
+xs[0] = 34
+----
+===============
+
+We are going to see that we can rely on cleaner conventions for
+passing to functions references on arrays.
+
+
+Passing to and returning from functions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you are familiar with Clatexmath:[++] container libraries, such as
+STL, this aspect of our array implementation, namely the calling
+conventions, may be unfamiliar: our arrays cannot be passed by value.
+We forbid passing by value because passing by value implies creating a
+fresh copy for each array being passed to or returned by a
+function. Of course, sometimes we really need to copy an array. In
+this case, we choose to copy the array explicitly, so that it is
+obvious where in our code we are paying a linear-time cost for copying
+out the contents. We will return to the issue of copying later.
+
+.Incorrect use of copy constructor 
+===========
+
+What then happens if the program tries to pass an array to a function?
+The program will be rejected by the compiler.  The code below does
+*not* compile, because we have disabled the copy constructor of our
+`sparray` class.
+
+[source,{cpp}]
+----
+value_type foo(sparray xs) {
+  return xs[0];
+}
+
+void bar() {
+  sparray xs = { 1, 2 };
+  foo(xs);
+}
+----
+===========
+
+
+.Correctly passing an array by reference
+===========
+
+The following code does compile, because in this case we pass
+the array `xs` to `foo` by reference.
+
+[source,{cpp}]
+----
+value_type foo(const sparray& xs) {
+  return xs[0];
+}
+
+void bar() {
+  sparray xs = { 1, 2 };
+  foo(xs);
+}
+----
+
+==========
+
+Returning an array is straightforward: we take advantage of a feature
+of modern Clatexmath:[++]11 which automatically detects when it is
+safe to move a structure by a constant-time pointer swap. Code of the
+following form is perfectly legal, even though we disabled the copy
+constructor of `sparray`, because the compiler is able to transfer
+ownership of the array to the caller of the function. Moreover, the
+transfer is guaranteed to take constant time -- not linear like a copy
+would take. The return is fast because internally what is happening is
+only a couple words are being exchanged and nothing more is happening.
+Such "move on return" is achieved by the "move-assignment operator" of
+`sparray` class.
+
+.Create and initialize an array (sequentially)
+====
+[source,{cpp}]
+----
+sparray fill_seq(long n, value_type x) {
+  sparray tmp = sparray(n);
+  for (long i = 0; i < n; i++)
+    tmp[i] = x;
+  return tmp;
+}
+
+void bar() {
+  sparray xs = fill_seq(4, 1234);
+  std::cout << "xs = " << xs << std::endl;
+}
+----
+
+Output after calling `bar()`:
+
+----
+xs = { 1234, 1234, 1234, 1234 }
+----
+
+====
+
+Ownership-passing semantics
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Although it is perfectly fine to assign to an array variable the
+contents of a given array, what happens may be surprising to those who
+know the usual conventions of Clatexmath:[++]11 container libraries.
+Consider the following program.
+
+.Ownership-passing semantics
+====
+
+[source,{cpp}]
+----
+sparray xs = fill_seq(4, 1234);
+sparray ys = fill_seq(3, 333);
+ys = std::move(xs);
+std::cout << "xs = " << xs << std::endl;
+std::cout << "ys = " << ys << std::endl;
+----
+
+The assignment from `xs` to `ys` simultaneously destroys the contents
+of `ys` (by calling its destructor, which nulls it out), namely the
+array `{ 333, 333, 333 }`, moves the contents of `xs` to `ys`, and
+empties out the contents of `xs`.  This behavior is defined as part of
+the move operator of `sparray`.  The result is the following.
+
+----
+xs = { }
+ys = { 1234, 1234, 1234, 1234 }
+----
+
+====
+
+The reason we use this semantics for assignment is that the assignment
+takes constant time. Later, we are going to see that we can
+efficiently copy items out of an array. But for reasons we already
+discussed, the copy operation is going to be explicit.
+
+Exercise: duplicating items in parallel
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The aim of this exercise is to combine our knowledge of parallelism
+and arrays. To this end, your assignment is to implement two
+functions. The first, namely `duplicate`, is to return a new array in
+which each item appearing in the given array `xs` appears twice.
+
+[source,{cpp}]
+----
+sparray duplicate(const sparray& xs) {
+  // fill in
+}
+----
+
+For example:
+
+[source,{cpp}]
+----
+sparray xs = { 1, 2, 3 };
+std::cout << "xs = " << duplicate(xs) << std::endl;
+----
+
+Expected output:
+
+----
+xs = { 1, 1, 2, 2, 3, 3 }
+----
+
+The second function is a generalization of the first: the value
+returned by `ktimes` should be an array in which each item `x` that is
+in the given array `xs` is replaced by `k` duplicate items.
+
+[source,{cpp}]
+----
+sparray ktimes(const sparray& xs, long k) {
+  // fill in
+}
+----
+
+For example:
+
+[source,{cpp}]
+----
+sparray xs = { 5, 7 };
+std::cout << "xs = " << ktimes(xs, 3) << std::endl;
+----
+
+Expected output:
+
+----
+xs = { 5, 5, 5, 7, 7, 7 }
+----
+
+Notice that the `k` parameter of `ktimes` is not bounded. Your
+solution to this problem should be highly parallel not only in the
+number of items in the input array, `xs`, but also in the
+duplication-degree parameter, `k`.
+
+. What is the work and span complexity of your solution?
+
+. Does your solution expose ample parallelism? How much, precisely?
+
+. What is the speedup do you observe in practice on various input
+sizes?
+
+Advances in memory technology give us unprecedented access to large
+amounts of data. We have the power to organize, mine, and manipulate
+massive amounts of data with just our own personal computers. Along
+with huge memory, our machines provide massive processing
+power. However, in many cases, just to get close to harnessing the
+total processing power, we must take advantage of parallelism that
+exists among simultaneous operations on many small pieces of
+data. Data parallelism is a classic paradigm in programming that
+addresses this issue.
+
+//////
+
+In this section, we take the approach to data parallelism that was
+pioneered by functional languages, such as Nesl and Data-Parallel
+Haskell, and later adopted by frameworks, such as Google's
+MapReduce. The characteristic of this approach is the emphasis on the
+use of combinators, such as map, reduce, scan, etc., that collectively
+provide a vocabulary for writing parallel algorithms. The other
+important characteristic is the emphasis on composition as the tool
+for taming the complexity of algorithm design. The goal of the
+following sections is to show the reader the advantages and pitfalls
+of this approach. By the final chapter, in which we study graph
+algorithms, the authors hope that the reader is convinced that the
+price they pay for learning the combinators and the composition rules
+pays for itself by bringing organization and clarity to the design of
+non-trivial algorithms.
+
+//////
+
+Tabulation
+~~~~~~~~~~
+
+A *tabulation* is a data-parallel operation which creates a new array
+of a given size and initializes the contents according to a given
+"generator function".  The call `tabulate(g, n)` allocates an array of
+length `n` and assigns to each valid index in the array `i` the value
+returned by `g(i)`.
+
+[source,{cpp}]
+----
+template <class Generator>
+sparray tabulate(Generator g, long n);
+----
+
+Tabulations can be used to generate sequences according to a specified
+formula.
+
+.Sequences of even numbers
+==========================
+[source,{cpp}]
+----
+sparray evens = tabulate([&] (long i) { return 2*i; }, 5);
+std::cout << "evens = " << evens << std::endl;
+----
+
+Output:
+
+----
+evens = { 0, 2, 4, 6, 8 }
+----
+==========================
+
+Copying an array can be expressed as a tabulation.
+
+.Parallel array copy function using tabulation
+==========================
+[source,{cpp}]
+----
+sparray mycopy(const sparray& xs) {
+  return tabulate([&] (long i) { return xs[i]; }, xs.size());
+}
+----
+==========================
+
+.Exercise
+****
+
+Solve the `duplicate` and `ktimes` problems that were given in
+homework, this time using tabulations.
+
+Solutions appear below.
+
+****
+
+
+.Solution to `duplicate` and `ktimes` exercises
+==========================
+[source,{cpp}]
+----
+sparray ktimes(const sparray& xs, long k) {
+  long m = xs.size() * k;
+  return tabulate([&] (long i) { return xs[i/k]; }, m);
+}
+
+sparray duplicate(const sparray& xs) {
+  return ktimes(xs, 2);
+}
+----
+==========================
+
+The implementation of tabulate is a straightforward application of the
+parallel-for loop. 
+
+[source,{cpp}]
+----
+loop_controller_type tabulate_contr("tabulate");
+
+template <class Generator>
+sparray tabulate(Generator g, long n) {
+  sparray tmp = sparray(n);
+  parallel_for(tabulate_contr, (long)0, n, [&] (long i) {
+    tmp[i] = g(i);
+  });
+  return tmp;
+}
+----
+
+
+Note that the work and span cost of the generator function depends an
+the generator function passed as an argument to the tabulation. Let us
+first analyze for the simple case, where the generator function takes
+constant work (and hence, constant span). In this case, it should be
+clear that a tabulation should take work linear in the size of the
+array. The reason is that the only work performed by the body of the
+loop is performed by the constant-time generator function. Since the
+loop itself performs as many iterations as positions in the array, the
+work cost is indeed linear in the size of the array. The span cost of
+the tabulation is the sum of two quantitles: the span taken by the
+loop and the maximum value of the spans taken by the applications of
+the generator function. Recall that we saw before that the span cost
+of a parallel-for loop with latexmath:[$n$] iterations is
+latexmath:[$\log n$]. The maximum of the spans of the generator
+applications is a constant. Therefore, we can conclude that, in this
+case, the span cost is logarithmic in the size of the array.
+
+The story is only a little more complicated when we generalize to
+consider non-constant time generator functions. Let
+latexmath:[$W(\mathtt{g}(i))$] denote the work performed by an
+application of the generator function to a specified value
+latexmath:[$i$]. Similarly, let latexmath:[$S(\mathtt{g}(i))$] denote
+the span. Then the tabulation takes work
+
+[latexmath]
+++++
+$$
+\sum_{i=0}^{n} W(\mathtt{g}(i))
+$$
+++++
+
+and span
+
+[latexmath]
+++++
+$$
+\log n + \max_{i=0}^{n} S(\mathtt{g}(i))$$
+++++
+
+Advanced topic: higher-order granularity controllers
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+We just observed that each application of our tabulate operation can
+have different work and span cost depending on the selection of the
+generator function. Pause for a moment and consider how this
+observation could impact our granularity-control scheme.  Consider, in
+particular, the way that the tabulate function uses its
+granularity-controller object, `tabulate_contr`. This one controller
+object is shared by every call site of `tabulate()`.
+
+The problem is that all of the profiling data that the granularity
+controller collects at run time is lumped together, even though each
+generator function that is passed to the tabulate function can have
+completely different performance characteristics.  The threshold that
+is best for one generator function is not necessarily good for another
+generator function.  For this reason, there must be one distinct
+granularity-control object for each generator function that is passed
+to `tabulate`.  For this reason, we refine our solution from the one
+above to the one below, which relies on Clatexmath:[++] template programming to
+effectively key accesses to the granularity controller object by the
+type of the generator function.
+
+[source,{cpp}]
+----
+template <class Generator>
+class tabulate_controller {
+public:
+  static loop_controller_type contr;
+};
+
+template <class Generator>
+loop_controller_type
+  tabulate_controller<Generator>::contr("tabulate"+std::string(typeid(Generator).name()));
+
+template <class Generator>
+sparray tabulate(Generator g, long n) {
+  sparray tmp = sparray(n);
+  parallel_for(tabulate_controller<Generator>::contr, (long)0, n, [&] (long i) {
+    tmp[i] = g(i);
+  });
+  return tmp;
+}
+----
+
+To be more precise, the use of the template parameter in the class
+`tabulate_controller` ensures that each generator function in the
+program that is passed to `tabulate()` gets its own unique instance of
+the controller object. The rules of the template system regarding
+static class members that appear in templated classes ensure this
+behavior. Although it is not essential for our purposes to have a
+precise understanding of the template system, it is useful to know
+that the template system provides us with the exact mechanism that we
+need to properly separate granularity controllers of distinct
+instances of higher-order functions, such as tabulation.
+
+Reduction
+~~~~~~~~~
+
+A *reduction* is an operation which combines a given set of values
+according to a specified *identity element* and a specified
+*associative combining operator*. Let latexmath:[$S$] denote a
+set. Recall from algebra that an associative combining operator is any
+binary operator latexmath:[$\oplus$] such that, for any three items
+latexmath:[$x,y,z \in S$], the following holds.
+
+[latexmath]
+++++
+$$
+x \oplus (y \oplus z) = (x \oplus y) \oplus z
+$$
+++++
+
+An element latexmath:[$\mathbf{I} \in S$] is an identity element if
+for any latexmath:[$x \in S$] the following holds.
+
+[latexmath]
+++++
+$$
+(x \oplus \mathbf{I}) \, = \, (\mathbf{I} \oplus x) \, = \, x
+$$
+++++
+
+This algebraic structure consisting of latexmath:[$(S, \oplus,
+\mathbf{I})$] is called a *monoid* and is particularly worth knowing
+because this structure is a common pattern in parallel computing.
+
+.Addition monoid
+==========================
+- latexmath:[$S$] = the set of all 64-bit unsigned integers;
+latexmath:[$\oplus$] = addition modulo latexmath:[$2^{64}$];
+latexmath:[$\mathbf{I}$] = 0
+==========================
+
+.Multiplication monoid
+==========================
+- latexmath:[$S$] = the set of all 64-bit unsigned integers;
+latexmath:[$\oplus$] = multiplication modulo latexmath:[$2^{64}$];
+latexmath:[$\mathbf{I}$] = 1
+==========================
+
+.Max monoid
+==========================
+- latexmath:[$S$] = the set of all 64-bit unsigned integers;
+latexmath:[$\oplus$] = max function; latexmath:[$\mathbf{I}$] = 0
+==========================
+
+The identity element is important because we are working with
+sequences: having a base element is essential for dealing with empty
+sequences. For example, what should the sum of the empty sequence?
+More interestingly, what should be the maximum (or minimum) element of
+an empty sequence? The identity element specifies this behavior.
+
+What about the associativity of latexmath:[$\oplus$]? Why does
+associativity matter? Suppose we are given the sequence latexmath:[$ [
+a_0, a_1, \ldots, a_n \] $]. The serial reduction of this sequence
+always computes the expression latexmath:[$(a_0 \oplus a_1 \oplus
+\ldots \oplus a_n)$]. However, when the reduction is performed in
+parallel, the expression computed by the reduction could be
+latexmath:[$( (a_0 \oplus a_1 \oplus a_2 \oplus a_3) \oplus (a_4
+\oplus a_5) \oplus \ldots \oplus (a_{n-1} \oplus a_n) )$] or
+latexmath:[$( (a_0 \oplus a_1 \oplus a_2) \oplus (a_3 \oplus a_4
+\oplus a_5) \oplus \ldots \oplus (a_{n-1} \oplus a_n) )$]. In general,
+the exact placement of the parentheses in the parallel computation
+depends on the way that the parallel algorithm decomposes the
+problem. Associativity gives the parallel algorithm the flexibility to
+choose an efficient order of evaluation and still get the same result
+in the end. The flexibility to choose the decomposition of the problem
+is exploited by efficient parallel algorithms, for reasons that should
+be clear by now. In summary, associativity is a key building block to
+the solution of many problems in parallel algorithms.
+
+Now that we have monoids for describing a generic method for combining
+two items, we can consider a generic method for combining many items
+in parallel. Once we have this ability, we will see that we can solve
+the remaining problems from last homework by simply plugging the
+appropriate monoids into our generic operator, `reduce`. The interface
+of this operator in our framework is specified below. The first
+parameter corresponds to latexmath:[$\oplus$], the second to the
+identity element, and the third to the sequence to be processed.
+
+[source,{cpp}]
+----
+template <class Assoc_binop>
+value_type reduce(Assoc_binop b, value_type id, const sparray& xs);
+----
+
+We can solve our first problem by plugging integer plus as
+latexmath:[$\oplus$] and 0 as latexmath:[$\mathbf{I}$].
+
+.Summing elements of array
+==========================
+[source,{cpp}]
+----
+auto plus_fct = [&] (value_type x, value_type y) {
+  return x+y;
+};
+
+sparray xs = { 1, 2, 3 };
+std::cout << "sum_xs = " << reduce(plus_fct, 0, xs) << std::endl;
+----
+
+Output:
+
+----
+reduce(plus_fct, 0, xs) = 6
+----
+==========================
+
+We can solve our second problem in a similar fashion. Note that in
+this case, since we know that the input sequence is nonempty, we can
+pass the first item of the sequence as the identity element.  What
+could we do if we instead wanted a solution that can deal with
+zero-length sequences? What identity element might make sense in that
+case? Why?
+
+.Taking max of elements of array
+==========================
+
+Let us start by solving a special case: the one where the input
+sequence is nonempty. 
+
+[source,{cpp}]
+----
+auto max_fct = [&] (value_type x, value_type y) {
+  return std::max(x, y);
+};
+
+sparray xs = { -3, 1, 634, 2, 3 };
+std::cout << "reduce(max_fct, xs[0], xs) = " << reduce(max_fct, xs[0], xs) << std::endl;
+----
+
+Output:
+
+----
+reduce(max_fct, xs[0], xs) = 634
+----
+
+Observe that in order to seed the reduction we selected the
+provisional maximum value to be the item at the first position of the
+input sequence. Now let us handle the general case by seeding with the
+smallest possible value of type `long`.
+
+[source,{cpp}]
+----
+long max(const sparray& xs) {
+  return reduce(max_fct, LONG_MIN, xs);
+}
+----
+
+The value of `LONG_MIN` is defined by `<limits.h>`.
+
+==========================
+
+Like the tabulate function, reduce is a higher-order function. Just
+like any other higher-order function, the work and span costs have to
+account for the cost of the client-supplied function, which is in this
+case, the associative combining operator. The analysis is
+straightforward in the case where the associative combining operator
+takes constant time. In this case, the reduction takes linear work and
+logarithmic span in the size of the array. 
+
+
+//////////
+//// solution to homework exercise.
+
+It should easy to convince
+yourself that these costs are the correct costs for the `reduce`
+function below.
+
+[source,{cpp}]
+----
+template <class Assoc_binop>
+value_type reduce(Assoc_binop b, value_type id, const sparray& xs) {
+  return reduce_rec(b, id, xs, 0, xs.size());
+}
+
+//-----------------------
+// Granularity controller
+
+template <class Assoc_binop>
+class reduce_controller {
+public:
+  static constroller_type contr;
+};
+
+template <class Assoc_binop>
+controller_type
+  reduce_controller::contr("reduce"+std::string(typeid(Assoc_binop).name()));
+
+//-----------------
+// Recursive reduce
+
+template <class Assoc_binop>
+value_type reduce_rec(Assoc_binop b, value_type id, const sparray& xs,
+                      long lo, long hi) {
+  value_type result = id;
+  long n = hi-lo;
+  cstmt(reduce_controller<Assoc_binop>::contr, [&] { return n; }, [&] {
+    if (n == 0) {
+      return id;
+    } else if (n == 1) {
+      return xs[lo];
+    } else {
+      long mid = (lo+hi)/2;
+      value_type x,y;
+      fork2([&] {
+        x = reduce_rec(b, id, xs, lo, mid);
+      }, [&] {
+        y = reduce_rec(b, id, xs, mid, hi);
+      });
+      result = b(x, y);
+    }
+  }, [&] {
+    for (long i = lo; i < hi; i++)
+      result = b(result, xs[i]);
+  });
+  return result;
+}
+----
+
+The situation is more complicated when the work cost of the
+associative combining operator is not constant. Because the reduce
+operations that we are going to consider in this course all take
+constant time, we leave this line of investigation to students who are
+interested to study independently.
+
+///////////////
+
+Scan
+~~~~
+
+A *scan* is an iterated reduction that is typically expressed in one
+of two forms: inclusive and exclusive. The inclusive form maps a given
+sequence latexmath:[$ [ x_0, x_1, x_2, \ldots, x_{n-1} \] $] to
+latexmath:[$ [ x_0, x_0 \oplus x_1, x_0 \oplus x_1 \oplus x_2,
+\ldots, x_0 \oplus x_1 \oplus \ldots \oplus x_{n-1} \] $].
+
+[source,{cpp}]
+----
+template <class Assoc_binop>
+sparray scan_incl(Assoc_binop b, value_type id, const sparray& xs);
+----
+
+.Inclusive scan
+==========================
+[source,{cpp}]
+----
+  scan_incl(b, 0, sparray({ 2, 1, 8, 3 }))
+= { reduce(b, id, { 2 }),       reduce(b, id, { 2, 1 }),
+    reduce(b, id, { 2, 1, 8 }), reduce(b, id, { 2, 1, 8, 3}) }
+= { 0+2, 0+2+1, 0+2+1+8, 0+2+1+8+3 }
+= { 2, 3, 11, 14 }
+----
+==========================
+
+The exclusive form maps a given sequence latexmath:[$ [ x_0, x_1,
+x_2, \ldots, x_{n-1} \] $] to latexmath:[$ [ \mathbf{I}, x_0, x_0
+\oplus x_1, x_0 \oplus x_1 \oplus x_2, \ldots, x_0 \oplus x_1 \oplus
+\ldots \oplus x_{n-2} \] $]. For convenience, we extend the result of
+the exclusive form with the total latexmath:[$ x_0 \oplus \ldots
+\oplus x_{n-1} $].
+
+[source,{cpp}]
+----
+class scan_excl_result {
+public:
+  sparray partials;
+  value_type total;
+};
+
+template <class Assoc_binop>
+scan_excl_result scan_excl(Assoc_binop b, value_type id, const sparray& xs);
+----
+
+.Exclusive scan
+==========================
+
+The example below represents the logical behavior of `scan`, but
+actually says nothing about the way scan is implemented.
+
+[source,{cpp}]
+----
+  scan_excl(b, 0, { 2, 1, 8, 3 }).partials
+= { reduce(b, 0, { }),      reduce(b, 0, { 2 }),
+    reduce(b, 0, { 2, 1 }), reduce(b, 0, { 2, 1, 8}) }
+= { 0, 0+2, 0+2+1, 0+2+1+8 }
+= { 0, 2, 3, 11 }
+
+  scan_excl(b, 0, { 2, 1, 8, 3 }).total
+= reduce(b, 0, { 2, 1, 8, 3})
+= { 0+2+1+8+3 }
+= 14
+----
+==========================
+
+Scan has applications in many parallel algorithms. To name just a few,
+scan has been used to implement radix sort, search for regular
+expressions, dynamically allocate processors, evaluate polynomials,
+etc. Suffice to say, scan is important and worth knowing about because
+scan is a key component of so many efficient parallel algorithms. In
+this course, we are going to study a few more applications not in this
+list.
+
+The expansions shown above suggest the following sequential
+algorithm. 
+
+[source,{cpp}]
+----
+template <class Assoc_binop>
+scan_excl_result scan_excl_seq(Assoc_binop b, value_type id, const sparray& xs) {
+  long n = xs.size();
+  sparray r = array(n);
+  value_type x = id;
+  for (long i = 0; i < n; i++) {
+    r[i] = x;
+    x = b(x, xs[i]);
+  }
+  return make_scan_result(r, x);
+}
+----
+
+If we just blindly follow the specification above, we might be tempted
+to try the solution below.
+
+[source,{cpp}]
+----
+loop_controller_type scan_contr("scan");
+
+template <class Assoc_binop>
+sparray scan_excl(Assoc_binop b, value_type id, const sparray& xs) {
+  long n = xs.size();
+  sparray result = array(n);
+  result[0] = id;
+  parallel_for(scan_contr, 1l, n, [&] (long i) {
+    result[i] = reduce(b, id, slice(xs, 0, i-1));
+  });
+  return result;
+}
+----
+
+.Question
+*********
+
+Although it is highly parallel, this solution has a major
+problem. What is it?
+
+*********
+
+Consider that our sequential algorithm takes linear time in the size
+of the input array. As such, finding a work-efficient parallel
+solution means finding a solution that also takes linear work in the
+size of the input array.  The problem is that our parallel algorithm
+takes quadratic work: it is not even asymptotically work efficient!
+Even worse, the algorithm performs a lot of redundant work. Can we do
+better? Yes, in fact, there exist solutions that take, in the size of
+the input, both linear time and logarithmic span, assuming that the
+given associative operator takes constant time. It might be worth
+pausing for a moment to consider this fact, because the specification
+of scan may at first look like it would resist a solution that is both
+highly parallel and work efficient. Unfortunately, we do not have time
+to consider solutions to the parallel `scan` problem in this course.
+
+Derived data-parallel operations
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The remaining operations that we are going to consider are useful for
+writing more succinct code and for expressing special cases where
+certain optimizations are possible. All of the the operations that are
+presented in this section are derived forms of tabulate, reduce, and
+scan.
+
+Map
+^^^^
+
+The `map(f, xs)` operation applies `f` to each item in `xs` returning
+the array of results. It is straightforward to implement as a kind of
+tabulation, as we have at our disposal efficient indexing.
+
+[source,{cpp}]
+----
+template <class Func>
+sparray map(Func f, sparray xs) {
+  return tabulate([&] (long i) { return f(xs[i]); }, xs.size());
+}
+----
+
+The array-increment operation that we defined on the first day of
+lecture is simple to express via `map`.
+
+.Incrementing via `map`
+==========================
+[source,{cpp}]
+----
+sparray map_incr(sparray xs) {
+  return map([&] (value_type x) { return x+1; }, xs);
+}
+----
+==========================
+
+The work and span costs of `map` are similar to those of
+tabulate. Granularity control is handled similarly as well. However,
+that the granularity controller object corresponding to `map` is
+instantiated properly is not obvious. It turns out that, for no extra
+effort, the behavior that we want is indeed preserved: each distinct
+function that is passed to `map` is assigned a distinct granularity
+controller. Although it is outside the scope of this course, the
+reason that this scheme works in our current design owes to specifics
+of the Clatexmath:[++] template system.
+
+==== Fill
+
+The call `fill(v, n)` creates an array that is initialized with a
+specified number of items of the same value. Although just another
+special case for tabulation, this function is worth having around
+because internally the `fill` operation can take advantage of special
+hardware optimizations, such as SIMD instructions, that increase
+parallelism.
+
+[source,{cpp}]
+----
+sparray fill(value_type v, long n);
+----
+
+.Creating an array of all 3s
+==========================
+[source,{cpp}]
+----
+sparray threes = fill(3, 5);
+std::cout << "threes = " << threes << std::endl;
+----
+
+Output:
+
+----
+threes = { 3, 3, 3, 3, 3 }
+----
+==========================
+
+Copy
+^^^^^
+
+Just like `fill`, the `copy` operation can take advantage of special
+hardware optimizations that accellerate memory traffic. For the same
+reason, the `copy` operation is a good choice when a full copy is
+needed.
+
+[source,{cpp}]
+----
+sparray copy(const sparray& xs);
+----
+
+.Copying an array
+==========================
+[source,{cpp}]
+----
+sparray xs = { 3, 2, 1 };
+sparray ys = copy(xs);
+std::cout << "xs = " << xs << std::endl;
+std::cout << "ys = " << ys << std::endl;
+----
+
+Output:
+
+----
+xs = { 3, 2, 1 }
+ys = { 3, 2, 1 }
+----
+==========================
+
+Slice
+^^^^^
+
+We now consider a slight generalization on the copy operator: with the
+`slice` operation we can copy out a range of positions from a given
+array rather than the entire array.
+
+[source,{cpp}]
+----
+sparray slice(const sparray& xs, long lo, long hi);
+----
+
+The `slice` operation takes a source array and a range to copy out and
+returns a fresh array that contains copies of the items in the given
+range.
+
+.Slicing an array
+==========================
+[source,{cpp}]
+----
+sparray xs = { 1, 2, 3, 4, 5 };
+std::cout << "slice(xs, 1, 3) = " << slice(xs, 1, 3) << std::endl;
+std::cout << "slice(xs, 0, 4) = " << slice(xs, 0, 4) << std::endl;
+----
+
+Output:
+
+----
+{ 2, 3 }
+{ 1, 2, 3, 4 }
+----
+==========================
+
+Concat
+^^^^^^
+
+In contrast to `slice`, the `concat` operation lets us "copy in" to a
+fresh array.
+
+[source,{cpp}]
+----
+sparray concat(const sparray& xs, const sparray& ys);
+----
+
+.Concatenating two arrays
+==========================
+[source,{cpp}]
+----
+sparray xs = { 1, 2, 3 };
+sparray ys = { 4, 5 };
+std::cout << "concat(xs, ys) = " << concat(xs, ys) << std::endl;
+----
+
+Output:
+
+----
+{ 1, 2, 3, 4, 5 }
+----
+==========================
+
+Prefix sums
+^^^^^^^^^^^
+
+The prefix sums problem is a special case of the scan problem. We have
+defined two solutions for two variants of the problem: one for the
+exclusive prefix sums and one for the inclusive case.
+
+[source,{cpp}]
+----
+sparray prefix_sums_incl(const sparray& xs);
+scan_excl_result prefix_sums_excl(const sparray& xs);
+----
+
+.Inclusive and exclusive prefix sums
+==========================
+[source,{cpp}]
+----
+sparray xs = { 2, 1, 8, 3 };
+sparray incl = prefix_sums_incl(xs);
+scan_excl_result excl = prefix_sums_excl(xs);
+std::cout << "incl = " << incl << std::endl;
+std::cout << "excl.partials = " << excl.partials << "; excl.total = " << excl.total << std::endl;
+----
+
+Output:
+
+----
+incl = { 2, 3, 11, 14 }
+excl.partials = { 0, 2, 3, 11 }; excl.total = 147
+----
+==========================
+
+Filter
+^^^^^^^
+
+The last data-parallel operation that we are going to consider is
+the operation that copies out items from a given array based on
+a given predicate function.
+
+[source,{cpp}]
+----
+template <class Predicate>
+sparray filter(Predicate pred, const sparray& xs);
+----
+
+For our purposes, a predicate function is any function that takes a
+value of type `long` (i.e., `value_type`) and returns a value of type
+`bool`.
+
+.Extracting even numbers
+==========================
+
+The following function copies out the even numbers it receives in the
+array of its argument.
+
+[source,{cpp}]
+----
+bool is_even(value_type x) {
+  return (x%2) == 0;
+}
+
+sparray extract_evens(const sparray& xs) {
+  return filter([&] (value_type x) { return is_even(x); }, xs);
+}
+
+sparray xs = { 3, 5, 8, 12, 2, 13, 0 };
+std::cout << "extract_evens(xs) = " << extract_evens(xs) << std::endl;
+----
+
+Output:
+
+----
+extract_evens(xs) = { 8, 12, 2, 0 }
+----
+==========================
+
+.Solution to the sequential-filter problem
+==========================
+
+The particular instance of the filter problem that we are considering
+is a little tricky because we are working with fixed-size arrays. In
+particular, what requires care is the method that we use to copy the
+selected items out of the input array to the output array. We need to
+first run a pass over the input array, applying the predicate function
+to the items, to determine which items are to be written to the output
+array. Furthermore, we need to track how many items are to be written
+so that we know how much space to allocate for the output array.
+
+[source,{cpp}]
+----
+template <class Predicate>
+sparray filter(Predicate pred, const sparray& xs) {
+  long n = xs.size();
+  long m = 0;
+  sparray flags = array(n);
+  for (long i = 0; i < n; i++)
+    if (pred(xs[i])) {
+      flags[i] = true;
+      m++;
+    }
+  sparray result = array(m);
+  long k = 0;
+  for (long i = 0; i < n; i++)
+    if (flags[i])
+      result[k++] = xs[i];
+  return result;
+}
+----
+
+==========================
+
+.Question
+*********
+
+In the sequential solution above, it appears that there are two
+particular obstacles to parallelization.  What are they?
+
+Hint: the obstacles relate to the use of variables `m` and `k`.
+
+*********
+
+.Question
+*********
+
+Under one particular assumption regarding the predicate, this
+sequential solution takes linear time in the size of the input, using
+two passes. What is the assumption?
+
+*********
+
+====  Parallel-filter problem
+
+The starting point for our solution is the following code. 
+
+[source,{cpp}]
+----
+template <class Predicate>
+sparray filter(Predicate p, const sparray& xs) {
+  sparray flags = map(p, xs);
+  return pack(flags, xs);
+}
+----
+
+The challenge of this exercise is to solve the following problem:
+given two arrays of the same size, the first consisting of boolean
+valued fields and the second containing the values, return the array
+that contains (in the same relative order as the items from the input)
+the values selected by the flags. Your solution should take linear
+work and logarithmic span in the size of the input.
+
+[source,{cpp}]
+----
+sparray pack(const sparray& flags, const sparray& xs);
+----
+
+.The allocation problem
+==========================
+
+[source,{cpp}]
+----
+sparray flags = { true, false, false, true, false, true, true };
+sparray xs    = {   34,    13,     5,    1,    41,   11,   10 };
+std::cout << "pack(flags, xs) = " << pack(flags, xs) << std::endl;
+----
+
+Output:
+
+----
+pack(flags, xs) = { 34, 1, 11, 10 }
+----
+
+TIP: You can use scans to implement `pack`.
+
+NOTE: Even though our arrays can store only 64-bit values of type
+`long`, we can nevertheless store values of type `bool`, as we have
+done just above with the `flags` array. The compiler automatically
+promotes boolean values to long values without causing us any
+problems, at least with respect to the correctness of our
+solutions. However, if we want to be more space efficient, we need to
+use arrays that are capable of packing values of type `bool` more
+efficiently, e.g., into single- or eight-bit fields. It should easy to
+convince yourself that achieving such specialized arrays is not
+difficult, especially given that the template system makes it easy to
+write polymorphic containers.
+
+==========================
+
+Summary of operations
+~~~~~~~~~~~~~~~~~~~~~
+
+Tabulate
+^^^^^^^^
+
+[source,{cpp}]
+----
+template <class Generator>
+sparray tabulate(Generator g, long n);
+----
+
+The call `tabulate(g, n)` returns the length-`n` array where the `i`
+th element is given by `g(i)`.
+
+Let latexmath:[$W(\mathtt{g}(i))$] denote the work performed by an
+application of the generator function to a specified value
+latexmath:[$i$]. Similarly, let latexmath:[$S(\mathtt{g}(i))$] denote
+the span. Then the tabulation takes work
+
+[latexmath]
+++++
+$$
+\sum_{i=0}^{n} W(\mathtt{g}(i))
+$$
+++++
+
+and span
+
+[latexmath]
+++++
+$$
+\log \mathtt{n} + \max_{i=0}^{n} S(\mathtt{g}(i))$$
+++++
+
+Reduce
+^^^^^^
+
+[source,{cpp}]
+----
+template <class Assoc_binop>
+value_type reduce(Assoc_binop b, value_type id, const sparray& xs);
+----
+
+The call `reduce(b, id, xs)` is logically equal to `id` if `xs.size()
+== 0`, `xs[0]` if `xs.size() == 1`, and
+
+[source,{cpp}]
+----
+b(reduce(b, id, slice(xs, 0, n/2)),
+  reduce(b, id, slice(xs, n/2, n)))
+----
+
+otherwise where `n == xs.size()`.
+
+The work and span cost are latexmath:[$O(n)$] and latexmath:[$O(\log
+n)$] respectively, where latexmath:[$n$] denotes the size of the input
+sequence `xs`. This cost assumes that the work and span of `b` are
+constant. If it's not the case, then refer directly to the
+implementation of `reduce`.
+
+Scan
+^^^^
+
+[source,{cpp}]
+----
+template <class Assoc_binop>
+sparray scan_incl(Assoc_binop b, value_type id, const sparray& xs);
+----
+
+For an associative function `b` and corresponding identity `id`, the
+return result of the call `scan_incl(b, id, xs)` is logically
+equivalent to
+
+[source,{cpp}]
+----
+tabulate([&] (long i) { return reduce(b, id, slice(xs, 0, i+1)); }, xs.size())
+----
+
+[source,{cpp}]
+----
+class scan_excl_result {
+public:
+  sparray partials;
+  value_type total;
+};
+
+template <class Assoc_binop>
+scan_excl_result scan_excl(Assoc_binop b, value_type id, const sparray& xs);
+----
+
+For an associative function `b` and corresponding identity `id`, the
+call `scan_excl(b, id, xs)` returns the object `res`, such that
+`res.partials` is logically equivalent to
+
+[source,{cpp}]
+----
+tabulate([&] (long i) { return reduce(b, id, slice(xs, 0, i)); }, xs.size())
+----
+
+and `res.total` is logically equivalent to
+
+[source,{cpp}]
+----
+reduce(b, id, xs)
+----
+
+The work and span cost are latexmath:[$O(n)$] and latexmath:[$O(\log
+n)$] respectively, where latexmath:[$n$] denotes the size of the input
+sequence `xs`. This cost assumes that the work and span of `b` are
+constant. If it's not the case, then refer directly to the
+implementation of `scan_incl` and `scan_excl`.
+
+Map
+^^^
+
+[source,{cpp}]
+----
+template <class Func>
+sparray map(Func f, sparray xs) {
+  return tabulate([&] (long i) { return f(xs[i]); }, xs.size());
+}
+----
+
+Let latexmath:[$W(\mathtt{f}(x))$] denote the work performed by an
+application of the function `f` to a specified value
+latexmath:[$x$]. Similarly, let latexmath:[$S(\mathtt{f}(x))$] denote
+the span. Then the map takes work
+
+[latexmath]
+++++
+$$
+\sum_{x \in xs} W(\mathtt{f}(x))
+$$
+++++
+
+and span
+
+[latexmath]
+++++
+$$
+\log \mathtt{xs.size()} + \max_{x \in xs} S(\mathtt{f}(x))$$
+++++
+
+Fill
+^^^^
+
+[source,{cpp}]
+----
+sparray fill(value_type v, long n);
+----
+
+Returns a length-`n` array with all cells initialized to `v`.
+
+Work and span are linear and logarithmic, respectively.
+
+Copy
+^^^^
+
+[source,{cpp}]
+----
+sparray copy(const sparray& xs);
+----
+
+Returns a fresh copy of `xs`.
+
+Work and span are linear and logarithmic, respectively.
+
+Slice
+^^^^^
+
+[source,{cpp}]
+----
+sparray slice(const sparray& xs, long lo, long hi);
+----
+
+The call `slice(xs, lo, hi)` returns the array `{xs[lo], xs[lo+1],
+..., xs[hi-1]}`.
+
+Work and span are linear and logarithmic, respectively.
+
+Concat
+^^^^^^
+
+[source,{cpp}]
+----
+sparray concat(const sparray& xs, const sparray& ys);
+----
+
+Concatenate the two sequences.
+
+Work and span are linear and logarithmic, respectively.
+
+Prefix sums
+^^^^^^^^^^^
+
+[source,{cpp}]
+----
+sparray prefix_sums_incl(const sparray& xs);
+----
+
+The result of the call `prefix_sums_incl(xs)` is logically equivalent
+to the result of the call
+
+[source,{cpp}]
+----
+scan_incl([&] (value_type x, value_type y) { return x+y; }, 0, xs)
+----
+
+[source,{cpp}]
+----
+scan_excl_result prefix_sums_excl(const sparray& xs);
+----
+
+The result of the call `prefix_sums_excl(xs)` is logically equivalent
+to the result of the call
+
+[source,{cpp}]
+----
+scan_excl([&] (value_type x, value_type y) { return x+y; }, 0, xs)
+----
+
+Work and span are linear and logarithmic, respectively.
+
+Filter
+^^^^^^
+
+[source,{cpp}]
+----
+template <class Predicate>
+sparray filter(Predicate p, const sparray& xs);
+----
+
+The call `filter(p, xs)` returns the subsequence of `xs` which
+contains each `xs[i]` for which `p(xs[i])` returns `true`.
+
+WARNING: Depending on the implementation, the predicate function `p`
+may be called multiple times by the `filter` function.
+
+Work and span are linear and logarithmic, respectively.

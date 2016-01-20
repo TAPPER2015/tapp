@@ -1,0 +1,287 @@
+Chapter: Parallelism and Concurrency
+------------------------------------
+
+We distinguish between parallelism and concurrency.  
+
+We use the term *_parallel_* to refer to an algorithm or application
+that performs multiple computations at the same time for the purposes
+of improving the completion or run time of the algorithm or
+application.  The input-output behavior or the extrinsic semantics of
+a parallel computation can be defined purely sequentially, even though
+the computation itself executes in parallel.
+
+We use the term *_concurrent_* to refer to a computation that involves
+independent agents, which can be implemented with processes or
+threads, that communicate and coordinate to accomplish the intended
+result. The input-output behavior or the extrinsic semantics of a
+concurrent application cannot be defined purely sequentially; we must
+consider the interaction between  different threads.
+
+
+In other words, parallelism is a property of the platform (software
+and/or hardware) on which the computation takes place, whereas
+concurrency is a property of the application.  A concurrent program
+can be executed serially or in parallel. 
+
+For example, the sorting algorithms that we covered earlier are
+parallel but they are not concurrent, because the algorithms do not
+involve communication between different, independent agents; an
+operating system on the other hand is a concurrent application, where
+many processes (agents) may run at the same time and communicate to
+accomplish a task.  For example, when you request these notes to be
+downloaded to your laptop, the kernel, the file system, and your
+browser communicate to accomplish the task.  Web browsers are
+typically written as concurrent applications because they may include
+multiple processes to communicate with the operating system, the
+network, and the user, all of which coordinate as needed.
+
+Parallelism and concurrency are orthogonal dimensions in the space of
+all applications.  Some applications are concurrent, some are not.
+Many concurrent applications can benefit from parallelism.  For
+example, a browser, which is a concurrent application itself as it may
+use a parallel algorithm to perform certain tasks.  On the other hand,
+there is often no need to add concurrency to a parallel application,
+because this unnecessarily complicates software.  It can, however,
+lead to improvements in efficiency.
+
+The following quote from Dijkstra suggest pursuing the approach of
+making parallelism just a matter of execution (not one of semantics),
+which is the goal of the much of the work on the development of 
+programming languages for parallel programs today.
+
+/////
+Note that Dijkstra uses the term "concurrency" to refer to
+simultaneous execution of instructions by the machine. 
+/////
+
+[quote, Edsger W. Dijkstra, Selected Writings on Computing: A Personal Perspective (EWD 508)]
+From the past terms such as "sequential programming" and "parallel
+programming" are still with us, and we should try to get rid of them,
+for they are a great source of confusion.  They date from the period
+that it was the purpose of our programs to instruct our machines, now
+it is the purpose of the machines to execute our programs.  Whether
+the machine does so sequentially, one thing at a time, or with
+considerable amount of concurrency, is a matter of implementation, and
+should _not_ be regarded as a property of the programming language.  
+
+
+
+Race conditions and concurrency
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Even though concurrent behavior is not necessary in parallel
+computing, it can arise as a result of shared state.  When shared
+variables are used for communication, for example by reading and
+writing the variable, between threads, we may have to treat the
+computation as a concurrent program to understand its behavior.
+
+Consider a simple example function, which increments a counter in
+parallel for a specified number of times latexmath:[$n$].  The code
+for such a function is shown below.  The function `concurrent_counter`
+takes a number `n` and uses a parallel-for loop to increment the
+variable `counter`.  When called with a large `n`, this function will
+create many threads that increment `counter` in parallel.
+
+[source,{cpp}]
+--------------
+loop_controller_type concurrent_counter_contr ("parallel for");
+
+void concurrent_counter(long n) {
+  long counter = 0;
+
+  auto incr = [&] () {
+    counter = counter + 1;
+  };
+    
+  par::parallel_for(concurrent_counter_contr, 0l, n, [&] (long i) {
+      incr(); 
+  });
+
+  std::cout << "Concurrent-counter: " << "n = " << n << " result = " << counter << std::endl;
+}
+--------------
+
+Since it is implemented by using our parallelism constructs, we may
+feel that the function `concurrent_counter` is parallel.  To define
+its behavior, we may thus conclude that we can ignore the parallelism
+constructs, because such constructs only impact the way that the
+function is executed but not its semantics.  So we may describe the
+semantics (input-output behavior) of `concurrent_counter` as taking a
+value `n`, incrementing it `n` times, and since `counter` starts out
+at `0`, printing the value `n` in the end.  But this is hardly the
+case, as shown below by several runs of the function.
+
+
+---------------
+
+$ make example.opt
+...
+
+// problem size = 1K, counter = 1K
+$ ./example.opt -example concurrent_counter -n 1000 -proc 16
+Concurrent-counter:n = 1000 result = 1000
+exectime 0.000
+total_idle_time 0.000
+utilization 0.9790
+
+// problem size = 100M, counter < 10M.
+$ ./example.opt -example concurrent_counter -n 100000000 -proc 16
+Concurrent-counter:n = 100000000 result = 6552587
+exectime 0.016
+total_idle_time 0.046
+utilization 0.8236
+
+// problem size = 100M, counter < 10M.
+$ ./example.opt -example concurrent_counter -n 100000000 -proc 24
+Concurrent-counter:n = 100000000 result = 5711624
+exectime 0.015
+total_idle_time 0.046
+utilization 0.8743
+
+// problem size = 100M, counter ~ 10M.
+$ ./example.opt -example concurrent_counter -n 100000000 -proc 24
+Concurrent-counter:n = 100000000 result = 10785626
+exectime 0.020
+total_idle_time 0.128
+utilization 0.7338
+
+---------------
+
+What has gone wrong is that the function `concurrent_counter` is in
+fact concurrent--not parallel--because the counter is a variable that
+is shared by many parallel threads, each of which read the value and
+update it by using multiple instructions. In fact, as we will see, the
+parallel updates to the counter lead to a race condition.  More
+generally, a program written with our parallelism constructs is only
+truly parallel if and only if parallel computations are
+*_disentangled_*, i.e., they don't interact by reading and writing
+memory, as for example in purely functional programs.  Note that this
+restriction holds only for parts of the computation that execute in
+parallel, those that are not parallel can read and write from memory.
+
+To understand more specifically what goes wrong, we need to rewrite
+our example to reflect the code, shown below, as executed by our
+machines.  The only difference from the previous example is the `incr`
+function, which now uses separate operations to read the counter, to
+calculate the next value, and to write into it.  The point is that the
+computation of reading-a-value-and-updating-it is not an *_atomic_*
+operation that executes in one step but a composite operation that
+takes place in three steps:
+
+. read `counter` into local, non-shared variable `current`,
+. increment `current`, and
+. write the updated value of `current` into shared variable `counter`.
+
+[source,{cpp}]
+--------------
+loop_controller_type concurrent_counter_contr ("parallel for");
+
+void concurrent_counter(long n) {
+  long counter = 0;
+
+  auto incr = [&] () {
+    long current = counter;
+    current = current + 1;
+    counter = current;
+  };
+    
+  par::parallel_for(concurrent_counter_contr, 0l, n, [&] (long i) {
+      incr(); 
+  });
+
+  std::cout << "Concurrent-counter: " << "n = " << n << " result = " << counter << std::endl;
+}
+
+--------------
+				   
+Since in a parallel execution, multiple threads can execute the
+function `incr` in parallel, the shared variable `counter` may not be
+updated as expected.  To see this, consider just two parallel
+executions of `incr` that both start out the current value of
+`counter` let`s say `i`, locally calculate `i+1`, and write it back.
+The resulting value of `counter` is thus `i+1` even though `incr` has
+been applied twice. This is the reason for missed increments
+illustrated by the runs above.
+
+
+
+Eliminating race conditions by synchronization
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+As discussed in an earlier <<ch::race-conditions, chapter>>, we can
+use synchronization operations provided by modern hardware to
+eliminate race codnitions.  In particular, we can use compare-and-swap
+in our example.  Since compare-and-swap allows us to update
+the value stored at a location atomically, we can use it to implement
+our increment function as shown below.  To this end, we declare
+`counter` as a atomic long type; the syntax `std::atomic<long>`
+declares an atomic `long`. In the function `incr`, we load the value
+of the counter into a local variable `current` and use
+compare-and-swap to replace the value of the `counter` with
+`current+1` by calling `compare_exchange_strong`, which implements the
+compare-and-swap operation.  Since compare-and-swap can fail, because
+of another thread succeeding to update at the same time, function
+`incr` tries this update cycle until the operation succeeds.  
+
+[source,{cpp}]
+--------------
+loop_controller_type concurrent_counter_atomic_contr ("parallel for");
+
+void concurrent_counter_atomic(long n) {
+  std::atomic<long> counter;
+  counter.store(0);
+
+  auto incr = [&] () {
+    while (true) { 
+      long current = counter.load();
+      if (counter.compare_exchange_strong (current,current+1)) {
+        break;
+      }
+    }
+  };
+
+  par::parallel_for(concurrent_counter_atomic_contr, 0l, n, [&] (long i) {
+      incr(); 
+  });
+
+  std::cout << "Concurrent-counter-atomic: " << "n = " << n << " result = " << counter << std::endl;
+}
+--------------
+
+Here are some example runs of this code with varying number of
+processors.  Note that the counter is always updated correctly, but
+the execution takes significantly longer time (approximately 10 times
+slower, accounting for the loss of parallelism due to the atomic
+operation) than the incorrect implementation with the race condition.
+This shows how expensive synchronization operations can be.
+Intuitively, synchronization operations are expensive, because they
+can require atomic access to memory and because they disable certain
+compiler optimizations.  The reality is significantly more complex,
+because modern multicore computers have memory models that are only
+weakly consistent and because they rely on several levels of caches,
+which are nevertheless kept consistent by using "cache coherency
+protocols".
+
+-------------
+
+
+$ ./example.opt -example concurrent_counter_atomic -n 1000 -proc 16
+Concurrent-counter-atomic:n = 1000 result = 1000
+exectime 0.000
+total_idle_time 0.000
+utilization 0.9796
+
+$ ./example.opt -example concurrent_counter_atomic -n 100000000 -proc 16
+Concurrent-counter-atomic:n = 100000000 result = 100000000
+exectime 14.718
+total_idle_time 0.082
+utilization 0.9997
+
+$ ./example.opt -example concurrent_counter_atomic -n 100000000 -proc 24
+Concurrent-counter-atomic:n = 100000000 result = 100000000
+exectime 7.570
+total_idle_time 0.388
+utilization 0.9979
+
+-------------
+

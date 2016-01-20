@@ -1,0 +1,20 @@
+== Administrative Matters
+
+
+Course combines theory and practice.  We will try ask the following
+two questions.
+  
+  . Does it work in practice?
+  . Does it work in theory?
+
+As you know this is a graduate class.  This means that I don't care
+about your grade. But if you are sitting here, you might as well work
+for an A.
+
+Grading will be based on some assignments, one midterm exam, and one
+project. We shall make time so that you can devote a good chunk of
+your semester to the project.  You will also be receive a
+participation score, which amounts to 20\% of the grade.
+
+For each lecture, I will make some notes and we shall make them
+available for you to comment, perhaps via a github repository.

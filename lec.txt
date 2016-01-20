@@ -1,0 +1,38 @@
+Parallel Computing in C++ with PASL
+===================================
+Umut A. Acar and Arthur Chargueraud and Mike Rainey
+v1.1 2015-04
+
+:doctype: book
+:imagesdir: ./originals
+:toc:
+:cpp: {basebackend@docbook:c++:cpp}
+:numbered:
+
+include::preface.txt[]
+
+include::background.txt[]
+
+include::fork-join.txt[]
+
+include::benchmarking.txt[]
+
+include::scheduling.txt[]
+
+include::work-efficiency.txt[]
+
+include::granularity-control.txt[]
+
+include::parallel-arrays.txt[]
+
+include::sorting.txt[]
+
+include::synchronization.txt[]
+
+include::graphs.txt[]
+				   
+
+[index]
+Index
+-----
+

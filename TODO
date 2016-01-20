@@ -1,0 +1,84 @@
+OUTLINE
+  Intro
+  Multithreading
+  Scheduling: lower and upper bounds
+  Fork-join
+  Designing parallel algorithms: sequences
+  ---> LIST RANKING AND SUCH?  DO WE NEED THIS STUFF? 
+  Online scheduling: work stealing
+  Designing parallel algorithms: tree contraction
+  Designing parallel algorithms: graph search, BFS
+  Designing parallel algorithms: graph contraction
+
+o Preliminaries
+  
+  process
+
+  thread
+
+  application will consist of multiple threads.  we shall then run
+  them on a number of processes.
+
+  in the pthreads model, things are a bit confusing... think about
+  this.  because you create many threads but how many processes do you
+  run on?  you don't have control over this...
+
+Lecture 1
+o introduction
+
+  o serial computing ruled the world
+    draw a dinosaur
+    
+
+
+  course: theory and practice.  we will alwask ask two questions:
+  
+  1) does it work in practice?
+  2) does it work in theory?
+
+
+Introduction
+
+goal: learn a lot and be very satisfied about it, because well it
+works no matter how you look at it. not just science, not just art,
+both.  beautiful in all senses of the word.
+
+what to expect.  this is a graduate class.  this means that i don't
+care about your grade (not that i care if this was an undergraduate
+class, who am i to tell you what grade you should aim for).  but if
+you are sitting here, you might as well work to get an A.
+
+but i have non answered the question.  what to expect.  there will be
+some assignments, one midterm exam, and one project.  the assignments
+will be in the first half of the course.  i expect that you will
+devote your second half to your project.  
+
+we could make you scribe notes but we are not going to do that because
+in my view, it is not the best use of anybody's time.  instead i will
+try to prepare a set of notes.  i have some in draft form that i will
+share here.  let's hope that i can stay on top of it as the semester
+advances.  all in all, we probably have notes for the half of the
+course. 
+
+
+
+o preface: should all the code be updated to work to use pasl main branch? 
+o preface: discuss process and threads
+o multithreading: 
+  present lower bounds W/P, S
+  present upper bounds: Brent and generalized Brent.
+  online scheduling and scheduling friction
+
+
+
+o there are some inconsistencies in the defition of threads in the
+multithreading seciton and fork-join section.
+
+o graphs: present the graph library and the operations possible.
+o sorting: observed work efficiency factor terminology.
+o parallel arrays: show destructors/deallocation, and the move operator.
+
+o other models
+  see vijaya ramachandran's notes
+
+

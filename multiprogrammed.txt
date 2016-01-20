@@ -1,0 +1,820 @@
+== Scheduling in Multiprogrammed Environments 
+
+Processors, Processes, and Threads
+++++++++++++++++++++++++++++++++++
+
+The problem is to schedule threads onto latexmath:[$P$] processes. The
+kernel maps the processes onto latexmath:[$P$] processors such that at
+any point in (time) *_step_*, a processor is mapped to at most one
+process. We say that a process is scheduled at step latexmath:[$i$] if
+it is mapped to a process at that step.  We write latexmath:[$p_i$]
+for the number of processes scheduled at step $i$. Note that
+latexmath:[$0 \le p_i \le P$.
+
+
+
+We define the *_processor average_* latexmath:[$Q$] over latexmath:[$T$] steps as follows
+
+[latexmath]
+++++++++++
+\[Q = \frac{1}{T} \sum_{i=1}^{T}{p_i}\].
+++++++++++
+
+.Kernel schedule
+==========
+An example kernel schedule with 3 processes over 9 steps.  1
+indicates that the process is scheduled at that step.  0 indicates
+that the process is not scheduled an that step.
+
+[width="100%",frame="topbot",options="header"]
+|==========
+|Time Step | Process 1    | Process 2    | Process 3 
+|1         |     1        |     1        |     0       
+|2         |     0        |     1        |     1         
+|3         |     1        |     1        |     1         
+|4         |     1        |     0        |     0         
+|5         |     1        |     1        |     1         
+|6         |     0        |     1        |     1         
+|7         |     1        |     1        |     0         
+|8         |     1        |     0        |     1         
+|==========
+
+For this kernel schedule the average number of processors is
+$\frac{17}{8}$, which is slightly more than latexmath:[$2$.
+
+==========
+
+Given a DAG and an kernel schedule, an *_execution schedule_*
+specifies for each step latexmath:[$i$] a set of at most latexmath:[$p_i$] vertices of the DAG
+to be executed by the processes scheduled at that step, while ensuring
+that the dependencies in the DAG are observed.  Specifically, for each
+arc latexmath:[$(u,v)$] in the DAG, the vertex latexmath:[$u$] is executed before vertex latexmath:[$v$.
+For any step in the execution, we call a vertex *_ready_* if all the
+ancestors of the vertex in the DAG are executed prior to that step.
+
+
+The *_length_* of a schedule is the number of steps in the schedule.
+
+
+
+// Note: this definition does not seem to require specifying the
+// processes executing an instruction.
+
+
+=== Lower Bounds 
+
+
+.Theorem: Lower bounds
+********
+
+Consider any multithreaded computation with work latexmath:[$W$] and
+span latexmath:[$S$] and latexmath:[$P$] processes.  
+
+For any kernel schedule, every execution schedule has length
+latexmath:[$\frac{W}{Q}$].
+
+For any number latexmath:[$Q'$] of the form latexmath:[$Q' = \frac{S
+\cdot P}{k + S}$] where latexmath:[$k$] is a natural number, there exists a
+kernel schedule such that every execution schedule has length at least
+latexmath:[$\frac{S \cdot P}{Q}$], where latexmath:[$Q$] is the
+processor average for that kernel schedule and satisfies
+latexmath:[$\lfloor Q' \rfloor \le Q \le Q'$].
+
+********
+
+Before we prove the theorem, let's interpret intuitively what it is
+saying.  The first lower bound is natural, because we cannot execute
+more that latexmath:[$Q$] vertices in a step and there are
+latexmath:[$W$] vertices.  For the second lower bound, let's note that
+the if the processor average is provides enough slack, then the kernel
+can generate a worst-case schedule that delays progress along the span
+of the computation but refusing to schedule any process in some steps.
+Under the right condititons the kernel can do this such that every
+latexmath:[$\frac{P}{Q}$] has a process that is scheduled.  In other
+words, it can delay progress along the span by a similar factor.
+
+
+.Proof
+********
+
+For the first lower bound, consider some execution schedule of length
+$T$] and note that latexmath:[$\sum_{i=1}^{T}{p_i} \ge W$, because an
+execution schedule must execute all the vertices in the DAG. Plugging
+this into the definiton of processor average yields, latexmath:[$Q =
+\frac{1}{T} \sum_{i=1}^{T}{p_i} \le W/T$]. This yields immediately
+that latexmath:[$T \ge W/Q$].
+
+
+For the second lower bound, consider some execution schedule of length
+$T$. We are now going to construct a kernel schedule that forces the
+
+The kernel schedule keeps all processors blocked for the first
+latexmath:[$k$ steps, i.e, latexmath:[$p_i = 0, 1 \le i \le k$].
+
+
+For the next latexmath:[$S$] steps, the schedule maps all processes to
+processors, i.e, latexmath:[$p_i = P, k+1 \le i \le S+k$].
+
+For the following steps, the schedule assigns latexmath:[$\lfloor Q'
+\rfloor$] processes, i.e, latexmath:[$p_i = \lfloor Q' \rfloor, S+k+1
+\le i$].
+
+The processor average for this kernel schedule is consistent with the
+stated bound in the lemma and the kernel has lenght latexmath:[$k + S$].  
+
+Furthermore latexmath:[$Q =\frac{1}{T} \sum_{i=1}^{T}{p_i} \ge
+\frac{1}{T} \cdot PS$]. This immediately yields latexmath:[$T \ge
+\frac{PS}{Q}$].
+
+********
+
+=== Offline scheduling
+
+Having established a lower bound, we now move on to establish an upper
+bound for the *_offline scheduling problem_*, where we are given a
+kernel schedule and DAG and wish to find an execution schedule that
+minimizes the run time.  It is known that the related decision problem
+in NP-complete but that 2-approximation is relatively easy.  In
+particular, greedy schedulers, can guarantee such an approximation
+quality.  Recall that a greedy scheduler never leaves a scheduled
+process idle if there is a vertex that can be executed on that
+process.
+
+[[fct:simple-invariant-scheduling]]
+.Fact: Scheduling Invariant
+*****
+
+Consider a computation DAG latexmath:[$G$] and consider an execution using any
+scheduling algorithm.  At any time during the execution, color the
+vertices that are executed as blue and the others as red.  
+
+. The blue vertices induce a blue sub-DAG of latexmath:[$G$] that is connected and that
+has the same root as latexmath:[$G$.
+
+. The red vertices incude a red sub-DAG of latexmath:[$G$] that is connected.
+
+. All the vertices of G are in the blue or the red sub-DAG.  
+
+*****
+
+
+
+[[thm:greedy]]
+.Theorem: Greedy Offline Scheduling 
+********
+
+Consider a DAG with work latexmath:[$W$] and span latexmath:[$S$] and
+any kernel schedule for latexmath:[$P$] processors.  Any greed
+schedule has length at most latexmath:[$\frac{W}{Q} + S \cdot
+\frac{P-1}{Q}$], where latexmath:[$Q$] is the processor average of the
+kernel schedule.
+
+********
+
+
+.Proof
+********
+
+Consider any greedy schedule with length latexmath:[$T$].
+
+For each step latexmath:[$1 \le i \le T$], and for each process that
+is scheduled at that step, collect a token.  The token goes to the
+*_work bucket_* if the process executes a vertex in that step,
+otherwise the process is idle and the token goes to a *_idle bucket_*.
+
+Since each token in the work bucket corresponds to an executed vertex,
+there are exactly latexmath:[$W$] tokens is that bucket.  
+
+We will now bound the tokens in the idle bucket by latexmath:[$S \cdot (P-1)$].
+To this end, observe that at any step in the execution schedule, there
+is a ready vertex to be executed (because otherwise the execution is
+complete).  This means that at each step, at most latexmath:[$P-1$] processes can
+contribute to the idle bucket.  Furtherfore at each step, where there
+is at least one idle process, we know that the number of ready
+vertices is less than the number of available processes.  Note now
+that at that step, all the ready vertices have no incoming edges in
+the red sub-DAG consisting of the vertices that are not yet executed,
+and all the vertices that have no incoming edges in the red sub-DAG
+are ready.  Thus executing all the ready vertices at the step reduces
+the length of all the paths that originate at these vertices by
+one. This means that the span of the red sub-DAG is reduced by one
+because all paths with length equal to span must originate in a ready
+vertex, because otherwise the path can be extended with its red parent
+until it has none left (this process terminates for any finite graph,
+eventually at the root, from which all vertices are reachable)
+Therefore there can be at most latexmath:[$S$] steps at which a process is idle.
+As a result the total number of tokens in the idle bucket is at most
+$S \cdot (P-1)$].
+
+To obtain the time bound, let's recall that latexmath:[$Q = \frac{1}{T} \cdot
+\sum_{i = 1}^{T}{p_i}$].  The sum in this term is equal to the total
+number of tokens, which is latexmath:[$] W + S \cdot (P-1)$].  The bound thus
+follows directly.
+
+
+********
+
+
+
+
+=== Nonblocking Work-stealing algorithm
+
+In non-blocking work stealing, a thief performs a *_yield_* system
+call after every unsuccessful steal attempt.  These calls do not
+affect correctness but prevent the kernel from starving a process.
+
+
+[source,{cpp}]
+----
+// Assign root to process zero.
+assignedVertex = NULL
+if (self == ProcessZero) {
+  assignedVertex = rootVertex
+}
+
+
+// Run scheduling loop.
+while (computationDone == false) {
+
+  // Execute assigned vertex.
+  if (assignedVertex <> NULL) {
+    (nChildren, child1, child2) = execute (assignedVertex)
+    if (nChildren == 0) {         // Die or block.
+      assignedVertex = self.popBottom ()
+    }
+    else if (nChildren == 1) {   // Continue, no synchronization.
+      assignedVertex = child1
+    } 
+    else {                      // Enable or spawn.
+      self.pushBottom (child1)
+      assignedVertex = child2
+    }
+  } 
+  else {                        // No local work.
+    // Make steal attempt.
+    yield ()
+    victim = randomProcess ()
+    assignedVertex = victim.popTop ()
+  }
+}
+----
+
+SLIGHT INCONSISTENCY BETWEEN TEXT AND CODE. YIELD BEFORE STEAL in
+CODE. AFTER IN TEXT. PAPER SAYS BETWEEN EVERY PAIR.
+
+
+==== Deque Specification
+
+The deque supports three methods: 
+. `pushBottom`
+. `popBottom`
+. `popTop`.
+
+
+We define the *_ideal_* semantics.  Define the *_invocation_* of a
+deque operation with a quadruple consisting of
+. the name of the method
+. the initiation time
+. the completion time
+. the argument (for `pushBottom`) or the return (for `popBottom` or
+`popTop`).
+
+
+===== Ideal semantics
+
+
+A set of invocations meets the ideal semantics if and only if there
+exists a *_linearization_* time for each invocation such that
+
+. linearization time is between the initiation and the completion time
+
+. no two linearization times coincide
+
+. return values are consistent with a sequential execution defined by
+the linearization times.
+
+A deque implementation meets the ideal semantics if the set of
+invocations in any executions meets the ideal semantics.
+
+A deque implementation meets the ideal semantics if and only if each
+method is linearizable as defined by Herlihy and Wing (1987).
+
+
+
+Define a set of invocations as *_good_* if no two `popBottom` and
+`pushBottom` operations are concurrent.  Any set of invocations due to
+work stealing are good.
+
+===== Relaxed semantics
+
+In the relaxed semantics, the `popTop` operation can return `NULL` if
+at some point during the invocation 
+. the deque is empty
+. the topmost item is removed from the deque (by another process).
+
+
+===== Deque implementation
+
+A deque implementation is *_constant-time_* if each of the three
+operations execute a constant number of instructions. No constant-time
+implementation of deques that is consistent with the ideal semantics
+is known.
+
+However, there is a constant time implementation of deques that is
+consistent with the relaxed semantics.  The Arora et al paper gives
+one.  There has been other implementations.
+
+
+CAN EXPAND ON THIS OR NOT. DEPENDS.  PERHAPS NOT IMPORTANT.  HOW DOES
+IT RELATE TO PRIVATE DEQUES...
+
+
+
+==== Structural lemma
+
+We have to be careful about the linearization of the assigned-vertex
+executions.
+
+. If the execution of the assigned vertex enables no children, then we
+view the execution and the updating of the assigned vertex occurring
+at the linearization point of the ensuing `popBottom` invocation.
+
+. If the execution of the assigned vertex enables one child, then we
+view the execution and the updating of the assigned vertex occurring
+at the time that the assigned vertex is executed.
+
+. If the execution of the assigned vertex enables two children, then we
+view the execution and the updating of the assigned vertex occurring
+at the linearization point of the ensuing `pushBottom` invocation.
+
+These choices are justified by the fact that executions of
+instructions locally by a process does not interfere with the
+execution of instructions in another process. In other words, such
+executions commute.
+
+If execution of latexmath:[$u$] enables latexmath:[$v$], then we call
+the edge latexmath:[$(u,v)$] an *_enabling edge_* and call
+latexmath:[$u$] the *_designated parent_* of latexmath:[$v$].  Every
+vertex except for the root has a designated parent.  Therefore the
+subgraph of the DAG consisting of the enabling edges form a rooted
+tree, called the *_enabling tree_*.  Note each execution can have a
+different enabling tree.
+
+if latexmath:[$d(u)$] is the depth of a node latexmath:[$u$] in the
+enabling tree, then we define the weight of latexmath:[$u$], written
+latexmath:[$w(u) = S - d(u)$].  The root has weight latexmath:[$S$].
+Intuitively, the weight is equal to the distance of a vertex to the
+completion.
+
+.Lemma[Structural Lemma] 
+************************
+
+Let latexmath:[$k$] be the number of vertices in a give deque in the linearized
+execution of the work-stealing algorithm.  Let latexmath:[$v_1 \ldots v_k$] denote
+the vertices, from bottom to top. Let latexmath:[$v_0$] denote the assigned vertex
+if there is one. For latexmath:[$0 \le i \le k$], let latexmath:[$u_i$] denote the designated
+parent of latexmath:[$v_i$].  Then latexmath:[$u_i$] is an ancestor of latexmath:[$u_{i-1}$] in the
+enabling tree.  Moreover, for any latexmath:[$2 \le i \le k$] latexmath:[$u_{i-1} \neq u_i$],
+that is the ancestor relationship is proper.
+
+************************
+
+INSERT PROOF.  By induction.  Relatively straightforward.  Let's see
+how this is used... WHEN TEACHING PROOF CAN BE LEFT FOR LATER.
+
+
+.Corrollary
+***********
+
+Let latexmath:[$v_0, v_1, v_2 \ldots v_k$] defined as in the structural lemma
+above.  Then, we have latexmath:[$w(v_0)\ le w(v_1) < w(v_2) \ldots w(k-1) <
+w(v_k)$] defined as in the structural lemma above.
+
+***********
+
+==== Analysis
+
+===== Kernel Assumption
+
+We need to restrict the kernel slightly in order to establish some
+bounds. Without such a restriction, we have a fundamental problem: the
+kernel can bias steals to target empty queues.  To see how, consider
+some interval of time during execution and the steal attempts that
+took place within this interval.  Now the kernel can delay the
+scheduling of those processes that target processes with nonempty
+deques until after the interval, scheduling instead the processes
+whose attempts are going to fail.  This essentially favors those steal
+attempts that will fail by slowing down the steals that will succeed.
+
+We address this issue by restricting the kernel to schedule an the
+granularity of *_rounds_* rather than steps.  A process scheduled in a
+round executes between latexmath:[$2C$] and latexmath:[$3C$] instructions (IS THIS THE SAME AS
+STEPS).  We will specify the constant latexmath:[$C$] momentarily.  The precise
+number of instructions executed is determined by the kernel in an
+arbitrary manner.  We assume that a process executes its instructions
+serially.  Instructions from different processes can be interleaved as
+determined by the kernel.
+
+
+Note that this is a reasonable assumption becaues realistic kernels
+schedule processes in quanta that are usually large enough for many
+instructions to be executed serially. In modern operating systems, the
+scheduling quanta are usually 10-100 milliseconds.
+
+
+===== Milestones
+
+We define an instruction executed by some process latexmath:[$q$] as a
+*_milestone_* if and only if one of the following two conditions
+hold: 
+
+. execution of a vertex by process latexmath:[$q$] occurs at that instruction, and 
+. a `popTop` invocation completes.
+
+Inspect now the scheduling loop and bound the number of instructions
+that a process executes between milestones.  We can observe that this
+bound is constant.  Note that this does not mean that a `popTop` may
+not not require a long, possibly unbounded time, but only that the
+number of instructions executed by a process is constant.
+
+
+Recall that we defined the scheduling quanta for the kernel to be a
+constant between latexmath:[$2C$] and latexmath:[$3C$].  We will choose latexmath:[$C$] to be a
+sufficiently large constant so that in any sequence of latexmath:[$C$
+instructions executed by a process, at least one is a milestone.  This
+means that in any round, a process executes at least two milestones in
+a round.
+
+NOTE THAT THIS ASSUMPTION THAT THERE IS A CONSTANT C SUCH THAT EVERY C
+INSTRUCTIONS CONTAIN A MILESTONE REQUIRES STEAL ATTEMPTS TO COMPLETE
+IN CONSTANT NUMBER OF STEPS.  THIS IS NOT THE CASE FOR WORK STEALING
+WITH PRIVATE DEQUES.  
+
+SUPPOSE THAT A STEAL FAILS AFTER WAITING A NUMBER OF STEPS LESS THAN
+C.  THIS WOULD SATISFY THE BOUND BUT IT WON'T BE GOOD ENOUGH
+PROBABLY.  HOW DOES THE PROOF ACCOUNT FOR THIS.
+
+
+
+===== Throws 
+
+We identify the completion of a steal attempt by its `popTop`
+invocation.  We define a steal attempt by a process latexmath:[$q$] to be a
+*_throw_*, if it completes in latexmath:[$q$'s second milestone in a round. This
+means 
+
+. that a throw completes in the same round as the identity of the
+victim is determined, and 
+
+. that a process completes at most one throw in a round.
+
+Since a throw completes in the same round as the victim is chosen, the
+scheduler cannot create bias against successful steals.  
+
+
+===== Bound in terms of Throws
+
+.Lemma[Throw Bound] 
+*******************
+
+Consider any multithreaded computation with work latexmath:[$W$].  The execution
+time is latexmath:[$O(W/Q + S/Q)$] where latexmath:[$S$] is the number of throws. 
+
+*******************
+
+We shall consider the execution in terms of rounds and collect a token
+from each processor scheduled in each cound.  Since rounds are a
+constant number of steps, we will thus collect as many tokes as total
+number of steps divided by the constant (the scheduling-quantum).
+
+Consider the execution in terms of rounds.  If a processor is
+scheduled in a round, then inspect its second milestone. 
+
+. If the second milestone corresponds to the execution of a vertex,
+then the processor places a token into the work bucket. 
+
+. If the second milestone corresponds to the completion of a steal
+attempt, then this is a throw, and the processor places a token into
+the throw bucket.
+
+. The second milestone cannot be anything else.  
+
+There are exactly latexmath:[$S$] tokens in the throw bucket and at most latexmath:[$W$
+tokens is the work bucket.  Thus the total number of tokens is at most
+$W + S$]. The bound follows by the definion of processor-average.
+
+
+===== BOUNDING THE NUMBER OF THROWS
+
+Our analysis will use a potential-function based method.  We shall
+divide the computation into phases each of which decreases the
+potential by a constant factor.
+
+
+Consider some round latexmath:[$i$] and let latexmath:[$R_i$] denote the set of ready vertices
+in the beginning of that round. A vertex is latexmath:[$R_i$] is either assigned
+to a process or is in a deque.  For each vertex latexmath:[$v \in R_i$], we define
+its *_potential_* as
+
+. latexmath:[$\phi_i(v) = 3^{2w(v)} - 1, if latexmath:[$v$] is assigned, or
+. 3^{2w(v)}, otherwise.
+
+
+We define the potential at round latexmath:[$i$], written latexmath:[$\Phi_i$
+\[
+\Phi_i = \sum_{v \in R_i}{\phi_i(v)}.
+\]
+
+.Beginning and termination potential
+====================================
+
+At the beginning of the computation, the only ready vertex is the
+root, which has a weight of latexmath:[$S$], because it is also the root of the
+enabling tree.  Therefore the potential in the beginning of the
+computation is latexmath:[$3^{2S-1}$].
+
+At the end of the computation, there are no ready notes and thus the
+potential is zero.
+
+====================================
+
+Let latexmath:[$R_i(q)$] denote the set of ready vertices at the begining of round
+$i$] that are in the deque of the process latexmath:[$q$] and the vertex assigned
+to it.  We say that any vertex latexmath:[$v \in R_i(q)$] belongs to latexmath:[$q$].
+
+The *_potential of process latexmath:[$q$_* is 
+
+$\Phi_i(q) = \sum_{v \in R_i(q)}{\phi_i(v)}.$
+
+We write latexmath:[$A_i$] for the set of processes whose deques are empty at the
+beginning of round latexmath:[$i$].  We write latexmath:[$D_i$] for the set of other
+processes.  We can thus write the total potential in round latexmath:[$i$] as
+follows 
+
+$\Phi_i = \Phi_i(A_i) + \Phi_i(D_i)$
+
+where latexmath:[$\Phi_i(X)$] is the pointwise sum, i.e., latexmath:[$\Phi_i(X) = \sum_{x \in
+X}{\Phi_i(x)}$].
+
+
+
+Let's now consider how the potential changes during execution based on
+scheduler actions. There are two cases to consider.
+
+.  Suppose that the scheduler assign the bottom vertex latexmath:[$v$] to a
+process.  In this case, the potential decreases by
+
+ latexmath:[$\phi_i(v) - \phi_(i+1}(v) = 3^{2w(v) - 3^{2w(v)-1} = 2/3 \phi_i(u).$
+
+Suppose that the scheduler executes a vertex latexmath:[$v$]. There are several
+cases to consider.
+
+.. The execution of latexmath:[$v$] enables two children latexmath:[$x$] and latexmath:[$y$].  In this case
+$x$] is placed in the deque and latexmath:[$y$] is assigned.  Thus the potential
+decrease is
+
+ latexmath:[$\phi_i(v) - \phi_(i+1}(x) - \phi_(i+1}(y) = 3^{2w(v)} - 3^{2w(v)-2}
+ - 3^{2w(v)-3} =  3^{2w(v)} (1 - 1/3 - 1/9) = 5/9 \cdot \phi_i(v)$].
+
+.. The execution of latexmath:[$v$] enables less than two children.  In this case
+the  potential decreases more. 
+
+
+We are now going to show that after latexmath:[$P$] throws  the total potential
+decreases with constant probability.
+
+.Lemma[Top-Heavy Deques]
+************************
+
+Consider any round latexmath:[$i$] and any process latexmath:[$q \in D_i$].  The topmost
+vertex is latexmath:[$q$' deque contributes at least latexmath:[$3/4$] of the potential of
+process latexmath:[$q$].
+
+************************
+
+This lemma follows directly from the structural lemma.  The cas in
+which the topmost vertex latexmath:[$v$] contributes the least of the process is
+when the assigned node and latexmath:[$v$] have the same designated parent.  In
+this case, we have 
+
+$\Phi_i(q) = \phi_i(v) + \phi_i(x) = 3^{2w(v)} + 3^{2w(x)-1} =
+3^{2w(v)} + 3^{2w(v)-1} =  (4/3) \phi_i(v)$].
+
+.Lemma[Balls and Bins]
+**********************
+
+Suppose that latexmath:[$P$] balls are thrown uniformly and randomly
+into latexmath:[$P$ bins, where bin latexmath:[$1 \le i \le P$] has
+weight latexmath:[$W_i$], and latexmath:[$W = \sum_{i=1}^{P}{W_i}$].
+For each bin, define the random variable
+
+$X_i = \left\{
+\begin{array}{ll}
+W_i & \mbox{if a ball lands in bin}~i
+\\
+0 & \mbox{otherwise}
+\end{array}
+\right.
+$
+
+If latexmath:[$X = \sum_{i=1}^{P}{X_i}$], then for any latexmath:[$\beta, 0 < \beta  1$], we
+have latexmath:[$\Pr{X \ge \beta W} > 1 - (1/((1-\beta)e)$].
+
+************************
+
+The proof of the lemma is a relatively straightforward application of
+Markov's inequality.  Consider the random variable latexmath:[$W_i - X_i$].  This
+random variable takes on the value latexmath:[$0$] if a ball lands in bin latexmath:[$i$] and
+$W_i$] otherwise.  Thus, 
+
+$E[W_i - X_i]  = W_i \cdot (1-1/P)^P \le W_i / e.$
+
+It follows that latexmath:[$E[W - X ] \le W / e$].
+
+By Markov's inequality we have 
+
+$\Pr{W-X > (1-\beta) W} \le \frac{E[W-X]}{(1-\beta)W}$], and thus
+$\Pr{X < \beta W } < \frac{1}{(1-\beta)e}.$
+
+
+.Lemma: Global Potential
+*******
+Consider any round latexmath:[$i$] and any later round latexmath:[$j$] such that at least latexmath:[$P$
+throws occur at rounds from latexmath:[$i$] (inclusive) to latexmath:[$j$] (exclusive). Then,
+we have 
+
+latexmath:[
+$$
+\Pr{\Phi_i - \Phi_j \ge \frac{1}{4} \Phi_i(D_i)} > \frac{1}{4}.
+$$
+]
+
+*******
+
+.Proof:
+****
+
+*First* we use the Top-Heavy Deques Lemma to establish:
+
+If a throw targets a process with a nonempty deque as its victim, then
+the potential decreases by at least of a half of the potential of the
+victim.
+
+Consider any process latexmath:[$q$] in latexmath:[$D_i$] and let
+latexmath:[$u$] denote the vertex at the top of its deque at round
+latexmath:[$i$].  By Top-Heavy Deques Lemma, we have
+latexmath:[$\phi_i(u) \ge \frac{3}{4} \Phi_i(q)$].
+
+Consider any throw that occurs at round latexmath:[$k \ge i$].
+
+. Suppose that this throw is sucessful with `popTop` returning a
+vertex.
+
+.. If the returned vertex is latexmath:[$u$], then after round latexmath:[$k$], vertex latexmath:[$v$] has
+been assigned and possibly executed. Thus, the potential has decreased
+by at least latexmath:[$\frac{2}{3}\, \phi_i(u)$].
+
+.. If the returned vertex is not latexmath:[$u$], then latexmath:[$u$] is already assigned and
+possibly executed. Thus, the potential has decreased by at least
+$\frac{2}{3}\, \phi_i(u)$].
+
+. Suppose that the throw is not succesful, and `popTop` returns
+`NULL`.  In this case, we know that latexmath:[$q$'s deque was empty
+during `popTop`, or some other `popTop` or `popBottom` returned
+latexmath:[$u$].  In all cases, vertex latexmath:[$u$] has been
+assigned or possibly executed by the end of round latexmath:[$k$] and
+thus, potential decrases by latexmath:[$\frac{2}{3}\, \phi_i(u)$].
+
+
+Thus, we conclude that if a thief targets a process latexmath:[$q \in D_i$] as victim at
+round latexmath:[$k \ge i$], then the potential decreases by at least 
+
+latexmath:[
+$$
+\frac{2}{3}\, \phi_i(u) \ge \frac{2}{3} \frac{3}{4} \Phi_i(q)  =
+\frac{1}{2} \Phi_i(q).
+$$
+]
+
+*Second*, we use Ball and Bins Lemma to establish the total decrease
+ in potential.
+
+Consider now all latexmath:[$P$] processes and latexmath:[$P$] throws
+that occur at or after round latexmath:[$i$].  For each process
+latexmath:[$q$] in latexmath:[$D_i$], assign a weight of
+$\frac{1}{2}\Phi_i(q)$] and for each process in latexmath:[$A_i$], we
+assign a weight of latexmath:[$0$].  The total weight is thus
+latexmath:[$\frac{1}{2} \Phi_i(D_i)$].  Using the Balls-and-Bins Lemman
+with latexmath:[$\beta = 1/2$], we conclude that the potential
+decreases by at least latexmath:[$\beta W = \frac{1}{4} \Phi_i(I_i)$]
+with probability greater that latexmath:[$1 - \frac{1}{(1-\beta) e)} >
+\frac{1}{4}$].
+
+****
+
+.Theorem: Dedicated Environments
+****
+Consider any multithreaded computation with work latexmath:[$W$] and span latexmath:[$S$] and
+execute it with non-blocking work stealing with latexmath:[$P$] processes in a
+dedicated environment.  
+The exection time is
+
+. latexmath:[$O(W/P + S)$] in expectation, and 
+
+. latexmath:[$O(W/P + S + \lg{1/\epsilon})$] with probability at least latexmath:[$1-\epsilon$] for any latexmath:[$\epsilon > 0$].
+
+****
+
+.Proof
+****
+
+The Throw-Bound Lemma bounds the execution time in terms of throws.
+We shall prove bounds on the number of throws.
+
+
+We break execution into *_phases_* of latexmath:[$\Theta(P)$] throws.  We show
+that with constant probability, a phase causes the potential to drop
+by a constant factor, and since we that the the potential starts at
+$\Phi_0 = 3^{2S -1}$] and ends at zero, we can bound the number of
+pases.
+
+The first phase begins at round latexmath:[$t_1 = 1$] and ends at the first round
+$t_i'$], where at least latexmath:[$P$] thorws occun during the interval
+$[t_1,t_1']$].  The second phase begins at round latexmath:[$t_2 = t_1' + 1$] and
+so on.
+
+Consider a phase latexmath:[$[i,j)$], where the next round begins at round latexmath:[$j$].
+We show that latexmath:[$\Pr{\Phi_j \le \frac{3}{4} \Phi_i} < \frac{1}{4}$].
+
+Recall that the potential can be partitioned as latexmath:[$\Phi_i = \Phi_i(A_i)
++ \Phi_i(D_i)$].  
+
+. Since the phase contains at least latexmath:[$P$] throws, we know
+that latexmath:[$\Pr{\Phi_i - \Phi_j \ge \frac{1}{4} \Phi_i(D_i)} >
+\frac{1}{4}$]. 
+
+. We need to shaw that the potential also drops by a constant fraction
+of latexmath:[$\Phi_i(A_i)$].  Consider some process latexmath:[$q$] in latexmath:[$A_i$].  If latexmath:[$q$] does
+not have an assigned note, then latexmath:[$\Phi_i(q) = 0$].  If latexmath:[$q$] has an
+assigned node latexmath:[$u$], then latexmath:[$\Phi_i(q) = \phi_i(u)$].  In this case,
+process latexmath:[$q$] executes node latexmath:[$u$] at round latexmath:[$i$] and the potential drops by
+at least latexmath:[$\frac{5}{9} \phi_i(u)$].  Summing over all processes in
+$A_i$], we have latexmath:[$\Phi_i - \Phi_j \ge \frac{5}{9} \Phi_i(A_i)$].
+
+Thus we conclude that latexmath:[$\Pr{\Phi_i - \Phi_j \ge \frac{1}{4} \Phi_i} >
+\frac{1}{4}$].  In other words, we have established that in any phase,
+potential drops by a quarter with some  probability latexmath:[$\frac{1}{4}$].
+
+
+DONT WE NEED SOME BOUND ON j. MAYBE IT IS GREATER THAN i.
+
+
+Define a phase to be *_successful_* if it causes the potential do trop
+by at least a quarter fraction.  We just established that phase is
+successful with probability at least latexmath:[$0.25$]. Since the start potential
+$\Phi_0 = 3^{2S -1}$] and ends at zero and is always an integer, the
+number of successful phases it as most latexmath:[$(2S-1)\, \log_{4/3}{3} < 8
+S$].  
+
+DO WE NEED THE INTEGER ASSUMPTION HERE? 
+
+Thus, the expceted number of phases is latexmath:[$O(S)$] and since each contains
+$O(P)$] throws, the expected number of throws is latexmath:[$O(SP)$].
+
+WHY O(P) and not just P? 
+
+
+We now establish the high-probability bound.  
+
+Suppose that the execution takes latexmath:[$n = 32S + m$] phases.  Each phase
+succeds with probability at least latexmath:[$p = \frac{1}{4}$], so the expceted
+number of successes is at least latexmath:[$np = 8S + m/4$].  Let latexmath:[$X$] the number
+of successes.  By Chernoff bound
+
+latexmath:[
+$$
+Pr{X < np -a} < e^{-a^2/2np},
+$$
+]
+
+with latexmath:[$a = m/4$].  Thus if we choose latexmath:[$m = 32S + 16 \ln{1/epsilon}$], then
+we have 
+
+latexmath:[
+$$
+\Pr{X < 8 S} < e^{-(m/4)^2 / (16S + m/2)} 
+\le  e^{-(m/4)^2 / (m/2 + m/2)} 
+=  e^{-m/16}
+\le  e^{-16\ln{1/\epsilon}/16}
+= \epsilon.
+$$
+]
+
+Thus the probabilty that the executian takes latexmath:[$64S + 18
+\ln{1/epsilon)}$] phases or more is less than latexmath:[$\epsilon$].
+
+We conclude that the number of throws is latexmath:[$O(S + \lg{1/epsilon}P)$] with
+probability at least latexmath:[$1 - \epsilon$].
+
+****
+
