@@ -9,6 +9,20 @@ To be concrete with our instructions, we assume that our
 username is `pasl` and that our home directory is `/home/pasl/`. You
 need to replace these settings with your own where appropriate.
 
+Obtain source files
+~~~~~~~~~~~~~~~~~~~
+
+Let's start by downloading the PASL sources.  The PASL sources that we
+are going to use are part of a branch that we created specifically for
+this course. You can access the sources either via the tarball linked
+by the https://github.com/deepsea-inria/pasl/tree/edu[github webpage]
+or, if you have `git`, via the command below.
+
+----
+$ cd /home/pasl
+$ git clone -b edu https://github.com/deepsea-inria/pasl.git
+----
+
 
 Software Setup
 ~~~~~~~~~~~~~~
@@ -42,22 +56,7 @@ following packages need to be installed on your system.
 | http://www.open-mpi.org/projects/hwloc/[hwloc] | recent | optional; might be useful to improve performance on large systems with NUMA (see below)
 |=========
 
-Fetch source files and configure
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Let us change to our home directory: `/home/pasl`.
-
-The PASL sources that we are going to use are part of a branch that we
-created specifically for this course. You can access the sources
-either via the tarball linked by the
-https://github.com/deepsea-inria/pasl/tree/edu[github webpage] or, if
-you have `git`, via the command below.
-
-----
-$ git clone -b edu https://github.com/deepsea-inria/pasl.git
-----
-
-This rest of this section explains what are the optional software
+The rest of this section explains what are the optional software
 dependencies and how to configure PASL to use them. We are going to
 assume that all of these software dependencies have been installed in
 the folder `/home/pasl/Installs/`.
@@ -171,7 +170,7 @@ directories.  Using cshell
 setenv PATH  /opt/rh/devtoolset-3/root/usr/bin:/usr/lib64/qt-3.3/bin:/usr/lib64/ccache:/usr/local/bin:/bin:/usr/bin:./
 ----
 
-The part added to the default PATH an andrew is 
+The part added to the default PATH on andrew is 
 
 ----
 /opt/rh/devtoolset-3/root/usr/bin
