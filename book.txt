@@ -39,15 +39,15 @@ include::parallel-arrays.txt[]
 
 include::sorting.txt[]
 
+include::graphs.txt[]
+
 include::dedicated.txt[]
 
-include::synchronization.txt[]
-
-include::graphs.txt[]
+// include::synchronization.txt[]
 				   
-include::concurrency.txt[]
+// include::concurrency.txt[]
 
-include::multiprogrammed.txt[]
+// include::multiprogrammed.txt[]
 
 
 

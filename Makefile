@@ -29,6 +29,10 @@ tapp.html: $(SOURCES)
 	asciidoc -a data-uri  -a toc book.txt
 	cp book.html tapp.html
 
+tapp.pdf: $(SOURCES)
+	asciidoc --backend docbook45 book.txt ; dblatex book.xml 
+	cp book.pdf tapp.pdf
+
 tapp-full.html: $(SOURCES)
 	asciidoc -a data-uri  -a toc book-full.txt
 	cp book-full.html tapp-full.html
