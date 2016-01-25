@@ -237,7 +237,7 @@ By the definition of work sequences, we know that latexmath:[$v_1,
 \ldots, u_k$] be their parents. By induction, we know that
 latexmath:[$u_i$] is an ancestor of latexmath:[$u_{i-1}$] in the
 enabling tree and the ancestor relationship is proper except for
-latexmath:[$i = 1$], where it is possible that latexmath:[$$u_0 =
+latexmath:[$i = 1$], where it is possible that latexmath:[$u_0 =
 u_1$].  Immediately after the execution of the assigned node, the work
 sequence of the process consists of all the vertices in the deque and
 the lemma follows easily.
@@ -310,14 +310,15 @@ each bin, define the random variable
 
 [latexmath]
 +++++++++++
-\[X_i = \left\{
+$
+X_i = \left\{
 \begin{array}{ll}
 W_i & \mbox{if a ball lands in bin}~i
 \\
 0 & \mbox{otherwise}
 \end{array}
 \right.
-\]
+$
 +++++++++++
 
 If latexmath:[$X = \sum_{i=1}^{P}{X_i}$], then for any
@@ -428,7 +429,7 @@ as
 We define the potential at round latexmath:[$i$], written
 latexmath:[$\Phi_i$] as
 
-latexmath::[\[\Phi_i = \sum_{v \in R_i}{\phi_i(v)}.\]]
+latexmath::[$\Phi_i = \sum_{v \in R_i}{\phi_i(v)}.$]
 
 .Definition: Beginning and termination potential
 ****
@@ -485,7 +486,9 @@ This is a simple consequence of the definition of the potential function:
 
 [latexmath]
 +++++++++++
-\[\phi_{i}(v) - \phi_{i+1}(v) = 3^{2w(v)} - 3^{2w(v)-1} = 2/3 \phi_i(v).\]
+$
+\phi_{i}(v) - \phi_{i+1}(v) = 3^{2w(v)} - 3^{2w(v)-1} = 2/3 \phi_i(v).
+$
 +++++++++++
 
 ****
@@ -494,7 +497,7 @@ This is a simple consequence of the definition of the potential function:
 ****
 
 Total potential does not increase from one round to the next, i.e.,
-$\Phi_{i+1} \le \Phi_i$. 
+latexmath:[$\Phi_{i+1} \le \Phi_i$]. 
 
 ****
 
@@ -525,7 +528,10 @@ suppose that the scheduler pushes onto the deque the only child
 
 [latexmath]
 +++++++++++
-\[\phi_{i}(v) - \phi_{i+1}(x) = 3^{2w(v)-1} - 3^{2w(v)-2} = 3^{2w(v)-1} (1 - 1/3) = 2/3 \cdot  \phi_i(v)\].
+$$
+\phi_{i}(v) - \phi_{i+1}(x) = 3^{2w(v)-1} - 3^{2w(v)-2} =3^{2w(v)-1}(1
+- 1/3) = 2/3 \cdot  \phi_i(v).
+$$
 +++++++++++
 
 *Case 2.2:* suppose that the scheduler pushes onto the deque two
@@ -535,7 +541,7 @@ suppose that the scheduler pushes onto the deque the only child
 
 [latexmath]
 +++++++++++
-\[
+$$
 \begin{array}{lll}
 \phi_i(v) - \phi_{i+1}(x) - \phi_{i+1}(y) & = & 3^{2w(v)} - 3^{2w(v)-2}
 - 3^{2w(v)-2} 
@@ -544,7 +550,7 @@ suppose that the scheduler pushes onto the deque the only child
 \\
 & = & 1/3 \cdot  \phi_i(v).
 \end{array}
-\]
+$$
 +++++++++++
 
 Since latexmath:[$\phi_i(v)$] is positive, the potential decreases in
@@ -583,7 +589,10 @@ have
 
 [latexmath]
 +++++++++++
-\[\Phi_i(q) = \phi_i(v) + \phi_i(x) = 3^{2w(v)} + 3^{2w(x)-1} = 3^{2w(v)} + 3^{2w(v)-1} =  (4/3) \phi_i(v)\].
+$$
+\Phi_i(q) = \phi_i(v) + \phi_i(x) = 3^{2w(v)} + 3^{2w(x)-1} =
+3^{2w(v)} + 3^{2w(v)-1} =  (4/3) \phi_i(v).
+$$
 +++++++++++
 
 
@@ -598,9 +607,9 @@ have
 
 [latexmath]
 +++++++++++
-\[
+$$
 Pr \lbrack \Phi_i - \Phi_j \ge \frac{1}{4} \Phi_i(D_i) \rbrack > \frac{1}{4}.
-\]
+$$
 +++++++++++
 *******
 
@@ -645,10 +654,10 @@ decreases by at least
 
 [latexmath]
 +++++++++++
-\[
+$$
 \frac{2}{3}\, \phi_i(u) \ge \frac{2}{3} \frac{3}{4} \Phi_i(q)  =
 \frac{1}{2} \Phi_i(q).
-\]
+$$
 +++++++++++
 
 *Second*, we use Ball and Bins Lemma to establish the total decrease
@@ -703,7 +712,7 @@ bound the number of phases.
 
 The first phase begins at round latexmath:[$t_1 = 1$] and ends at the
 first round latexmath:[$t_i'$], where at least latexmath:[$P$] thorws occun
-during the interval latexmath:[$[t_1,t_1']$].  The second phase begins at round
+during the interval latexmath:[$\lbrack t_1,t_1' \rbrack $].  The second phase begins at round
 latexmath:[$t_2 = t_1' + 1$] and so on.
 
 Consider a phase latexmath:[$[i,j)$], where the next round begins at
@@ -755,22 +764,22 @@ successes.  By Chernoff bound
 
 [latexmath]
 +++++++++++
-\[
+$$
 P \lbrack X < np -a \rbrack < e^{-a^2/2np},
-\]
+$$
 +++++++++++
 
 with latexmath:[$a = m/4$].  Thus if we choose latexmath:[$m = 32S + 16 \ln{1/\epsilon}$], then we have
 
 [latexmath]
 +++++++++++
-\[
+$$
 P \lbrack X < 8 S \rbrack < e^{-(m/4)^2 / (16S + m/2)} 
 \le  e^{-(m/4)^2 / (m/2 + m/2)} 
 =  e^{-m/16}
 \le  e^{-16\ln{1/\epsilon}/16}
 = \epsilon.
-\]
+$$
 +++++++++++
 
 Thus the probabilty that the executian takes latexmath:[$64S + 18
@@ -1168,7 +1177,7 @@ For each vertex latexmath:[$v \in R_i$], we define its *_potential_* as
 We define the potential at round latexmath:[$i$], written
 latexmath:[$\Phi_i$] as
 
-latexmath::[\[\Phi_i = \sum_{v \in R_i}{\phi_i(v)}.\]]
+latexmath::[$\Phi_i = \sum_{v \in R_i}{\phi_i(v)}.$]
 
 .Beginning and termination potential
 ====================================
@@ -1211,7 +1220,9 @@ to a process.  In this case, the potential decreases by
 
 [latexmath]
 +++++++++++
-\[\phi_i(v) - \phi_(i+1}(v) = 3^{2w(v) - 3^{2w(v)-1} = 2/3 \phi_i(u)\].
+$$
+\phi_i(v) - \phi_(i+1}(v) = 3^{2w(v) - 3^{2w(v)-1} = 2/3 \phi_i(u).
+$$
 +++++++++++
 
 Suppose that the scheduler executes a vertex latexmath:[$v$]. There
@@ -1224,9 +1235,11 @@ potential decrease is
 
 [latexmath]
 +++++++++++
-\[\phi_i(v) - \phi_(i+1}(x) - \phi_(i+1}(y) = 3^{2w(v)} -
+$$
+\phi_i(v) - \phi_(i+1}(x) - \phi_(i+1}(y) = 3^{2w(v)} -
  3^{2w(v)-2} - 3^{2w(v)-3} = 3^{2w(v)} (1 - 1/3 - 1/9) = 5/9 \cdot
- \phi_i(v)\].
+ \phi_i(v).
+$$
 +++++++++++
 
 .. The execution of latexmath:[$v$] enables less than two children.
@@ -1251,7 +1264,10 @@ designated parent.  In this case, we have
 
 [latexmath]
 +++++++++++
-\[\Phi_i(q) = \phi_i(v) + \phi_i(x) = 3^{2w(v)} + 3^{2w(x)-1} = 3^{2w(v)} + 3^{2w(v)-1} =  (4/3) \phi_i(v)\].
+$$
+\Phi_i(q) = \phi_i(v) + \phi_i(x) = 3^{2w(v)} + 3^{2w(x)-1} =
+3^{2w(v)} + 3^{2w(v)-1} =  (4/3) \phi_i(v).
+$$
 +++++++++++
 
 .Lemma[Balls and Bins]
@@ -1264,14 +1280,15 @@ each bin, define the random variable
 
 [latexmath]
 +++++++++++
-\[X_i = \left\{
+$$
+X_i = \left\{
 \begin{array}{ll}
 W_i & \mbox{if a ball lands in bin}~i
 \\
 0 & \mbox{otherwise}
 \end{array}
 \right.
-\]
+$$
 +++++++++++
 
 If latexmath:[$X = \sum_{i=1}^{P}{X_i}$], then for any latexmath:[$\beta, 0 < \beta  1$], we
@@ -1305,9 +1322,9 @@ have
 
 [latexmath]
 +++++++++++
-\[
+$$
 \Pr{\Phi_i - \Phi_j \ge \frac{1}{4} \Phi_i(D_i)} > \frac{1}{4}.
-\]
+$$
 +++++++++++
 *******
 
@@ -1353,10 +1370,10 @@ decreases by at least
 
 [latexmath]
 +++++++++++
-\[
+$$
 \frac{2}{3}\, \phi_i(u) \ge \frac{2}{3} \frac{3}{4} \Phi_i(q)  =
 \frac{1}{2} \Phi_i(q).
-\]
+$$
 +++++++++++
 
 *Second*, we use Ball and Bins Lemma to establish the total decrease
@@ -1465,22 +1482,22 @@ successes.  By Chernoff bound
 
 [latexmath]
 +++++++++++
-\[
+$$
 \Pr{X < np -a} < e^{-a^2/2np},
-\]
+$$
 +++++++++++
 
 with latexmath:[$a = m/4$].  Thus if we choose latexmath:[$m = 32S + 16 \ln{1/epsilon}$], then we have
 
 [latexmath]
 +++++++++++
-\[
+$$
 \Pr{X < 8 S} < e^{-(m/4)^2 / (16S + m/2)} 
 \le  e^{-(m/4)^2 / (m/2 + m/2)} 
 =  e^{-m/16}
 \le  e^{-16\ln{1/\epsilon}/16}
 = \epsilon.
-\]
+$$
 +++++++++++
 
 Thus the probabilty that the executian takes latexmath:[$64S + 18
