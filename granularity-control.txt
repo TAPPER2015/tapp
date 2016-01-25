@@ -342,6 +342,6 @@ is not common for many other algorithms on modern multicore machines
 where many computations can quickly become limited by the availability
 of bandwidth.  Matrix multiplication does not suffer as much from the
 memory-bandwidth limitations because it performs significant work per
-memory operation: in touches latexmath:[$\Theta(n^2)$] memory cells, while
+memory operation: it touches latexmath:[$\Theta(n^2)$] memory cells, while
 performing nearly latexmath:[$\Theta(n^3)$] work.  
 
