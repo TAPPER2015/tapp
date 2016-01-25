@@ -9,6 +9,10 @@ objects, such as shared (e.g., global) variables.  This means that the
 a critical section requires *_mutual exclusion_*: only one thread can
 be inside the critical section at any time. 
 
+//////////////////////////////
+WARNING: Naama: the phrase “only one thread can be inside/enter the critical section at the same time” appears 4 times in these two paragraphs; sounds a bit odd.
+//////////////////////////////
+
 Since only one thread can be inside a critical section at a time,
 threads must coordinate to make sure that they don't enter the
 critical section at the same time.  If threads do not coordinate and
@@ -366,6 +370,10 @@ another thread) since it was loaded.  This guarantees that the
 `result` is always updated (read and modified) correctly without
 missing an update from another thread.
 
+//////////////////////////////////////////////////////////////////////
+WARNING: Naama: Is fetch-and-add a hardware primitive? If so, fetch-and-add would solve the problem in the fib example without the busy-wait loop; F&A always succeeds.
+/////////////////////////////////////////////////////////////////////
+
 ================
 
 The example above illustrates a typical use of the compare-and-swap
@@ -420,4 +428,8 @@ load-link/store-conditional operation solves this problem by
 performing the write only if the memory location has not been updated
 since the last read (load) but its practical implementations are hard
 to come by.
+
+//////////////////////////////////////////////////////////////////
+WARNING: Naama: LL/SC behaves exactly like compare-and-swap, but does not suffer from the ABA problem (will fail if the value has been changed between a load-link and a store-conditional operation). Worth mentioning? Also, LL/SC can be implemented from CAS operations in constant time (maybe about 20 CAS operations), but this implementation is complicated and is not generally used in practice as far as I know.
+///////////////////////////////////////////////////////////////////
 

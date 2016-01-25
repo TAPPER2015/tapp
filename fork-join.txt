@@ -178,6 +178,10 @@ as follows. This function for computing the Fibonacci numbers is
 inefficient because the algorithm takes exponential time, whereas
 there exist dynamic programming solutions that take linear time.
 
+//////////////////////////
+WARNING: Naama: there are also sequential algorithms that can caluclate Fib(n) in log(n) time (using matrix multiplication).
+////////////////////////
+
 
 [source, {cpp}]
 ----
