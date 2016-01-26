@@ -45,7 +45,7 @@
 
 /////
 
-= Chapter: Simple Parallel Arrays
+== Simple Parallel Arrays
 
 
 Arrays are a fundamental data structure in sequential and parallel
@@ -121,7 +121,7 @@ Specifically, we carefully control initialization and disallow
 implicit copy operations on arrays, because copy operations can harm
 observable work efficiency (their asymptotic work cost is linear).
 
-== Interface and cost model
+=== Interface and cost model
 
 The key components of our array data structure, `sparray`, are shown
 by the code snippet below. An `sparray` can store 64-bit words only;
@@ -234,7 +234,7 @@ xs[2] = 5
 
 
 
-== Allocation and deallocation
+=== Allocation and deallocation
 
 Arrays can be allocated by specifying the size of the array.
 
@@ -354,7 +354,7 @@ We are going to see that we can rely on cleaner conventions for
 passing to functions references on arrays.
 
 
-== Passing to and returning from functions
+=== Passing to and returning from functions
 
 
 If you are familiar with Clatexmath:[++] container libraries, such as
@@ -578,7 +578,7 @@ non-trivial algorithms.
 
 //////
 
-== Tabulation
+=== Tabulation
 
 A *tabulation* is a parallel operation which creates a new array of a
 given size and initializes the contents according to a given
@@ -705,7 +705,7 @@ $$
 \log n + \max_{i=0}^{n} S(\mathtt{g}(i))$$
 ++++
 
-== Higher-order granularity controllers
+=== Higher-order granularity controllers
 
 We just observed that each application of our tabulate operation can
 have different work and span cost depending on the selection of the
@@ -763,7 +763,7 @@ instances of higher-order functions, such as tabulation.
 
 Note: Above, we still assume constant-work generator functions.   
 
-== Reduction
+=== Reduction
 
 A *reduction* is an operation which combines a given set of values
 according to a specified *identity element* and a specified
@@ -999,7 +999,7 @@ interested to study independently.
 
 ///////////////
 
-== Scan
+=== Scan
 
 
 A *scan* is an iterated reduction that is typically expressed in one
@@ -1138,16 +1138,15 @@ TODO: Include the solution to scan.
 ////
 
 
-
-
+=== Derived operations
 The remaining operations that we are going to consider are useful for
 writing more succinct code and for expressing special cases where
 certain optimizations are possible. All of the the operations that are
 presented in this section are derived forms of tabulate, reduce, and
 scan.
 
-Map
-^^^^
+==== Map
+
 
 The `map(f, xs)` operation applies `f` to each item in `xs` returning
 the array of results. It is straightforward to implement as a kind of
@@ -1213,8 +1212,8 @@ threes = { 3, 3, 3, 3, 3 }
 ----
 ==========================
 
-Copy
-^^^^^
+
+==== Copy
 
 Just like `fill`, the `copy` operation can take advantage of special
 hardware optimizations that accellerate memory traffic. For the same
@@ -1244,8 +1243,7 @@ ys = { 3, 2, 1 }
 ----
 ==========================
 
-Slice
-^^^^^
+==== Slice
 
 We now consider a slight generalization on the copy operator: with the
 `slice` operation we can copy out a range of positions from a given
@@ -1277,8 +1275,8 @@ Output:
 ----
 ==========================
 
-Concat
-^^^^^^
+==== Concat
+
 
 In contrast to `slice`, the `concat` operation lets us "copy in" to a
 fresh array.
@@ -1304,8 +1302,8 @@ Output:
 ----
 ==========================
 
-Prefix sums
-^^^^^^^^^^^
+==== Prefix sums
+
 
 The prefix sums problem is a special case of the scan problem. We have
 defined two solutions for two variants of the problem: one for the
@@ -1336,8 +1334,8 @@ excl.partials = { 0, 2, 3, 11 }; excl.total = 147
 ----
 ==========================
 
-Filter
-^^^^^^^
+==== Filter
+
 
 The last data-parallel operation that we are going to consider is
 the operation that copies out items from a given array based on
@@ -1491,11 +1489,10 @@ write polymorphic containers.
 
 ==========================
 
-== Summary of operations
+=== Summary of operations
 
 
-Tabulate
-^^^^^^^^
+==== Tabulate
 
 [source,{cpp}]
 ----
@@ -1526,8 +1523,7 @@ $$
 \log \mathtt{n} + \max_{i=0}^{n} S(\mathtt{g}(i))$$
 ++++
 
-Reduce
-^^^^^^
+==== Reduce
 
 [source,{cpp}]
 ----
@@ -1552,8 +1548,7 @@ sequence `xs`. This cost assumes that the work and span of `b` are
 constant. If it's not the case, then refer directly to the
 implementation of `reduce`.
 
-Scan
-^^^^
+==== Scan
 
 [source,{cpp}]
 ----
@@ -1604,8 +1599,7 @@ sequence `xs`. This cost assumes that the work and span of `b` are
 constant. If it's not the case, then refer directly to the
 implementation of `scan_incl` and `scan_excl`.
 
-Map
-^^^
+==== Map
 
 [source,{cpp}]
 ----
@@ -1635,8 +1629,8 @@ $$
 \log \mathtt{xs.size()} + \max_{x \in xs} S(\mathtt{f}(x))$$
 ++++
 
-Fill
-^^^^
+==== Fill
+
 
 [source,{cpp}]
 ----
@@ -1647,8 +1641,8 @@ Returns a length-`n` array with all cells initialized to `v`.
 
 Work and span are linear and logarithmic, respectively.
 
-Copy
-^^^^
+==== Copy
+
 
 [source,{cpp}]
 ----
@@ -1659,8 +1653,8 @@ Returns a fresh copy of `xs`.
 
 Work and span are linear and logarithmic, respectively.
 
-Slice
-^^^^^
+==== Slice
+
 
 [source,{cpp}]
 ----
@@ -1672,8 +1666,8 @@ The call `slice(xs, lo, hi)` returns the array `{xs[lo], xs[lo+1],
 
 Work and span are linear and logarithmic, respectively.
 
-Concat
-^^^^^^
+==== Concat
+
 
 [source,{cpp}]
 ----
@@ -1684,8 +1678,8 @@ Concatenate the two sequences.
 
 Work and span are linear and logarithmic, respectively.
 
-Prefix sums
-^^^^^^^^^^^
+==== Prefix sums
+
 
 [source,{cpp}]
 ----
@@ -1715,8 +1709,8 @@ scan_excl([&] (value_type x, value_type y) { return x+y; }, 0, xs)
 
 Work and span are linear and logarithmic, respectively.
 
-Filter
-^^^^^^
+==== Filter
+
 
 [source,{cpp}]
 ----
