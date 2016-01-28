@@ -1,5 +1,52 @@
-Chapter: Simple Parallel Arrays
--------------------------------
+//////
+  Teaching notes:
+  
+  Start with the following questions.  
+
+  Last week, we discussed parallel algorithms for operating on
+  sequences with operations such as tabulate, map, reduce, and scan.
+
+  We then went on do discuss a C++ library for writing parallel code,
+  called PASL.  Specifically, we have seen that pasl provides support
+  for fork-join parallelism by using the `fork2` function.  We have
+  seen that it also enables automatic granularity control via
+  controlled statements `cstmt`.  Finally, we have seen the
+  `parallel_for` function, which is syntactic sugar for a common
+  paradigm.
+
+
+
+  Today: I want to start with the question of how we might implement
+  the parallel sequence algorithms that we talked about in practice,
+  specifically in PASL.
+
+  How difficult do you think this would be?  What challenges do you
+  expect?
+  
+  Answers: one challenge is that C++ is designed as a serial
+  programming language.  It can do things that can kill parallelism.
+  We shall see some examples of this.
+
+  Second challenge is memory allocation and management.  If you have
+  programmed in C, you should know that memory management can be
+  difficult.  This is especially a challenge is parallel computing
+  because 1) we operate on collection data structures such as
+  sequences in order to obtain parallelism.  This requires passing
+  sequences to and from functions.  This can be very tricky in C,
+  because technically we can't pass anything between function other
+  than word-size data structures.
+
+  The third challenge is granularity control.  Recall that the
+  sequence operations that we discussed are all higher order
+  functions.  How do we control granularity in this world?  How do we
+  implement tabulate/map/reduce when we don't know the function being
+  passed?
+
+
+/////
+
+== Simple Parallel Arrays
+
 
 Arrays are a fundamental data structure in sequential and parallel
 computing.  When computing sequentially, arrays can sometimes be
@@ -17,7 +64,6 @@ this book involves arrays.
 
 ////////
 
-
 Unfortunately, it is difficult to find a good treatment of parallel
 arrays in Clatexmath:[++]: the various array implementations provided
 by Clatexmath:[++] have been designed primarily for sequential
@@ -28,9 +74,8 @@ computing. Each one has various pitfalls for parallel use.
 
 By default, Clatexmath:[++] arrays that are created by the `new[]`
 operator are initialized sequentially. Therefore, the work and span
-cost of the call `new[n]` is `n`. But we have seen already that we
-can initialize an array more efficiently by using parallelism to
-achieve logarithmic span in the number of items.
+cost of the call `new[n]` is `n`. But we can initialize an array in
+logarithmic span in the number of items.
 
 ========
 
@@ -38,17 +83,18 @@ achieve logarithmic span in the number of items.
 ========
 
 The "vector" data structure that is provided by the Standard Template
-Library has similar issues.  The STL vector implements a dynamically
-resizable array that provides push, pop, and indexing operations. The
-push and pop operations take amortized constant time and the indexing
-operation constant time.  As with Clatexmath:[++] arrays,
-initialization of vectors can require linear work and span.  The STL
-vector also provides the method `resize(n)` which changes the size of
-the array to be `n`. The resize operation takes, in the worst case,
-linear work and span in proportion to the new size, `n`. In other
-words, the resize function uses a sequential algorithm to fill the
-cells in the vector. The resize operation is therefore inefficient for
-the same reason as for the default Clatexmath:[++] arrays.
+Library (STL) has similar issues.  The STL vector implements a
+dynamically resizable array that provides push, pop, and indexing
+operations. The push and pop operations take amortized constant time
+and the indexing operation constant time.  As with Clatexmath:[++]
+arrays, initialization of vectors can require linear work and span.
+The STL vector also provides the method `resize(n)` which changes the
+size of the array to be `n`. The resize operation takes, in the worst
+case, linear work and span in proportion to the new size, `n`. In
+other words, the resize function uses a sequential algorithm to fill
+the cells in the vector. The `resize` operation is therefore not
+parallel for the same reason as for the default {cplusplus}
+arrays.
 
 ////////
 You might be tempted to think that there is an efficient parallel
@@ -60,28 +106,30 @@ efficient parallel solutions.
 
 =========
 
-Such sequential loops that exist behind the wall of abstraction of a
-data structure can harm parallel performance by introducing implicit
-sequential dependencies. Moreover, finding the source of such
-sequential bottlenecks can be time consuming, because they are hidden
-behind the abstraction boundary of the native array abstraction that
-is provided by the programming language.
+Such sequential computations that exist behind the wall of abstraction
+of a language or library can harm parallelism by introducing implicit
+sequential dependencies. Finding the source of such sequential
+bottlenecks can be time consuming, because they are hidden behind the
+abstraction boundary of the native array abstraction that is provided
+by the programming language.
 
-We can easily avoid such pitfalls by carefully designing our own array
-data structure. Because array implementations are quite subtle, we
-consider our own implementation of parallel arrays, which makes
-explicit the cost of array operation, allowing us to control them
-quite carefully.  Specifically, we disallow implicit copy operations
-on arrays, because copy operations can greatly harm performance (their
-asymptotic work cost is linear).
+We can avoid such pitfalls by carefully designing our own array data
+structure. Because array implementations are quite subtle, we consider
+our own implementation of parallel arrays, which makes explicit the
+cost of array operation, allowing us to control them quite carefully.
+Specifically, we carefully control initialization and disallow
+implicit copy operations on arrays, because copy operations can harm
+observable work efficiency (their asymptotic work cost is linear).
 
-Interface and cost model
-~~~~~~~~~~~~~~~~~~~~~~~~
+=== Interface and cost model
 
 The key components of our array data structure, `sparray`, are shown
-by the code snippet below. For simplicity, in this course, our arrays
-can store 64-bit words only; in particular, our arrays are monomorphic
-and fixed to values of type `long`. 
+by the code snippet below. An `sparray` can store 64-bit words only;
+in particular, they are monomorphic and fixed to values of type
+`long`. Generalizing `sparray` to store values of arbitrary types can
+be achieved by use of Clatexmath:[++] templates.  We stick to
+monomorphic arrays here to simplify the presentation.
+
 
 [source,{cpp}]
 ----
@@ -113,18 +161,13 @@ allocates an array with the same size.  Since the argument to this
 constructor must be specified explicitly in the program, its size is
 constant by definition.
 
-NOTE: Generalizing our parallel arrays to store values of any given
-type can be achieved by use of Clatexmath:[++] templates.  We stick to
-monomorphic arrays here to simplify the presentation.
-
-
 The cost model guaranteed by our implementation of parallel array is
 as follows:
 
 - *Constructors/Allocation:* The work and span of simply allocating an
   array on the heap, without initialization, is constant.  The second
-  constructor performs initialization, of constant size, and thus also
-  has constant work and span.
+  constructor performs initialization, based on constant-size lists,
+  and thus also has constant work and span.
 
 - *Array indexing:* Each array-indexing operation, that is the
   operation which accesses an individual cell, requires constant work and
@@ -191,8 +234,7 @@ xs[2] = 5
 
 
 
-Allocation and deallocation
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+=== Allocation and deallocation
 
 Arrays can be allocated by specifying the size of the array.
 
@@ -280,7 +322,7 @@ contents of deallocated memory: .... (undefined)
 
 ===============
 
-It is safe, however, to take a pointer to a cell in the array, when
+It is safe to take a pointer to a cell in the array, when
 the array itself is still in scope.  For example, in the code below,
 the contents of the array are used strictly when the array is in scope.
 
@@ -312,8 +354,8 @@ We are going to see that we can rely on cleaner conventions for
 passing to functions references on arrays.
 
 
-Passing to and returning from functions
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+=== Passing to and returning from functions
+
 
 If you are familiar with Clatexmath:[++] container libraries, such as
 STL, this aspect of our array implementation, namely the calling
@@ -373,11 +415,10 @@ safe to move a structure by a constant-time pointer swap. Code of the
 following form is perfectly legal, even though we disabled the copy
 constructor of `sparray`, because the compiler is able to transfer
 ownership of the array to the caller of the function. Moreover, the
-transfer is guaranteed to take constant time -- not linear like a copy
-would take. The return is fast because internally what is happening is
-only a couple words are being exchanged and nothing more is happening.
-Such "move on return" is achieved by the "move-assignment operator" of
-`sparray` class.
+transfer is guaranteed to be constant work -- not linear like a copy
+would take. The return is fast, because internally all that happens is
+that a couple words are being exchanged.  Such "move on return" is
+achieved by the "move-assignment operator" of `sparray` class.
 
 .Create and initialize an array (sequentially)
 ====
@@ -404,15 +445,12 @@ xs = { 1234, 1234, 1234, 1234 }
 
 ====
 
-Ownership-passing semantics
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 Although it is perfectly fine to assign to an array variable the
 contents of a given array, what happens may be surprising to those who
 know the usual conventions of Clatexmath:[++]11 container libraries.
 Consider the following program.
 
-.Ownership-passing semantics
+.Move constructor
 ====
 
 [source,{cpp}]
@@ -443,10 +481,10 @@ efficiently copy items out of an array. But for reasons we already
 discussed, the copy operation is going to be explicit.
 
 Exercise: duplicating items in parallel
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+****
 
 The aim of this exercise is to combine our knowledge of parallelism
-and arrays. To this end, your assignment is to implement two
+and arrays. To this end, the exercise is to implement two
 functions. The first, namely `duplicate`, is to return a new array in
 which each item appearing in the given array `xs` appears twice.
 
@@ -508,6 +546,10 @@ duplication-degree parameter, `k`.
 . What is the speedup do you observe in practice on various input
 sizes?
 
+****
+
+//////
+
 Advances in memory technology give us unprecedented access to large
 amounts of data. We have the power to organize, mine, and manipulate
 massive amounts of data with just our own personal computers. Along
@@ -518,7 +560,6 @@ exists among simultaneous operations on many small pieces of
 data. Data parallelism is a classic paradigm in programming that
 addresses this issue.
 
-//////
 
 In this section, we take the approach to data parallelism that was
 pioneered by functional languages, such as Nesl and Data-Parallel
@@ -537,11 +578,10 @@ non-trivial algorithms.
 
 //////
 
-Tabulation
-~~~~~~~~~~
+=== Tabulation
 
-A *tabulation* is a data-parallel operation which creates a new array
-of a given size and initializes the contents according to a given
+A *tabulation* is a parallel operation which creates a new array of a
+given size and initializes the contents according to a given
 "generator function".  The call `tabulate(g, n)` allocates an array of
 length `n` and assigns to each valid index in the array `i` the value
 returned by `g(i)`.
@@ -626,8 +666,8 @@ sparray tabulate(Generator g, long n) {
 ----
 
 
-Note that the work and span cost of the generator function depends an
-the generator function passed as an argument to the tabulation. Let us
+Note that the work and span of the generator function depends on the
+generator function passed as an argument to the tabulation. Let us
 first analyze for the simple case, where the generator function takes
 constant work (and hence, constant span). In this case, it should be
 clear that a tabulation should take work linear in the size of the
@@ -665,8 +705,7 @@ $$
 \log n + \max_{i=0}^{n} S(\mathtt{g}(i))$$
 ++++
 
-Advanced topic: higher-order granularity controllers
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+=== Higher-order granularity controllers
 
 We just observed that each application of our tabulate operation can
 have different work and span cost depending on the selection of the
@@ -721,8 +760,10 @@ that the template system provides us with the exact mechanism that we
 need to properly separate granularity controllers of distinct
 instances of higher-order functions, such as tabulation.
 
-Reduction
-~~~~~~~~~
+
+Note: Above, we still assume constant-work generator functions.   
+
+=== Reduction
 
 A *reduction* is an operation which combines a given set of values
 according to a specified *identity element* and a specified
@@ -882,11 +923,15 @@ The value of `LONG_MIN` is defined by `<limits.h>`.
 Like the tabulate function, reduce is a higher-order function. Just
 like any other higher-order function, the work and span costs have to
 account for the cost of the client-supplied function, which is in this
-case, the associative combining operator. The analysis is
-straightforward in the case where the associative combining operator
-takes constant time. In this case, the reduction takes linear work and
-logarithmic span in the size of the array. 
+case, the associative combining operator. 
 
+////
+// Not quite: the size of the output matters.
+
+The analysis is straightforward in the case where the associative
+combining operator takes constant time. In this case, the reduction
+takes linear work and logarithmic span in the size of the array.
+/////
 
 //////////
 //// solution to homework exercise.
@@ -954,8 +999,8 @@ interested to study independently.
 
 ///////////////
 
-Scan
-~~~~
+=== Scan
+
 
 A *scan* is an iterated reduction that is typically expressed in one
 of two forms: inclusive and exclusive. The inclusive form maps a given
@@ -1079,26 +1124,29 @@ of the input array. As such, finding a work-efficient parallel
 solution means finding a solution that also takes linear work in the
 size of the input array.  The problem is that our parallel algorithm
 takes quadratic work: it is not even asymptotically work efficient!
-Even worse, the algorithm performs a lot of redundant work. Can we do
-better? Yes, in fact, there exist solutions that take, in the size of
-the input, both linear time and logarithmic span, assuming that the
-given associative operator takes constant time. It might be worth
-pausing for a moment to consider this fact, because the specification
-of scan may at first look like it would resist a solution that is both
-highly parallel and work efficient. Unfortunately, we do not have time
-to consider solutions to the parallel `scan` problem in this course.
+Even worse, the algorithm performs a lot of redundant work. 
 
-Derived data-parallel operations
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Can we do better? Yes, in fact, there exist solutions that take, in
+the size of the input, both linear time and logarithmic span, assuming
+that the given associative operator takes constant time. It might be
+worth pausing for a moment to consider this fact, because the
+specification of scan may at first look like it would resist a
+solution that is both highly parallel and work efficient.
 
+////
+TODO: Include the solution to scan.
+////
+
+
+=== Derived operations
 The remaining operations that we are going to consider are useful for
 writing more succinct code and for expressing special cases where
 certain optimizations are possible. All of the the operations that are
 presented in this section are derived forms of tabulate, reduce, and
 scan.
 
-Map
-^^^^
+==== Map
+
 
 The `map(f, xs)` operation applies `f` to each item in `xs` returning
 the array of results. It is straightforward to implement as a kind of
@@ -1164,8 +1212,8 @@ threes = { 3, 3, 3, 3, 3 }
 ----
 ==========================
 
-Copy
-^^^^^
+
+==== Copy
 
 Just like `fill`, the `copy` operation can take advantage of special
 hardware optimizations that accellerate memory traffic. For the same
@@ -1195,8 +1243,7 @@ ys = { 3, 2, 1 }
 ----
 ==========================
 
-Slice
-^^^^^
+==== Slice
 
 We now consider a slight generalization on the copy operator: with the
 `slice` operation we can copy out a range of positions from a given
@@ -1228,8 +1275,8 @@ Output:
 ----
 ==========================
 
-Concat
-^^^^^^
+==== Concat
+
 
 In contrast to `slice`, the `concat` operation lets us "copy in" to a
 fresh array.
@@ -1255,8 +1302,8 @@ Output:
 ----
 ==========================
 
-Prefix sums
-^^^^^^^^^^^
+==== Prefix sums
+
 
 The prefix sums problem is a special case of the scan problem. We have
 defined two solutions for two variants of the problem: one for the
@@ -1287,8 +1334,8 @@ excl.partials = { 0, 2, 3, 11 }; excl.total = 147
 ----
 ==========================
 
-Filter
-^^^^^^^
+==== Filter
+
 
 The last data-parallel operation that we are going to consider is
 the operation that copies out items from a given array based on
@@ -1442,11 +1489,10 @@ write polymorphic containers.
 
 ==========================
 
-Summary of operations
-~~~~~~~~~~~~~~~~~~~~~
+=== Summary of operations
 
-Tabulate
-^^^^^^^^
+
+==== Tabulate
 
 [source,{cpp}]
 ----
@@ -1477,8 +1523,7 @@ $$
 \log \mathtt{n} + \max_{i=0}^{n} S(\mathtt{g}(i))$$
 ++++
 
-Reduce
-^^^^^^
+==== Reduce
 
 [source,{cpp}]
 ----
@@ -1503,8 +1548,7 @@ sequence `xs`. This cost assumes that the work and span of `b` are
 constant. If it's not the case, then refer directly to the
 implementation of `reduce`.
 
-Scan
-^^^^
+==== Scan
 
 [source,{cpp}]
 ----
@@ -1555,8 +1599,7 @@ sequence `xs`. This cost assumes that the work and span of `b` are
 constant. If it's not the case, then refer directly to the
 implementation of `scan_incl` and `scan_excl`.
 
-Map
-^^^
+==== Map
 
 [source,{cpp}]
 ----
@@ -1586,8 +1629,8 @@ $$
 \log \mathtt{xs.size()} + \max_{x \in xs} S(\mathtt{f}(x))$$
 ++++
 
-Fill
-^^^^
+==== Fill
+
 
 [source,{cpp}]
 ----
@@ -1598,8 +1641,8 @@ Returns a length-`n` array with all cells initialized to `v`.
 
 Work and span are linear and logarithmic, respectively.
 
-Copy
-^^^^
+==== Copy
+
 
 [source,{cpp}]
 ----
@@ -1610,8 +1653,8 @@ Returns a fresh copy of `xs`.
 
 Work and span are linear and logarithmic, respectively.
 
-Slice
-^^^^^
+==== Slice
+
 
 [source,{cpp}]
 ----
@@ -1623,8 +1666,8 @@ The call `slice(xs, lo, hi)` returns the array `{xs[lo], xs[lo+1],
 
 Work and span are linear and logarithmic, respectively.
 
-Concat
-^^^^^^
+==== Concat
+
 
 [source,{cpp}]
 ----
@@ -1635,8 +1678,8 @@ Concatenate the two sequences.
 
 Work and span are linear and logarithmic, respectively.
 
-Prefix sums
-^^^^^^^^^^^
+==== Prefix sums
+
 
 [source,{cpp}]
 ----
@@ -1666,8 +1709,8 @@ scan_excl([&] (value_type x, value_type y) { return x+y; }, 0, xs)
 
 Work and span are linear and logarithmic, respectively.
 
-Filter
-^^^^^^
+==== Filter
+
 
 [source,{cpp}]
 ----
