@@ -14,6 +14,7 @@
   src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
 </script>
 
+
 <style type="text/css">
 /* Shared CSS for AsciiDoc xhtml11 and html5 backends */
 
@@ -1096,7 +1097,7 @@ computation represents the partial ordering of the dependencies
 between the instructions in the computation.</p></div>
 <div class="imageblock" id="multithreading:fork-join" style="text-align:center;">
 <div class="content">
-<img alt="A multithreaded computation." width="600pt"
+<img alt="A multithreaded computation." width="500pt"
 src="data:image/png;base64,
 iVBORw0KGgoAAAANSUhEUgAABk4AAAH2CAYAAAA28XDyAAAMGWlDQ1BJQ0MgUHJvZmlsZQAASImV
 lwdYU8kWx+eWFEJCC0RASuhNkF6l9yIgHWyEJEAoIQSCir0sKrAWVESxoqsgiq4FkLUgooiyCNjr
@@ -3280,7 +3281,7 @@ forks thread A, which then spaws thread B.  Thread B then joins thread
 A, which then joins Thread M.</p></div>
 <div class="imageblock" id="multithreading:general" style="text-align:center;">
 <div class="content">
-<img alt="A multithreaded, fork-join computation." width="600pt"
+<img alt="A multithreaded, fork-join computation." width="500pt"
 src="data:image/png;base64,
 iVBORw0KGgoAAAANSUhEUgAABhAAAAH6CAYAAADm7gZyAAAMGWlDQ1BJQ0MgUHJvZmlsZQAASImV
 lwdYU8kWx+eWFEJCC0RASuhNkF6l9yIgHWyEJEAoIQSCir0sKrAWVESxoqsgiq4FkLUgooiyCNjr
@@ -12221,7 +12222,7 @@ quicksort function and is labeled with the key at that call. Note that
 the tree is a binary search tree.</p></div>
 <div class="imageblock" id="ch:qsort-bst-example" style="text-align:center;">
 <div class="content">
-<img alt="Quicksort call tree" width="600pt"
+<img alt="Quicksort call tree" width="500pt"
 src="data:image/png;base64,
 iVBORw0KGgoAAAANSUhEUgAAA5oAAAKoCAYAAAAWMICZAAAMFmlDQ1BJQ0MgUHJvZmlsZQAASImV
 lwdUk8kWx+crKYSEFoiAlNCbIL1K7x3pYCMkAUIJIRBU7GVRgbWgIoKioisiKq4FkMWGXVkE7PUF
@@ -13334,15 +13335,16 @@ $T$, which corresponds to the output.  Consider two
 positions $i, j \in \{1, \dots, n\}$ in the sequence
 $T$. We define following random variable:</p></div>
 <div class="mathblock">
-<div class="content">\begin{eqnarray*}
+<div class="content">$$
+\begin{array}{lll}
 A_{ij} & = &\left\{
 \begin{array}{ll}
 1 & \mbox{if}~T_i~\mbox{and}~T_j \mbox{are compared}\\
 0  & \mbox{otherwise}
 \end{array}
 \right.
-
-\end{eqnarray*}</div></div>
+\end{array}
+$$</div></div>
 <div class="paragraph"><p>We can write $X_n$ by summing over all $A_{ij}$'s:</p></div>
 <div class="mathblock">
 <div class="content">$$
@@ -13363,7 +13365,7 @@ $T_i$ and $T_j$ are compared, i.e.,
 $P(A_{ij} = 1)$, and working out the sum.</p></div>
 <div class="imageblock" id="ch:sorting::qsort-cases" style="text-align:center;">
 <div class="content">
-<img alt="Relationship between the pivot and other keys.}" width="600pt"
+<img alt="Relationship between the pivot and other keys.}" width="500pt"
 src="data:image/png;base64,
 iVBORw0KGgoAAAANSUhEUgAAAyIAAAFACAYAAABA7sgmAAAMFmlDQ1BJQ0MgUHJvZmlsZQAASImV
 lwdUk8kWx+crKYSEFoiAlNCbIL1K7x3pYCMkAUIJIRBU7GVRgbWgIoKioisiKq4FkMWGXVkE7PUF
@@ -13683,8 +13685,7 @@ $T_j$ are compared will be determined in some later call.
 <div class="paragraph"><p></p></div>
 <div class="mathblock">
 <div class="content">$$
-
-\begin{align*}
+\begin{array}{ll}
 E \lbrack   X_n  \rbrack
 &
 \leq \sum_{i=1}^{n-1} \sum_{j=i+1}^n E \lbrack A_{ij}  \rbrack
@@ -13700,8 +13701,7 @@ E \lbrack   X_n  \rbrack
 \\
 & =
 2nH_n \in O(n\log n)
-\end{align*}
-
+\end{array}
 $$</div></div>
 <div class="paragraph"><p>The last step follows by the fact that $H_n = \ln{n} + O(1)$.</p></div>
 <div class="paragraph"><p>Having completed work, let&#8217;s analyze the span of quicksort.  Recall
@@ -13713,14 +13713,14 @@ than, equal to, and greater than the pivot.</p></div>
 <div class="mathblock">
 <div class="content">$$
 
-\begin{align*}
+\begin{array}{ll}
 E \lbrack |L| \rbrack
 &
 = \sum_{i=1}^{n-1}{\frac{i-1}{n}}
 \\
 &
 \le \frac{n}{2}.
-\end{align*}
+\end{array}
 
 $$</div></div>
 <div class="paragraph"><p>By symmetry, $E \lbrack |R| \rbrack \le \frac{n}{2}$.
@@ -13770,7 +13770,7 @@ we can now calculate expected span by dividing the sample space into
 mutually exclusive and exhaustive space as follows.</p></div>
 <div class="mathblock">
 <div class="content">$$
-\begin{align*}
+\begin{array}{ll}
 E \lbrack S \rbrack
 &
 =
@@ -13790,7 +13790,7 @@ n^2 \cdot 1/n^{2}
 &
 =
 O(lg^2{n})
-\end{align*}
+\end{array}
 $$</div></div>
 <div class="paragraph"><p>In thes bound, we used the fact that each call to quicksort has a span
 of $O(\lg{n})$ because this is the span of <code>filter</code>.</p></div>
@@ -13813,7 +13813,7 @@ likely to be selected as a pivot this probability is $\frac{3n/4 -
 n/4}{n} = 1/2$.  The figure below illustrates this.</p></div>
 <div class="imageblock" id="qsort-span-intuition" style="text-align:center;">
 <div class="content">
-<img alt="Quicksort span intuition." width="600pt"
+<img alt="Quicksort span intuition." width="500pt"
 src="data:image/png;base64,
 iVBORw0KGgoAAAANSUhEUgAAA0wAAADcCAYAAABDEyFpAAAMFmlDQ1BJQ0MgUHJvZmlsZQAASImV
 lwdUk8kWx+crKYSEFoiAlNCbIL1K7x3pYCMkAUIJIRBU7GVRgbWgIoKioisiKq4FkMWGXVkE7PUF
@@ -14259,23 +14259,22 @@ $$</div></div>
 <div class="mathblock">
 <div class="content">$$
 
-\begin{align*}
+\begin{array}{ll}
 E \lbrack S_n \rbrack
-&=  \sum_{m=n/2}^{n}{P(M_n=m) \cdot E \lbrack S_m \rbrack}
+& =  \sum_{m=n/2}^{n}{P(M_n=m) \cdot E \lbrack S_m \rbrack}
 \\
-&\leq P(M_n \leq \frac{3n}{4}) \cdot E \lbrack S_{\frac{3n}{4}} \rbrack +
+& \leq P(M_n \leq \frac{3n}{4}) \cdot E \lbrack S_{\frac{3n}{4}} \rbrack +
       P(M_n > \frac{3n}{4}) \cdot E \lbrack S_n \rbrack + c\cdot \log n
 \\
-&\leq \frac{1}{2} E \lbrack S_{\frac{3n}{4}} \rbrack + \frac{1}{2} E
+& \leq \frac{1}{2} E \lbrack S_{\frac{3n}{4}} \rbrack + \frac{1}{2} E
 \lbrack S_n \rbrack
 \\
 & \implies E \lbrack S_n \rbrack \leq E \lbrack S_{\frac{3n}{4}} \rbrack + 2c \log n.
 \\
-\end{align*}
-
+\end{array}
 $$</div></div>
-<div class="paragraph"><p>This is a recursion in $E[S(\cdot)$] and solves easily to
- $E[S(n) = O(\log^2 n)$].</p></div>
+<div class="paragraph"><p>This is a recursion in $E \lbrack S(\cdot) \rbrack $ and
+ solves easily to $E \lbrack S(n) \rbrack = O(\log^2 n)$.</p></div>
 </div>
 <div class="sect3">
 <h4 id="_observable_work_efficency_and_scalability">12.1.2. Observable Work Efficency and Scalability</h4>

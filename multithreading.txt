@@ -29,7 +29,7 @@ between the instructions in the computation.
 
 [[multithreading:fork-join, Figure ?]]
 .A multithreaded computation.
-image::general-threads.png["A multithreaded computation.",width="600pt",align="center"]
+image::general-threads.png["A multithreaded computation.",width="500pt",align="center"]
 
 Throughout this book, we make two assumptions about the structure of
 the dag:
@@ -480,7 +480,7 @@ A, which then joins Thread M.
 
 [[multithreading:general, Figure ?]]
 .A multithreaded fork-join computation.
-image::fork-join-threads.png["A multithreaded, fork-join computation.",width="600pt",align="center"]
+image::fork-join-threads.png["A multithreaded, fork-join computation.",width="500pt",align="center"]
 
 
 In addition to fork-join, there are other interfaces for structured

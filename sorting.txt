@@ -98,7 +98,7 @@ the tree is a binary search tree.
 
 [[ch:qsort-bst-example, Figure ?]]
 .Quicksort call tree.
-image::qsort-bst-example.png["Quicksort call tree", width="600pt",align="center"]
+image::qsort-bst-example.png["Quicksort call tree", width="500pt",align="center"]
 
 
 Let's observe some properties of quicksort.  
@@ -138,17 +138,16 @@ latexmath:[$T$]. We define following random variable:
 
 [latexmath]
 +++++++++++
-
-\begin{eqnarray*} 
+$$
+\begin{array}{lll} 
 A_{ij} & = &\left\{
 \begin{array}{ll} 
 1 & \mbox{if}~T_i~\mbox{and}~T_j \mbox{are compared}\\ 
 0  & \mbox{otherwise} 
 \end{array}
 \right.  
-
-\end{eqnarray*}
-
+\end{array}
+$$
 +++++++++++
 
 We can write latexmath:[$X_n$] by summing over all latexmath:[$A_{ij}$]'s: 
@@ -181,7 +180,7 @@ latexmath:[$P(A_{ij} = 1)$], and working out the sum.
 
 [[ch:sorting::qsort-cases]]
 .Relationship between the pivot and other keys.
-image::qsort-cases.png["Relationship between the pivot and other keys.}",width="600pt",align="center"]
+image::qsort-cases.png["Relationship between the pivot and other keys.}",width="500pt",align="center"]
 
 
 To compute this probability, note that each call takes the pivot
@@ -212,8 +211,7 @@ Hence, the expected number of comparisons made in randomized \cname{quicksort} i
 [latexmath]
 +++++++++++
 $$
-
-\begin{align*}
+\begin{array}{ll}
 E \lbrack   X_n  \rbrack 
 & 
 \leq \sum_{i=1}^{n-1} \sum_{j=i+1}^n E \lbrack A_{ij}  \rbrack
@@ -229,8 +227,7 @@ E \lbrack   X_n  \rbrack
 \\
 & = 
 2nH_n \in O(n\log n)
-\end{align*}
-
+\end{array}
 $$
 +++++++++++
 
@@ -249,14 +246,14 @@ Let's first bound the size of the left sequence latexmath:[$L$].
 +++++++++++
 $$
 
-\begin{align*}
+\begin{array}{ll}
 E \lbrack |L| \rbrack
 & 
 = \sum_{i=1}^{n-1}{\frac{i-1}{n}}
 \\
 &
 \le \frac{n}{2}.
-\end{align*}
+\end{array}
 
 $$
 +++++++++++
@@ -323,7 +320,7 @@ mutually exclusive and exhaustive space as follows.
 [latexmath]
 +++++++++++
 $$
-\begin{align*}
+\begin{array}{ll}
 E \lbrack S \rbrack 
 & 
 = 
@@ -343,7 +340,7 @@ n^2 \cdot 1/n^{2}
 & 
 = 
 O(lg^2{n})
-\end{align*}
+\end{array}
 $$
 ++++++++++
 
@@ -381,7 +378,7 @@ n/4}{n} = 1/2$].  The figure below illustrates this.
 
 [[qsort-span-intuition, Figure ?]]
 .Quicksort span intuition.
-image::qsort-span-intuition.png["Quicksort span intuition.",width="600pt",align="center"]
+image::qsort-span-intuition.png["Quicksort span intuition.",width="500pt",align="center"]
 
 
 This observations implies that at each level of the call tree (every
@@ -448,25 +445,24 @@ The rest is algebra
 +++++++++++
 $$
 
-\begin{align*}
+\begin{array}{ll}
 E \lbrack S_n \rbrack 
-&=  \sum_{m=n/2}^{n}{P(M_n=m) \cdot E \lbrack S_m \rbrack}
+& =  \sum_{m=n/2}^{n}{P(M_n=m) \cdot E \lbrack S_m \rbrack}
 \\
-&\leq P(M_n \leq \frac{3n}{4}) \cdot E \lbrack S_{\frac{3n}{4}} \rbrack + 
+& \leq P(M_n \leq \frac{3n}{4}) \cdot E \lbrack S_{\frac{3n}{4}} \rbrack + 
       P(M_n > \frac{3n}{4}) \cdot E \lbrack S_n \rbrack + c\cdot \log n
 \\
-&\leq \frac{1}{2} E \lbrack S_{\frac{3n}{4}} \rbrack + \frac{1}{2} E
+& \leq \frac{1}{2} E \lbrack S_{\frac{3n}{4}} \rbrack + \frac{1}{2} E
 \lbrack S_n \rbrack
 \\
 & \implies E \lbrack S_n \rbrack \leq E \lbrack S_{\frac{3n}{4}} \rbrack + 2c \log n.
 \\
-\end{align*}
-
+\end{array}
 $$
 +++++++++++
 
-This is a recursion in latexmath:[$E[S(\cdot)]$] and solves easily to 
- latexmath:[$E[S(n)] = O(\log^2 n)$].
+This is a recursion in latexmath:[$E \lbrack S(\cdot) \rbrack $] and
+ solves easily to latexmath:[$E \lbrack S(n) \rbrack = O(\log^2 n)$].
 
 
 ==== Observable Work Efficency and Scalability
