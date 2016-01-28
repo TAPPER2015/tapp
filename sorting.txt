@@ -142,7 +142,7 @@ latexmath:[$T$]. We define following random variable:
 \begin{eqnarray*} 
 A_{ij} & = &\left\{
 \begin{array}{ll} 
-1 & \mbox{if}~T_i~\mbox{and}~$T_j$ \mbox{are compared}\\ 
+1 & \mbox{if}~T_i~\mbox{and}~T_j \mbox{are compared}\\ 
 0  & \mbox{otherwise} 
 \end{array}
 \right.  
@@ -173,10 +173,10 @@ $$
 
 Furthermore, since each latexmath:[$A_{ij}$] is an indicator random
 variable, 
-latexmath:[$E \lbrack A_{ij} \rbrack = P \lbrack A_{ij} \rbrack = 1}$].
+latexmath:[$E \lbrack A_{ij} \rbrack = P(A_{ij}) = 1$].
 Our task therefore comes down to computing the probability that
 latexmath:[$T_i$] and latexmath:[$T_j$] are compared, i.e.,
-latexmath:[$P \lbrack A_{ij} = 1 \rbrack$], and working out the sum.
+latexmath:[$P(A_{ij} = 1)$], and working out the sum.
 
 
 [[ch:sorting::qsort-cases]]
@@ -195,10 +195,9 @@ latexmath:[$T_j$], in which case latexmath:[$T_i$] and
 latexmath:[$T_j$] are compared and latexmath:[$A_{ij} = 1$].  Since
 there are latexmath:[$j-i+1$] keys in the interval latexmath:[$T_i
 \ldots T_j$] and since each one is equally likely to be the first in
-the randomly permuted input, the latexmath:[$P \lbrack A_{ij} = 1
-\rbrack $ = \frac{2}{j-i+1}$.
+the randomly permuted input, the latexmath:[$P(A_{ij} = 1) = \frac{2}{j-i+1}$].
 
-. The pivot is element between latexmath:[$T_i$] and latexmath:[$T_j$,
+. The pivot is a key between latexmath:[$T_i$] and latexmath:[$T_j$],
 and latexmath:[$T_i$] and latexmath:[$T_j$] will never be compared;
 thus latexmath:[$A_{ij} = 0$].
 
@@ -236,6 +235,238 @@ $$
 +++++++++++
 
 The last step follows by the fact that latexmath:[$H_n = \ln{n} + O(1)$].
+
+
+Having completed work, let's analyze the span of quicksort.  Recall
+that each call to quicksort partitions the input sequence of length
+latexmath:[$n$] into three subsequences latexmath:[$L$],
+latexmath:[$E$], and latexmath:[$R$], consisting of the elements less
+than, equal to, and greater than the pivot.  
+
+Let's first bound the size of the left sequence latexmath:[$L$].
+
+[latexmath]
++++++++++++
+$$
+
+\begin{align*}
+E \lbrack |L| \rbrack
+& 
+= \sum_{i=1}^{n-1}{\frac{i-1}{n}}
+\\
+&
+\le \frac{n}{2}.
+\end{align*}
+
+$$
++++++++++++
+
+By symmetry, latexmath:[$E \lbrack |R| \rbrack \le \frac{n}{2}$].
+This reasoning applies at any level of the quicksort call tree.  In
+other words, the size of the input decreases by latexmath:[$1/2$] in
+expectation at each level in the call tree.
+
+Since pivot choice at each call is independent of the other calls.
+The expected size of the  input at level latexmath:[$i$] is
+latexmath:[$E \lbrack Y_i \rbrack =  \frac{n}{2^i}$].
+
+Let's calculate the expected size of the input at depth
+latexmath:[$i = 5\lg{n}$].  By basic arithmetic, we obtain
+
+[latexmath]
++++++++++++
+$$
+E \lbrack Y_{5\lg{n}} \rbrack 
+= 
+n\, \frac{1}{2^{5\lg{n}}} = n\, n^{-5\lg{2}} = n^{-4}. 
+$$
++++++++++++
+
+Since latexmath:[$Y_i$]'s are always non-negative, we can use 
+https://en.wikipedia.org/wiki/Markov%27s_inequality[Markov's
+inequality],
+to turn expectations into probabilities as follows.
+
+[latexmath]
++++++++++++
+$$
+P(Y_{5\lg{n}} \ge 1)  
+\le
+\frac{E \lbrack Y_{5\lg{n}}\rbrack}{1}
+= 
+n^{-4}.
+$$
++++++++++++
+
+In other words, the probability that a given path in the quicksort
+call tree has a depth that exceeds latexmath:[$5 \lg{n} $] is tiny.
+
+
+From this bound, we can calculute a bound on the depth of the whole
+tree.  Note first that the tree has exactly latexmath:[$n+1$] leaves
+because it has latexmath:[$n$] internal nodes. Thus we have at most
+latexmath:[$n+1$] to consider.  The probability that a given path
+expeeds a depth of latexmath:[$5\lg{n}$] is
+latexmath:[$n^{-4}$]. Thus, by 
+https://en.wikipedia.org/wiki/Boole%27s_inequality[union bound]
+the probability that any one of the paths exceed the depeth of
+latexmath:[$5\lg{n}$] is latexmath:[$(n+1) \cdot n^{-4} \le n^{-2}$].
+Thus the probability that the depth of the tree is greater than
+latexmath:[$5\lg{n}$] is latexmath:[$n^{-2}$].
+
+By using 
+https://en.wikipedia.org/wiki/Law_of_total_expectation[Total
+Expectation Theorem] or the Law of total expectation, 
+we can now calculate expected span by dividing the sample space into
+mutually exclusive and exhaustive space as follows.
+ 
+[latexmath]
++++++++++++
+$$
+\begin{align*}
+E \lbrack S \rbrack 
+& 
+= 
+E \lbrack S ~|~\mbox{Depth is no greater than}~5\lg{n} \rbrack 
+\cdot
+P(\mbox{Depth is no greater than}~5\lg{n})
++ 
+E \lbrack S ~|~\mbox{Depth is greater than}~5\lg{n} \rbrack 
+\cdot
+P(\mbox{Depth is greater than}~5\lg{n})
+\\
+& 
+\le
+\lg^2{n} \cdot (1 - 1/n^{2}) + 
+n^2 \cdot 1/n^{2} 
+\\
+& 
+= 
+O(lg^2{n})
+\end{align*}
+$$
+++++++++++
+
+In thes bound, we used the fact that each call to quicksort has a span
+of latexmath:[$O(\lg{n})$] because this is the span of `filter`.
+
+
+Here is an alternative analysis.
+
+
+
+Let latexmath:[$M_n = \max\{|L|, |R|\}$], which is the size of larger
+subsequence. The span of quicksort is determined by the sizes of these
+larger subsequences. For ease of analysis, we will assume that
+latexmath:[$|E| = 0$], as more equal elements will only decrease the
+span. As the partition step uses `filter` we have the following
+recurrence for span:
+
+[latexmath]
++++++++++++
+$$
+S(n) = S(M_n) + O(\log n) 
+$$
++++++++++++
+
+
+
+
+To develop some intuition for the span analysis, let's consider the
+probability that we split the input sequence more or less evenly.  If
+we select a pivot that is greater than latexmath:[$T_{n/4}$] and less than
+$T_{3n/4}$] then latexmath:[$M_n$] is at most latexmath:[$3n/4$].  Since all keys are equally
+likely to be selected as a pivot this probability is latexmath:[$\frac{3n/4 -
+n/4}{n} = 1/2$].  The figure below illustrates this.
+
+[[qsort-span-intuition, Figure ?]]
+.Quicksort span intuition.
+image::qsort-span-intuition.png["Quicksort span intuition.",width="600pt",align="center"]
+
+
+This observations implies that at each level of the call tree (every
+time a new pivot is selected), the size of the input to both calls
+decrease by a constant fraction (of latexmath:[$4/3$).  At every two
+levels, the probability that the input size decreases by
+latexmath:[$4/3$] is the probability that it decreases at either step,
+which is at least latexmath:[$3/4$, etc.  Thus at a small costant
+number of steps, the probability that we observe a $4/3$] factor
+decrease in the size of the input approches latexmath:[$1$] quickly.
+This suggest that at some after latexmath:[$c\log{n}$] levels
+quicksort should complete.  We now make this intuition more precise.
+
+
+For the analysis, we use the conditioning technique for computing
+expectations as suggested by the total expectation theorem.  Let
+latexmath:[$X$] be a random variable and let latexmath:[$A_i$] be
+disjoint events that form a a partition of the sample space such that
+latexmath:[$P(A_i) > 0$].  The
+https://en.wikipedia.org/wiki/Law_of_total_expectation[Total
+Expectation Theorem] or the Law of total expectation states that
+
+[latexmath]
++++++++++++
+$$
+
+E[X] = \sum_{i=1}^{n}{P(A_i) \cdot E \lbrack X | A_i \rbrack}.
+
+$$
++++++++++++
+
+
+Note first that latexmath:[$P(X_n \leq 3n/4) = 1/2$], since half of
+the randomly chosen pivots results in the larger partition to be at
+most latexmath:[$3n/4$] elements: any pivot in the range
+latexmath:[$T_{n/4}$] to latexmath:[$T_{3n/4}$] will do, where
+latexmath:[$T$] is the sorted input sequence.
+
+By conditioning latexmath:[$S_n$] on the random variable
+latexmath:[$M_n$], we write,
+
+[latexmath]
++++++++++++
+$$
+E \lbrack S_n \rbrack
+= 
+\sum_{m=n/2}^{n}{P(M_n=m) \cdot E \lbrack S_n | (M_n=m) \rbrack}.
+$$
++++++++++++
+
+ 
+We can re-write this
+
+[latexmath]
++++++++++++
+$$
+
+E \lbrack S_n \rbrack = \sum_{m=n/2}^{n}{P(M_n=m) \cdot E \lbrack S_m \rbrack}
+$$
++++++++++++
+
+The rest is algebra
+[latexmath]
++++++++++++
+$$
+
+\begin{align*}
+E \lbrack S_n \rbrack 
+&=  \sum_{m=n/2}^{n}{P(M_n=m) \cdot E \lbrack S_m \rbrack}
+\\
+&\leq P(M_n \leq \frac{3n}{4}) \cdot E \lbrack S_{\frac{3n}{4}} \rbrack + 
+      P(M_n > \frac{3n}{4}) \cdot E \lbrack S_n \rbrack + c\cdot \log n
+\\
+&\leq \frac{1}{2} E \lbrack S_{\frac{3n}{4}} \rbrack + \frac{1}{2} E
+\lbrack S_n \rbrack
+\\
+& \implies E \lbrack S_n \rbrack \leq E \lbrack S_{\frac{3n}{4}} \rbrack + 2c \log n.
+\\
+\end{align*}
+
+$$
++++++++++++
+
+This is a recursion in latexmath:[$E[S(\cdot)]$] and solves easily to 
+ latexmath:[$E[S(n)] = O(\log^2 n)$].
 
 
 ==== Observable Work Efficency and Scalability
