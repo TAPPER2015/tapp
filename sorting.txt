@@ -1,11 +1,10 @@
-Chapter: Parallel Sorting
--------------------------
+== Chapter: Parallel Sorting
+
 
 In this chapter, we are going to study parallel implementations of
 quicksort and mergesort.
 
-Quicksort
-~~~~~~~~~
+=== Quicksort
 
 The quicksort algorithm for sorting an array (sequence) of elements is
 known to be a very efficient sequential sorting algorithm.  A natural
@@ -73,18 +72,173 @@ partition,
 . concatenations are themselves highly parallel.
 
 
+
+==== Asymptotic Work Efficiency and Parallelism
+
 Let us now turn our attention to asymptotic and observed work
 efficiency.  Recall first that quicksort can exhibit a quadratic-work
 worst-case behavior on certain inputs if we select the pivot
 deterministically.  To avoid this, we can pick a random element as a
 pivot by using a random-number generator, but then we need a parallel
-random number generator.  For the purposes of this course, we are
-going to side-step this issue by assuming that the input is randomly
-permuted in advance. Under this assumption, we can simply pick the
-pivot to be the first item of the sequence.  With this assumption, our
-algorithm performs asymptotically the same work as sequential
-quicksort implementations that perform latexmath:[$\Theta(n\log{n})$]
-in expectation. 
+random number generator.  Here, we are going to side-step this issue
+by assuming that the input is randomly permuted in advance. Under this
+assumption, we can simply pick the pivot to be the first item of the
+sequence.  With this assumption, our algorithm performs asymptotically
+the same work as sequential quicksort implementations that perform
+latexmath:[$\Theta(n\log{n})$] in expectation.
+
+
+For the analysis, let's assume a version of quicksort that compares
+the pivot latexmath:[$p$] to each key in the input once (instead of 3
+times.  The figure below illustrates the structure of an execution of
+quicksort by using a tree.  Each node corresponds to a call to the
+quicksort function and is labeled with the key at that call. Note that
+the tree is a binary search tree.
+
+
+[[ch:qsort-bst-example, Figure ?]]
+.Quicksort call tree.
+image::qsort-bst-example.png["Quicksort call tree", width="600pt",align="center"]
+
+
+Let's observe some properties of quicksort.  
+
+. In quicksort, a comparison always involves a pivot and another
+key. Since, the pivot is never sent to a recursive call, a key is
+selected as a pivot exactly once, and is not involved in further
+comparisons (after is becomes a pivot). Before a key is selected as a
+pivot, it may be compared to other pivots, once per pivot, and thus
+two keys are never compared more than once.  
+
+. When the algorithm selects a key latexmath:[$y$] as a pivot and if
+latexmath:[$y$] is between two other keys latexmath:[$x, z$] such that
+latexmath:[$x < y < z$, it sends the two keys latexmath:[$y, z$] to
+two separate subtrees.  The two keys latexmath:[$x$] and
+latexmath:[$z$] separated in this way are never compared again.
+
+. We can sum up the two observations: a key is compared with all its
+ancestors in the call tree and all its descendants in the call tree,
+and with no other keys.
+
+Since a pair of key are never compared more than once, the total
+number of comparisons performed by quicksort can be expressed as the
+sum over all pairs of keys. 
+
+Let latexmath:[$X_n$] be the random variable denoting the total number of
+comparisons performed in an execution of quicksort with a randomly
+permuted input of size latexmath:[$n$.
+
+We want to bound the expectation of latexmath:[$X_n$], latexmath:[$E
+\lbrack X_n \rbrack$].
+
+For the analysis, let's consider the final sorted order of the keys
+latexmath:[$T$], which corresponds to the output.  Consider two
+positions latexmath:[$i, j \in \{1, \dots, n\}$] in the sequence
+latexmath:[$T$]. We define following random variable:
+
+[latexmath]
++++++++++++
+
+\begin{eqnarray*} 
+A_{ij} & = &\left\{
+\begin{array}{ll} 
+1 & \mbox{if}~T_i~\mbox{and}~$T_j$ \mbox{are compared}\\ 
+0  & \mbox{otherwise} 
+\end{array}
+\right.  
+
+\end{eqnarray*}
+
++++++++++++
+
+We can write latexmath:[$X_n$] by summing over all latexmath:[$A_{ij}$]'s: 
+
+[latexmath]
++++++++++++
+$$
+X_n \leq \sum_{i=1}^n \sum_{j=i+1}^n A_{ij} 
+$$
++++++++++++
+
+
+By linearity of expectation, we have
+[latexmath]
++++++++++++
+$$
+E \lbrack X_n \rbrack 
+\leq 
+\sum_{i=1}^n \sum_{j=i+1}^n E \lbrack A_{ij}  \rbrack
+$$
++++++++++++
+
+Furthermore, since each latexmath:[$A_{ij}$] is an indicator random
+variable, 
+latexmath:[$E \lbrack A_{ij} \rbrack = P \lbrack A_{ij} \rbrack = 1}$].
+Our task therefore comes down to computing the probability that
+latexmath:[$T_i$] and latexmath:[$T_j$] are compared, i.e.,
+latexmath:[$P \lbrack A_{ij} = 1 \rbrack$], and working out the sum.
+
+
+[[ch:sorting::qsort-cases]]
+.Relationship between the pivot and other keys.
+image::qsort-cases.png["Relationship between the pivot and other keys.}",width="600pt",align="center"]
+
+
+To compute this probability, note that each call takes the pivot
+latexmath:[$p$] and splits the sequence into two parts, one with keys
+larger than latexmath:[$p$] and the other with keys smaller than
+latexmath:[$p$]. For any one call to quicksort there are three
+possibilities as illustrated in the figure above.
+
+. The pivot is (equal to) either latexmath:[$T_i$] or
+latexmath:[$T_j$], in which case latexmath:[$T_i$] and
+latexmath:[$T_j$] are compared and latexmath:[$A_{ij} = 1$].  Since
+there are latexmath:[$j-i+1$] keys in the interval latexmath:[$T_i
+\ldots T_j$] and since each one is equally likely to be the first in
+the randomly permuted input, the latexmath:[$P \lbrack A_{ij} = 1
+\rbrack $ = \frac{2}{j-i+1}$.
+
+. The pivot is element between latexmath:[$T_i$] and latexmath:[$T_j$,
+and latexmath:[$T_i$] and latexmath:[$T_j$] will never be compared;
+thus latexmath:[$A_{ij} = 0$].
+
+.  The pivot is less than latexmath:[$T_i$] or greater than
+latexmath:[$T_j$.  Then latexmath:[$T_i$] and latexmath:[$T_j$] are
+sent to the same recursive call.  Whether latexmath:[$T_i$] and
+latexmath:[$T_j$] are compared will be determined in some later call.
+
+
+Hence, the expected number of comparisons made in randomized \cname{quicksort} is
+
+[latexmath]
++++++++++++
+$$
+
+\begin{align*}
+E \lbrack   X_n  \rbrack 
+& 
+\leq \sum_{i=1}^{n-1} \sum_{j=i+1}^n E \lbrack A_{ij}  \rbrack
+\\
+& 
+= \sum_{i=1}^{n-1}  \sum_{j=i+1}^n \frac{2}{j-i+1}
+\\
+&
+= \sum_{i=1}^{n-1} n \sum_{k=2}^{n-i+1} \frac{2}{k} 
+\\
+&
+\leq 2\sum_{i=1}^{n-1}  H_n 
+\\
+& = 
+2nH_n \in O(n\log n)
+\end{align*}
+
+$$
++++++++++++
+
+The last step follows by the fact that latexmath:[$H_n = \ln{n} + O(1)$].
+
+
+==== Observable Work Efficency and Scalability
 
 For an implementation to be observably work efficient, we know that we
 must control granularity by switching to a fast sequential sorting
