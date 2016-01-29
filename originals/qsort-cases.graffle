@@ -35,6 +35,93 @@
 	<key>GraphicsList</key>
 	<array>
 		<dict>
+			<key>Bounds</key>
+			<string>{{66, 137.063}, {15, 15}}</string>
+			<key>Class</key>
+			<string>ShapedGraphic</string>
+			<key>FontInfo</key>
+			<dict>
+				<key>Font</key>
+				<string>Helvetica</string>
+				<key>Size</key>
+				<real>17</real>
+			</dict>
+			<key>ID</key>
+			<integer>177</integer>
+			<key>Shape</key>
+			<string>Circle</string>
+			<key>Style</key>
+			<dict>
+				<key>fill</key>
+				<dict>
+					<key>Color</key>
+					<dict>
+						<key>b</key>
+						<string>0</string>
+						<key>g</key>
+						<string>0</string>
+						<key>r</key>
+						<string>0</string>
+					</dict>
+				</dict>
+				<key>shadow</key>
+				<dict>
+					<key>Draws</key>
+					<string>NO</string>
+				</dict>
+			</dict>
+		</dict>
+		<dict>
+			<key>Bounds</key>
+			<string>{{424.875, 138.48}, {15, 15}}</string>
+			<key>Class</key>
+			<string>ShapedGraphic</string>
+			<key>Flow</key>
+			<string>Overflow</string>
+			<key>FontInfo</key>
+			<dict>
+				<key>Font</key>
+				<string>Helvetica</string>
+				<key>Size</key>
+				<real>17</real>
+			</dict>
+			<key>ID</key>
+			<integer>176</integer>
+			<key>Line</key>
+			<dict>
+				<key>ID</key>
+				<integer>24</integer>
+				<key>Position</key>
+				<real>0.99000000953674316</real>
+				<key>RotationType</key>
+				<integer>0</integer>
+			</dict>
+			<key>Shape</key>
+			<string>Circle</string>
+			<key>Style</key>
+			<dict>
+				<key>fill</key>
+				<dict>
+					<key>Color</key>
+					<dict>
+						<key>b</key>
+						<string>0</string>
+						<key>g</key>
+						<string>0</string>
+						<key>r</key>
+						<string>0</string>
+					</dict>
+				</dict>
+				<key>shadow</key>
+				<dict>
+					<key>Draws</key>
+					<string>NO</string>
+				</dict>
+			</dict>
+			<key>Wrap</key>
+			<string>YES</string>
+		</dict>
+		<dict>
 			<key>Class</key>
 			<string>Group</string>
 			<key>Graphics</key>
@@ -491,7 +578,7 @@
 			<array>
 				<dict>
 					<key>Bounds</key>
-					<string>{{328.73199, 111.096}, {15, 20}}</string>
+					<string>{{328.21649, 111.99999}, {15, 20}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>FitText</key>
@@ -542,7 +629,7 @@
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{316.237, 103.096}, {21, 20}}</string>
+					<string>{{315.7215, 103.99999}, {21, 20}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>FitText</key>
@@ -602,7 +689,7 @@
 			<array>
 				<dict>
 					<key>Bounds</key>
-					<string>{{174.763, 111.096}, {15, 20}}</string>
+					<string>{{174.2475, 111.99999}, {15, 20}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>FitText</key>
@@ -653,7 +740,7 @@
 				</dict>
 				<dict>
 					<key>Bounds</key>
-					<string>{{162.26801, 103.096}, {21, 20}}</string>
+					<string>{{161.7525, 103.99999}, {21, 20}}</string>
 					<key>Class</key>
 					<string>ShapedGraphic</string>
 					<key>FitText</key>
@@ -828,7 +915,7 @@
 				<key>stroke</key>
 				<dict>
 					<key>HeadArrow</key>
-					<string>FilledArrow</string>
+					<string>0</string>
 					<key>TailArrow</key>
 					<string>0</string>
 					<key>Width</key>
@@ -943,7 +1030,7 @@
 		</dict>
 	</array>
 	<key>ModificationDate</key>
-	<string>2016-01-28 17:05:18 +0000</string>
+	<string>2016-01-29 13:20:27 +0000</string>
 	<key>Modifier</key>
 	<string>Umut Acar</string>
 	<key>NotesVisible</key>
