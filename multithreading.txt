@@ -5,7 +5,7 @@
 The term *_multithreading_* refers to computing with multiple threads
 of control. Once created, a thread performs a computation by executing
 a sequence of instructions, as specified by the program, until it
-terminates.  A multithreaded computation start by executing a *_main
+terminates.  A multithreaded computation starts by executing a *_main
 thread_*, which is the thread at which the execution starts.  A thread
 can create or *_spawn_* another thread and *_synchronize_* with other
 threads by using a variety of synchronization constructs such as locks,
@@ -37,7 +37,7 @@ the dag:
 . Each vertex has outdegree at most two.
 
 . The DAG has exactly one *_root vertex_* with indegree zero and one
-*_final vertex_* vertex with outdegree zero.  The root is the first
+*_final vertex_* with outdegree zero.  The root is the first
 instruction of the *_root thread_*.
 
 The outdegree assumption naturally follows by the fact that each
@@ -55,10 +55,10 @@ latexmath:[$15$] and span is latexmath:[$9$].
 
 === Execution and Scheduling
 
-Execution of a multithreaded computation executes the vertices in the
+The execution of a multithreaded computation executes the vertices in the
 dag of the computation in some partial order that is consistent with
 the partial order specified by the dag, that is, if vertices
-latexmath[$u,v$] are ordered then the execution orders them in the
+latexmath:[$u,v$] are ordered then the execution orders them in the
 same way.  
 
 
@@ -82,6 +82,12 @@ The *_length_* of a schedule is the number of steps in the schedule.
 
 ****
 
+////////////
+
+WARNING: Naama: doesn’t v have to be scheduled strictly after u if u is before it in the dag order? The statement of the definition seems to allow u and v to be executed at the same time step. Is that right?
+
+///////////
+
 The first condition ensures that a schedule observes the dependencies
 in the DAG.  Specifically, for each arc latexmath:[$(u,v)$] in the
 dag, the vertex latexmath:[$u$] is executed before vertex
@@ -95,8 +101,8 @@ vertex.  Note that a thread can contain only one ready vertex at any
 time.
 
 
-In this book. we are interested in a class of scheduling algorithms
-that maintain a *_work pool_* or work, consisting of ready
+In this book, we are interested in a class of scheduling algorithms
+that maintain a *_work pool_* of work, consisting of ready
 threads. Execution starts with the root thread in the pool.  It ends
 when the final vertex is executed.
 
@@ -234,7 +240,7 @@ vertex is the longest distance from the root of the dag to the vertex.
 More specifically, the vertices in level 0 are executed first,
 followed by the vertices in level 1 and so on.
 
-.Theorem[Offline level-by-level schedule]
+.Theorem:[Offline level-by-level schedule]
 ****
 
 For a dag with work latexmath:[$W$] and span latexmath:[$S$], the
@@ -269,7 +275,7 @@ easily.
 
 Brent's theorem has later been generalized to all greedy schedules.  A
 *_greedy schedule_* is a schedule that never leaves a process idle
-unless there is no ready vertices.  In other words, greedy schedules
+unless there are no ready vertices.  In other words, greedy schedules
 keep processes as busy as possibly by greedily assigning ready
 vertices. 
 
@@ -280,7 +286,7 @@ vertices.
 ********
 
 Consider a dag latexmath:[$G$] with work latexmath:[$W$] and span
-latexmath:[$S$]. Any schedule latexmath:[$P$]-process schedule has
+latexmath:[$S$]. Any greedy latexmath:[$P$]-process schedule has
 length at most latexmath:[$\frac{W}{P} + S \cdot \frac{P-1}{P}$].
 
 ********
@@ -294,17 +300,17 @@ Consider any greedy schedule with length latexmath:[$T$].
 For each step latexmath:[$1 \le i \le T$], and for each process that
 is scheduled at that step, collect a token.  The token goes to the
 *_work bucket_* if the process executes a vertex in that step,
-otherwise the process is idle and the token goes to a *_idle bucket_*.
+otherwise the process is idle and the token goes to an *_idle bucket_*.
 
 Since each token in the work bucket corresponds to an executed vertex,
-there are exactly latexmath:[$W$] tokens is that bucket.  
+there are exactly latexmath:[$W$] tokens in that bucket.  
 
 We will now bound the tokens in the idle bucket by latexmath:[$S \cdot
 (P-1)$].  Observe that at any step in the execution schedule, there is
 a ready vertex to be executed (because otherwise the execution is
 complete).  This means that at each step, at most latexmath:[$P-1$]
 processes can contribute to the idle bucket.  Furthermore at each
-step, where there is at least one idle process, we know that the
+step where there is at least one idle process, we know that the
 number of ready vertices is less than the number of available
 processes.  Note now that at that step, all the ready vertices have no
 incoming edges in the red sub-DAG consisting of the vertices that are
