@@ -1,41 +1,17 @@
+[[ch:work-stealing]]
 == Chapter: Work Stealing in Dedicated Environments
 
-I AM TRYING TO SIMPLIFY AND STREAMLINE THE PROOF SO THAT WE CAN DEAL
-WITH EDGE WEIGHTS.
-
-
-
-We will present a randomized work stealing algorithm and analyze its
-complexity.
-
+The work-stealing algorithm is a solution to the *_online scheduling
+problem_*, where we are given a latexmath:[$P$] processes and a
+computation dag, and asked to construct an execution schedule with
+minimal length, while spending as little work and time for scheduling
+itself.
 
 We consider multithreaded computations represented as dags as
 described in Chapter <<ch:multithreading>>.  To streamline the
 analysis, we assume without loss of generality that the root vertex
-has a single child.
-
-=== Offline and online scheduling
-
-INSERT LOWER BOUNDS
-
-INSERT UPPER BOUND FOR BRENT
-
-INSERT UPPER BOUND GREEDY
-
- 
-Online scheduling
-+++++++++++++++++
-
-Offline scheduling problem discussed above shows that any greedy
-scheduler has within factor two of the optimal, based on the lower
-bounds established above.  We now turn our attention to the problem of
-constructing such an execution schedule online.  In this *_online
-scheduling problem_*, we are given a P-processor kernel schedule and a
-computation dag, and we are interested in constructing an execution
-schedule with minimal length.  As we shall describe next, the
-non-blocking work-stealing algorithm achieves this goal, also when
-including the cost of scheduling itself.
-
+has a single child.  This assumption eliminates a few corner cases
+from the analysis.
 
 === Work-Stealing Algorithm
 
@@ -45,18 +21,32 @@ queue, of vertices.  Each process tries to work on its local deque as
 much as possible. Execution starts with the root vertex in the deque
 of one of the processes.  It ends when the final vertex is executed.  
 
-A work stealing scheduler operates as described by our generic
-scheduling algorithm but instead of operating on threads, it operates
-on vertices of the dag.
+A work stealing scheduler operates as described by our
+<<multithreading::scheduler-typical, generic scheduling algorithm>>
+but instead of operating on threads, it operates on vertices of the
+dag. To obtain work, a process pops the vertex at the bottom of its
+deque and executes it. We refer to the vertex being executed by a
+process as the *_assigned vertex_*.  When executed, the ready vertex
+can make the other vertices ready, which are then pushed onto the
+bottom end of the deque in an arbitrary order.  If a process finds its
+deque empty, then the process becomes a *_thief_*.  A thief picks a
+*_victim_* process at random and attempts to steals a thread from
+another it by popping a thread off the top of the victim's deque.  The
+thief performs steal attempts until it successfully steals a thread,
+at which point, the thief goes back to work and the stolen thread
+becomes its assigned thread.
 
-To obtain work, a process pops the vertex at the bottom of its deque
-and executes it. We refer to the vertex executed by a process as the
-*_assigned vertex_*.  When executed, the ready vertex can make the
-other vertices ready, which are then pushed onto the bottom end of the
-deque in an arbitrary order.  If a process finds its deque empty, then
-the process becomes a *_thief_*.  A thief picks a *_victim_* process
-at random and attempts to steals a thread from another it by popping a
-thread off the top of the victim's deque.
+
+
+The pseudo-code for the algorithm is shown below.  All deques are
+initially empty and the root vertex is assigned to the process zero.
+The algorithm operates in *_rounds_*.  In each round, a process
+executes the assigned vertex if any, pushes the newly enabled vertices
+to its deque, and obtains a new assigned vertex from its deque.  If
+the round starts with no assigned vertex then the process becomes a
+thief performs a steal attempt.  For simplicity, we refer to a steal
+attempt as a *_throw_*. Noe that a steal attempt start and completes
+in the same round.
 
 Such a *_steal attempt_* can fail if 
 
@@ -66,20 +56,6 @@ Such a *_steal attempt_* can fail if
 thief is executed by the process that own the dequer or stolen by
 another thief.
 
-
-The thief performs steal attempts until it successfully steals a
-thread, at which point, the thief goes back to work and the stolen
-thread becomes its assigned thread.
-
-
-The pseudo-code for the algorithm is shown below.  The algorithm
-operates is round.  In each round, a process executes the assigned
-vertex if any, pushes the newly enabled vertices to its deque, and
-obtains a new assigned vertex from its deque.  If the round starts
-with no assigned vertex then the process becomes a thief performs a
-steal attempt.  For simplicity, we refer to a steal attempt as a
-*_throw_*. Noe that a steal attempt start and completes in the same
-round.
 
 For the analysis of the algorithm, we shall assume that each
 instruction and each deque operations executes in a single step to
@@ -144,6 +120,10 @@ which allows `popTop` to return `NULL` if another concurrent operation
 removes the top vertex in the deque, accepts a constant-time
 implementation.  This relaxed version suffices for our purposes.
 
+// TODO: How about the owner removing a vertex.
+//
+
+
 ==== Work sequence of a process
 
 Consider the execution of the work stealing algorithm and let
@@ -164,16 +144,17 @@ the bottom to top order.
 Let's recall first the notion of an enabling three.  If execution of
 latexmath:[$u$] enables latexmath:[$v$], then we call the edge
 latexmath:[$(u,v)$] an *_enabling edge_* and call latexmath:[$u$] the
-*_parent_* of latexmath:[$v$].  Every vertex except for the root has a
-parent.  Therefore the subgraph of the dag consisting of the enabling
-edges form a rooted tree, called the *_enabling tree_*.  Note each
-execution can have a different enabling tree.
+*_designated parent_* of latexmath:[$v$].  Every vertex except for the
+root has a designated parent.  Therefore the subgraph of the dag
+consisting of the enabling edges form a rooted tree, called the
+*_enabling tree_*.  Note each execution can have a different enabling
+tree.
 
 If latexmath:[$d(u)$] is the depth of a node latexmath:[$u$] in the
 enabling tree, then we define the weight of latexmath:[$u$], written
-latexmath:[$w(u) = S - d(u)$].  The root has weight latexmath:[$S$].
-Intuitively, the weight is equal to the distance of a vertex to the
-completion.
+latexmath:[$w(u)$] as follows latexmath:[$w(u) = S - d(u)$].  The root
+has weight latexmath:[$S$].  Intuitively, the weight is equal to the
+distance of a vertex from the completion.
 
 
 
@@ -190,7 +171,7 @@ v_k$] denote the work sequence of a process. Let latexmath:[$u_0, u_1,
 vertices in the working sequence in the same order.  Then
 latexmath:[$u_i$] is an ancestor of latexmath:[$u_{i-1}$] in the
 enabling tree.  Moreover, we may have latexmath:[$u_0 = u_1$] but for
-any latexmath:[$2 \le i \le k$] latexmath:[$u_{i-1} \neq u_i$, that is
+any latexmath:[$2 \le i \le k$] latexmath:[$u_{i-1} \neq u_i$], that is
 the ancestor relationship is proper.
 
 ************************
@@ -198,8 +179,8 @@ the ancestor relationship is proper.
 
 [[dedicated::structural]]
 .Structural lemma illustrated.
-image::deques-and-enabling-tree-case-1.png["",width="200pt",align="center"]
-image::deques-and-enabling-tree-case-2.png["",width="200pt",align="center"]
+image:deques-and-enabling-tree-case-1.png["",width="200pt",align="center"]
+image:deques-and-enabling-tree-case-2.png["",width="200pt",align="center"]
 
 Before we prove the lemma, we state an important corollary.
 
