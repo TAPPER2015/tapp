@@ -222,7 +222,7 @@ latexmath:[$\lceil \frac{W_i}{P} \rceil$] steps.  Thus the total time is
 
 
 This theorem called
-https://www.google.com/search?q=Brent%27s+theorem&gws_rd=ssl [Brent's
+https://www.google.com/search?q=Brent%27s+theorem&gws_rd=ssl[Brent's
 theorem] was proved by Brent in 1974. It shows that the lower bound
 can be approximated within a factor of latexmath:[$2$].
 
