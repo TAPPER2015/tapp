@@ -302,10 +302,23 @@ time it takes to compute the schedule.  These two additional
 conditions define the *_online scheduling problem._*
 
 
-There are many different algorithms for online scheduling but these
+An online scheduler or a simply a *_scheduler_* is an algorithm that
+solves the online scheduling problem by mapping threads to available
+processes.  For example, if only one processor is available, a
+scheduler can map all threads to that one processor.  If two
+processors are available, then the scheduler can divide the threads
+between the two processors as evenly as possible in an attempt to keep
+the two processors as busy as possible by *_load balancing_*.
+
+There are many different online-scheduling algorithms but these
 algorithms all operate similarly. We can outline a typical scheduling
-algorithm as follows. The algorithm maintain a *_work pool_* of work,
-consisting of ready threads, and execute them. Execution starts with
+algorithm as follows. 
+
+[[multithreading::scheduler-typical]]
+.Typical Online Scheduling Algorithm 
+****
+The algorithm maintains a *_work pool_* of work,
+consisting of ready threads, and executes them. Execution starts with
 the root thread in the pool.  It ends when the final vertex is
 executed.  In order to minimize the cost of computing the schedule,
 the algorithm executes a thread until there is a need for
@@ -338,6 +351,7 @@ These actions are not mutually exclusive.  For example, a thread may
 spawn/enable a thread and die.  In this case, the process performs the
 corresponding steps for each action.
 				   
+****
 
 .Exercise: Scheduling Invariant
 ****
@@ -363,6 +377,78 @@ parent.  Thus the subgraph induced by the enabling edges is a rooted
 tree that we call the *_enabling tree_*.  
 
 ****
+
+
+
+.Scheduler with a global thread queue.
+=============
+
+We can give a simple greedy scheduler by using a queue of threads.  At the
+start of the execution, the scheduler places the root of the dag into
+the queue and then repeats the following step until the queue becomes
+empty: for each idle processor, take the vertex at the front of the
+queue and assign it to the processor, let each processor run for one
+step, if at the end of the step, there is a vertex in the dag whose
+parents have all completed their execution, then insert that vertex at
+the tail of the queue.
+
+=============
+
+.Centralized scheduler illustrated: the state of the queue and the dag after step 4.  Completed vertices are drawn in grey (shaded).
+[[multithreading::centralized-scheduler, centralized scheduler illustrated]]
+image::centralized-scheduler.png["Centralized scheduler illustrated",width="800pt",align="center"]
+
+
+
+The centralized scheduler with the global thread queue is a greedy
+scheduler that generates a greedy schedule under the assumption that
+the queue operations take zero time and that the dag is given. This
+algorithm, however, does not work well for online scheduling the
+operations on the queue take time.  In fact, since the thread queue is
+global, the algorithm can only insert and remove one thread at a time.
+For this reason, centralized schedulers do not scale beyond a handful
+of processors.
+
+.Definition: Scheduling friction.
+************
+
+No matter how efficient a scheduler is there is real cost to creating
+threads, inserting and deleting them from queues, and to performing
+load balancing.  We refer to these costs cumulatively as *_scheduling
+friction_*, or simply as *_friction_*.
+
+************
+
+
+.Distributed scheduler illustrated: the state of the queue and the dag after step 4.  Completed vertices are drawn in grey (shaded).
+[[multithreading::distributed-scheduler, distributed scheduler illustrated]]
+image::distributed-scheduler.png["Distributed scheduler illustrated",width="800pt",align="center"]
+
+
+There has been much research on the problem of reducing friction in
+scheduling.  This research shows that distrubuted scheduling
+algorithms can work quite well.  In a distributed algorithm, each
+processor has its own queue and primarily operates on its own queue.
+A load-balancing technique is then used to balance the load among the
+existing processors by redistributing threads, usually on a needs
+basis.  This strategy ensures that processors can operate in parallel
+to obtain work from their queues.
+
+A specific kind of distributed scheduling technique that can leads to
+schedules that are close to optimal is *_work stealing_*
+schedulers. In a work-stealing scheduler, processors work on their own
+queues as long as their is work in them, and if not, go "steal" work
+from other processors by removing the thread at the tail end of the
+queue.  It has been proven that randomized work-stealing algorithm,
+where idle processors randomly select processors to steal from,
+deliver close to optimal schedules in expectation (in fact with high
+probability) and furthermore incur minimal friction.  Randomized
+schedulers can also be implemented efficiently in practice.  PASL uses
+an scheduling algorithm that is based on work stealing.  We consider
+work-stealing in greater detail in a <<ch:work-stealing, future chapter.>>
+
+
+
 
 === Writing Multithreaded Programs: Pthreads
 
