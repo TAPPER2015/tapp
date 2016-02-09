@@ -488,3 +488,15 @@ unit time.
 ****
 Draw the enabling tree for the schedule above.
 ****
+
+.Centralized scheduler illustrated: the state of the queue and the dag after step 4.  Completed vertices are drawn in grey (shaded).
+====
+[[multithreading::centralized-scheduler, centralized scheduler illustrated]]
+image::centralized-scheduler.png["Centralized scheduler illustrated",width="500pt",align="center"]
+====
+
+.Distributed scheduler illustrated: the state of the queue and the dag after step 4.  Completed vertices are drawn in grey (shaded).
+====
+[[multithreading::distributed-scheduler, distributed scheduler illustrated]]
+image::distributed-scheduler.png["Distributed scheduler illustrated",width="500pt",align="center"]
+====

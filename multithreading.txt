@@ -383,21 +383,15 @@ tree that we call the *_enabling tree_*.
 .Scheduler with a global thread queue.
 =============
 
-We can give a simple greedy scheduler by using a queue of threads.  At the
-start of the execution, the scheduler places the root of the dag into
+We can give a simple greedy scheduler by using a queue of threads.  At
+the start of the execution, the scheduler places the root thread into
 the queue and then repeats the following step until the queue becomes
-empty: for each idle processor, take the vertex at the front of the
+empty: for each idle process, take the thread at the front of the
 queue and assign it to the processor, let each processor run for one
-step, if at the end of the step, there is a vertex in the dag whose
-parents have all completed their execution, then insert that vertex at
-the tail of the queue.
+step, if at the end of the step, there are new ready threads, then
+insert them onto the tail of the queue.
 
 =============
-
-.Centralized scheduler illustrated: the state of the queue and the dag after step 4.  Completed vertices are drawn in grey (shaded).
-[[multithreading::centralized-scheduler, centralized scheduler illustrated]]
-image::centralized-scheduler.png["Centralized scheduler illustrated",width="800pt",align="center"]
-
 
 
 The centralized scheduler with the global thread queue is a greedy
@@ -418,11 +412,6 @@ load balancing.  We refer to these costs cumulatively as *_scheduling
 friction_*, or simply as *_friction_*.
 
 ************
-
-
-.Distributed scheduler illustrated: the state of the queue and the dag after step 4.  Completed vertices are drawn in grey (shaded).
-[[multithreading::distributed-scheduler, distributed scheduler illustrated]]
-image::distributed-scheduler.png["Distributed scheduler illustrated",width="800pt",align="center"]
 
 
 There has been much research on the problem of reducing friction in
