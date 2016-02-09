@@ -8,7 +8,7 @@ minimal length, while spending as little work and time for scheduling
 itself.
 
 We consider multithreaded computations represented as dags as
-described in Chapter <<ch:multithreading>>.  To streamline the
+described in <<ch:multithreading, an earlier chapter>>.  To streamline the
 analysis, we assume without loss of generality that the root vertex
 has a single child.  This assumption eliminates a few corner cases
 from the analysis.
@@ -95,6 +95,19 @@ while (computationDone == false) {
 }
 ----
 
+NOTE: Note that when a vertex enables two vertices they are both
+pushed onto the bottom of the deque in an order that is unspecified.
+The analysis holds for any such order. However, realistic
+implementations will operate at the granularity of threads as defined
+in for example <<ch:fork-join, an earlier chapter>> and by the 
+<<multithreading::scheduler-typical, generic scheduling algorithm>>.
+To make this algorithm consistent with such implementations, we would
+push the vertex that is next in the thread last, so that it is
+executed next.  Pushing and popping the vertex in of course
+unnecessary and should be avoided in an implementation.  For the
+purposes of the analysis, this adds a small constant factor that we
+don't care to account for.
+
 ==== Deque Specification
 
 
@@ -180,8 +193,9 @@ the ancestor relationship is proper.
 [[dedicated::structural]]
 .Structural lemma illustrated.
 ****
-image:deques-and-enabling-tree-case-1.png["",width="200pt",align="center"]
-image:deques-and-enabling-tree-case-2.png["",width="200pt",align="center"]
+image:deques-and-enabling-tree-case-1.png["",width="200pt",align="left"]
+{nbsp}{nbsp}{nbsp}{nbsp}{nbsp}{nbsp}{nbsp}{nbsp}{nbsp}{nbsp}{nbsp}
+image:deques-and-enabling-tree-case-2.png["",width="200pt",align="right"]
 ****
 
 Before we prove the lemma, we state an important corollary.
@@ -196,6 +210,8 @@ w(v_k)$] defined as in the structural lemma above.
 ***********
 
 
+.Proof of the Structural Lemma 
+****
 The proof is by induction on the number of rounds.
 
 At the initialization and before the beginning of the first round, all
@@ -204,8 +220,8 @@ executed.  The root vertex is then executed and enables a single
 vertex, this vertex is pushed onto the deque and popped again becoming
 the assigned vertex at the beginning of the second round.  At any of
 these points in time after the execution of the root, process zero's
-work sequence consist of the child of the root, latexmath:[$v$].
-The parent of latexmath:[$v$] is root and the lemma holds trivially.
+work sequence consist of the child of the root, latexmath:[$v$].  The
+designated parent of latexmath:[$v$] is root and the lemma holds trivially.
 
 For the inductive case, assume that the lemma holds up to beginning of
 some later round.  We will show that it holds at any point during the
@@ -217,7 +233,7 @@ Consider any process and its deque.  We have two cases to consider.
 
 By the definition of work sequences, we know that latexmath:[$v_1,
 \ldots, v_k$] are the vertices in the deque. Let latexmath:[$u_1,
-\ldots, u_k$] be their parents. By induction, we know that
+\ldots, u_k$] be their designated parents. By induction, we know that
 latexmath:[$u_i$] is an ancestor of latexmath:[$u_{i-1}$] in the
 enabling tree and the ancestor relationship is proper except for
 latexmath:[$i = 1$], where it is possible that latexmath:[$u_0 =
@@ -239,7 +255,7 @@ several sub-cases to consider.
 Since the deque remains the same, the lemma holds trivially.
 
 *Case 1.2:* execution of latexmath:[$v_0$] enables one child
-latexmath:[$x$], which is pushed to the bottom of the deque.  In this
+latexmath:[$x$], which is pushed onto the bottom of the deque.  In this
 case, latexmath:[$v_0$] becomes the parent of latexmath:[$x$].  The
 lemma holds.
 
@@ -263,9 +279,9 @@ After the execution of the assigned vertex completes and the children
 are pushed, the process pops the vertex at the bottom of the
 deque. There are two cases to consider.
 
-. If the deque is empty, then the process finds no vertex in its
-deque and there is no assigned vertex at the end of the round, thus
-the lemma holds trivially.
+. If the deque is empty, then the process finds no vertex in its deque
+and there is no assigned vertex at the end of the round, thus the work
+sequence is empty and the lemma holds trivially.
 
 . If the deque is not empty, then the vertex at the bottom of the
 deque becomes the new assigned vertex. The lemma holds trivially
@@ -275,8 +291,13 @@ lemma.
 
 *Case 2:* A successful steal takes place and removes the top vertex in
   the deque.  In this case, the victim process loses its top vertex,
-  which becomes the assigned vertex of the thief.  The lemma holds.
+  which becomes the assigned vertex of the thief.  The work sequence
+  of the victim loses its rightmost element and the lemma continues to
+  hold for the victim.  When the stolen vertex is assigned, the work
+  sequence of the thief consist of just the stolen vertex and the
+  lemma holds for the thief. 
 				   
+****
 === Analysis
 
 ==== Balls and Bins Game

@@ -761,7 +761,7 @@ need to properly separate granularity controllers of distinct
 instances of higher-order functions, such as tabulation.
 
 
-Note: Above, we still assume constant-work generator functions.   
+NOTE: Above, we still assume constant-work generator functions.   
 
 === Reduction
 
