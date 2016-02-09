@@ -179,8 +179,10 @@ the ancestor relationship is proper.
 
 [[dedicated::structural]]
 .Structural lemma illustrated.
+****
 image:deques-and-enabling-tree-case-1.png["",width="200pt",align="center"]
 image:deques-and-enabling-tree-case-2.png["",width="200pt",align="center"]
+****
 
 Before we prove the lemma, we state an important corollary.
 
