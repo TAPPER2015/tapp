@@ -392,7 +392,7 @@ the very end.
 
 .Dag for parallel increment on an array of latexmath:[$8$]: Each vertex corresponds a call to `map_inc_rec` excluding the `fork2`  or the continuation of `fork2`, which is empty, an is annotated with the interval of the input array that it operates on (its argument).
 [[fig:parallel-inc-dag]]
-image::inc-parallel-dag.png["Dag for parallel increment",width="800pt",align="center"]
+image::inc-parallel-dag.png["Dag for parallel increment",width="500pt",align="center"]
 
 <<fig:parallel-inc-dag, The Figure above>> illustrates the dag for an execution
 of `map_incr_rec`.  We partition each invocation of this function into

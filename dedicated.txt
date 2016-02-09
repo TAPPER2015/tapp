@@ -193,9 +193,9 @@ the ancestor relationship is proper.
 [[dedicated::structural]]
 .Structural lemma illustrated.
 ****
-image:deques-and-enabling-tree-case-1.png["",width="200pt",align="left"]
+image:deques-and-enabling-tree-case-1.png["",width="100pt",align="left"]
 {nbsp}{nbsp}{nbsp}{nbsp}{nbsp}{nbsp}{nbsp}{nbsp}{nbsp}{nbsp}{nbsp}
-image:deques-and-enabling-tree-case-2.png["",width="200pt",align="right"]
+image:deques-and-enabling-tree-case-2.png["",width="100pt",align="right"]
 ****
 
 Before we prove the lemma, we state an important corollary.
@@ -210,9 +210,9 @@ w(v_k)$] defined as in the structural lemma above.
 ***********
 
 
-.Proof of the Structural Lemma 
-****
-The proof is by induction on the number of rounds.
+
+The proof of the structural lemma is by induction on the number of
+rounds.
 
 At the initialization and before the beginning of the first round, all
 deques are empty, root is assigned to a process but has not been
@@ -244,7 +244,7 @@ the lemma follows easily.
 
 [[dedicated::structural-popbottom-execute]]
 .Structural lemma illustrated after the assigned vertex is executed.
-image::deques-and-enabling-tree-execute.png["",width="200pt",align="center"]
+image::deques-and-enabling-tree-execute.png["",width="100pt",align="center"]
 
 
 After the execution of the assigned vertex latexmath:[$v_0$], we have
@@ -261,7 +261,7 @@ lemma holds.
 
 [[dedicated::structural-popbottom-enable-one]]
 .Structural lemma illustrated after the assigned vertex enables one child.
-image::deques-and-enabling-tree-one-child.png["",width="200pt",align="center"]
+image::deques-and-enabling-tree-one-child.png["",width="100pt",align="center"]
 
 
 *Case 1.2:* execution of latexmath:[$v_0$] enables two children
@@ -273,7 +273,7 @@ In this case, latexmath:[$v_0$] becomes the parent of latexmath:[$x$]
 
 [[dedicated::structural-popbottom-enable-two]]
 .Structural lemma illustrated after the assigned vertex enables two children.
-image::deques-and-enabling-tree-two-children.png["",width="200pt",align="center"]
+image::deques-and-enabling-tree-two-children.png["",width="100pt",align="center"]
 
 After the execution of the assigned vertex completes and the children
 are pushed, the process pops the vertex at the bottom of the
@@ -297,7 +297,7 @@ lemma.
   sequence of the thief consist of just the stolen vertex and the
   lemma holds for the thief. 
 				   
-****
+
 === Analysis
 
 ==== Balls and Bins Game
@@ -988,7 +988,7 @@ ancestor relationship is proper.
 
 [[dedicated::structural]]
 .Structural lemma illustrated.
-image::deques-and-enabling-tree.png["",width="200pt",align="center"]
+image::deques-and-enabling-tree.png["",width="100pt",align="center"]
 
 Before we prove the lemma, we state an important corallary.
 
@@ -1055,7 +1055,7 @@ assigned vertex. The lemma holds.
 
 [[dedicated::structural-popbottom]]
 .Structural lemma illustrated after the owner removes the bottom vertex.
-image::deques-and-enabling-tree-popbottom.png["",width="200pt",align="center"]
+image::deques-and-enabling-tree-popbottom.png["",width="100pt",align="center"]
 
 
 . Execution of latexmath:[$v_0$] enables one child latexmath:[$x$].
@@ -1065,7 +1065,7 @@ image::deques-and-enabling-tree-popbottom.png["",width="200pt",align="center"]
 
 [[dedicated::structural-popbottom]]
 .Structural lemma illustrated after the assigned vertex enables one child.
-image::deques-and-enabling-tree-one-child.png["",width="200pt",align="center"]
+image::deques-and-enabling-tree-one-child.png["",width="100pt",align="center"]
 
 
 
@@ -1077,7 +1077,7 @@ image::deques-and-enabling-tree-one-child.png["",width="200pt",align="center"]
 
 [[dedicated::structural-popbottom]]
 .Structural lemma illustrated after the assigned vertex enables two children.
-image::deques-and-enabling-tree-two-children.png["",width="200pt",align="center"]
+image::deques-and-enabling-tree-two-children.png["",width="100pt",align="center"]
 
 
 * Case 2:*  A successful steal takes place and removes the top vertex
