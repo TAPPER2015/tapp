@@ -1066,7 +1066,7 @@ Concurrency
 <div class="paragraph"><p>The term <strong><em>multithreading</em></strong> refers to computing with multiple threads
 of control. Once created, a thread performs a computation by executing
 a sequence of instructions, as specified by the program, until it
-terminates.  A multithreaded computation start by executing a <strong><em>main
+terminates.  A multithreaded computation starts by executing a <strong><em>main
 thread</em></strong>, which is the thread at which the execution starts.  A thread
 can create or <strong><em>spawn</em></strong> another thread and <strong><em>synchronize</em></strong> with other
 threads by using a variety of synchronization constructs such as locks,
@@ -2810,7 +2810,7 @@ $15$ and span is $9$.</p></div>
 </div>
 <div class="sect2">
 <h3 id="_execution_and_scheduling">5.3. Execution and Scheduling</h3>
-<div class="paragraph"><p>Execution of a multithreaded computation executes the vertices in the
+<div class="paragraph"><p>The execution of a multithreaded computation executes the vertices in the
 dag of the computation in some partial order that is consistent with
 the partial order specified by the dag, that is, if vertices
 $u,v$ are ordered then the execution orders them in the
@@ -3007,7 +3007,7 @@ More specifically, the vertices in level 0 are executed first,
 followed by the vertices in level 1 and so on.</p></div>
 <div class="sidebarblock">
 <div class="content">
-<div class="title">Theorem[Offline level-by-level schedule]</div>
+<div class="title">Theorem:[Offline level-by-level schedule]</div>
 <div class="paragraph"><p>For a dag with work $W$ and span $S$, the
 length of a level-by-level schedule is $W/P + S$.</p></div>
 </div></div>
@@ -3032,14 +3032,14 @@ theorem] was proved by Brent in 1974. It shows that the lower bound
 can be approximated within a factor of $2$.</p></div>
 <div class="paragraph"><p>Brent&#8217;s theorem has later been generalized to all greedy schedules.  A
 <strong><em>greedy schedule</em></strong> is a schedule that never leaves a process idle
-unless there is no ready vertices.  In other words, greedy schedules
+unless there are no ready vertices.  In other words, greedy schedules
 keep processes as busy as possibly by greedily assigning ready
 vertices.</p></div>
 <div class="sidebarblock" id="thm:greedy">
 <div class="content">
 <div class="title">Theorem: Offline Greedy Schedule</div>
 <div class="paragraph"><p>Consider a dag $G$ with work $W$ and span
-$S$. Any schedule $P$-process schedule has
+$S$. Any greedy $P$-process schedule has
 length at most $\frac{W}{P} + S \cdot \frac{P-1}{P}$.</p></div>
 </div></div>
 <div class="sidebarblock">
@@ -3049,15 +3049,15 @@ length at most $\frac{W}{P} + S \cdot \frac{P-1}{P}$.</p></div>
 <div class="paragraph"><p>For each step $1 \le i \le T$, and for each process that
 is scheduled at that step, collect a token.  The token goes to the
 <strong><em>work bucket</em></strong> if the process executes a vertex in that step,
-otherwise the process is idle and the token goes to a <strong><em>idle bucket</em></strong>.</p></div>
+otherwise the process is idle and the token goes to an <strong><em>idle bucket</em></strong>.</p></div>
 <div class="paragraph"><p>Since each token in the work bucket corresponds to an executed vertex,
-there are exactly $W$ tokens is that bucket.</p></div>
+there are exactly $W$ tokens in that bucket.</p></div>
 <div class="paragraph"><p>We will now bound the tokens in the idle bucket by $S \cdot
 (P-1)$.  Observe that at any step in the execution schedule, there is
 a ready vertex to be executed (because otherwise the execution is
 complete).  This means that at each step, at most $P-1$
 processes can contribute to the idle bucket.  Furthermore at each
-step, where there is at least one idle process, we know that the
+step where there is at least one idle process, we know that the
 number of ready vertices is less than the number of available
 processes.  Note now that at that step, all the ready vertices have no
 incoming edges in the red sub-dag consisting of the vertices that are
