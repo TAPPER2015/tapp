@@ -13,7 +13,7 @@ mutex's, synchronization variables, and semaphores.
 
 === DAG Representation
 
-A multithreaded computation can be represented by a DAG, a Directed
+A multithreaded computation can be represented by a dag, a Directed
 Acyclic Graph, or written also more simply a *_dag_*, of vertices. The
 figure below show an example multithreaded computation and its dag.
 Each vertex represents the execution of an *_instruction_*, such as an
@@ -27,7 +27,7 @@ computation represents the partial ordering of the dependencies
 between the instructions in the computation.
 
 
-[[multithreading:fork-join, Figure ?]]
+[[multithreading::general-threads, Figure ?]]
 .A multithreaded computation.
 image::general-threads.png["A multithreaded computation.",width="500pt",align="center"]
 
@@ -36,7 +36,7 @@ the dag:
 
 . Each vertex has outdegree at most two.
 
-. The DAG has exactly one *_root vertex_* with indegree zero and one
+. The dag has exactly one *_root vertex_* with indegree zero and one
 *_final vertex_* vertex with outdegree zero.  The root is the first
 instruction of the *_root thread_*.
 
@@ -58,7 +58,7 @@ latexmath:[$15$] and span is latexmath:[$9$].
 Execution of a multithreaded computation executes the vertices in the
 dag of the computation in some partial order that is consistent with
 the partial order specified by the dag, that is, if vertices
-latexmath[$u,v$] are ordered then the execution orders them in the
+latexmath:[$u,v$] are ordered then the execution orders them in the
 same way.  
 
 
@@ -83,52 +83,18 @@ The *_length_* of a schedule is the number of steps in the schedule.
 ****
 
 The first condition ensures that a schedule observes the dependencies
-in the DAG.  Specifically, for each arc latexmath:[$(u,v)$] in the
+in the dag.  Specifically, for each arc latexmath:[$(u,v)$] in the
 dag, the vertex latexmath:[$u$] is executed before vertex
 latexmath:[$v$].  
 
 
 For any step in the execution, we call a vertex *_ready_* if all the
-ancestors of the vertex in the DAG are executed prior to that step.
+ancestors of the vertex in the dag are executed prior to that step.
 Similarly, we say that a thread is ready if it contains a ready
 vertex.  Note that a thread can contain only one ready vertex at any
 time.
 
-
-In this book. we are interested in a class of scheduling algorithms
-that maintain a *_work pool_* or work, consisting of ready
-threads. Execution starts with the root thread in the pool.  It ends
-when the final vertex is executed.
-
-To obtain work, a process removes a thread from the pool and executes
-its ready vertex. We refer to the thread executed by a process as the
-*_assigned thread_*.  When executed, the ready vertex can make the
-next vertex of the thread ready, which then also gets executed an so
-on until one of the following *_synchronization_* actions occur.
-
-. *_Die:_* The process executes last vertex of the thread, causing
-the thread to die. The process then obtains other work.
-
-. *_Block:_* The assigned vertex executes but the next vertex does not
-become ready. This blocks the thread and thus the process obtains
-other work.
-
-. *_Enable:_* The assigned vertex makes ready the continuation of the
-vertex and unblocks another previously blocked thread by making a
-vertex from that thread ready. In this case, the process inserts both
-(any) one thread into the work pool and continues to execute the
-other.
-
-. *_Spawn:_* The assigned vertex spaws another thread.  As in the
-previous case, the process inserts one thread into the work pool and
-continues to execute the other.
-
-These actions are not mutually exclusive.  For example, a thread may
-spawn/enable a thread and die.  In this case, the process performs the
-corresponding steps for each action.
-
-
-. Schedule
+.Schedule
 =====
 
 An example  schedule with 3 processes. The length of this
@@ -149,7 +115,6 @@ schedule is latexmath:[$10$]
 |10        |              |     M6       |              
 |==========
 
-
 ====
 
 
@@ -158,37 +123,24 @@ schedule is latexmath:[$10$]
 // processes executing an instruction.
 
 
-.Definition: Enabling Tree
-****
-
-Consider the execution of a dag.  If the execution of a vertex
-latexmath:[$u$] enables another vertex latexmath:[$v$], then we call
-the edge latexmath:[$(u,v)$] an *_enabling edge_* and we call
-latexmath:[$u$] the *_enabling parent_* of latexmath:[$v$].  For
-simplicity, we simply use the term *_parent_* instead of enabling
-parent.
-
-Note that any vertex other than the root vertex has one enabling
-parent.  Thus the subgraph induced by the enabling edges is a rooted
-tree that we call the *_enabling tree_*.  
-
-****
 
 
 [[fct:simple-invariant-scheduling]]
 .Fact: Scheduling Invariant
 *****
 
-Consider a computation DAG latexmath:[$G$] and consider an execution using any
+Consider a computation dag latexmath:[$G$] and consider an execution using any
 scheduling algorithm.  At any time during the execution, color the
 vertices that are executed as blue and the others as red.  
 
-. The blue vertices induce a blue sub-DAG of latexmath:[$G$] that is
+. The blue vertices induce a blue sub-dag of latexmath:[$G$] that is
 connected and that has the same root as latexmath:[$G$].
 
-. The red vertices incude a red sub-DAG of latexmath:[$G$] that is connected.
+. The red vertices incude a red sub-dag of latexmath:[$G$] that is connected.
 
-. All the vertices of G are in the blue or the red sub-DAG.  
+. All the vertices of G are in the blue or the red sub-dag.  In other
+words, the blue and red vertices partitions the dag into two
+sub-dags.
 
 *****
 
@@ -218,7 +170,7 @@ observation that the schedule cannot execute a vertex before its
 ancestors and thus the length of the schedule is at least as long as
 any path in the dag, which can be as large as the span latexmath:[$S$].
 
-=== Offline Scheduling Algorithms
+=== Offline Scheduling
 
 Having established a lower bound, we now move on to establish an upper
 bound for the *_offline scheduling problem_*, where we are given a dag
@@ -226,7 +178,6 @@ and wish to find an execution schedule that minimizes the run time.
 It is known that the related decision problem in NP-complete but that
 2-approximation is relatively easy.  We shall consider two distinct
 schedulers: *_level-by-level scheduler_* and *_greedy scheduler_*.
-
 
 A *_level-by-level schedule_* is a schedule that executes the
 instructions in a given dag level order, where the *_level_* of a
@@ -263,9 +214,10 @@ latexmath:[$\lceil \frac{W_i}{P} \rceil$] steps.  Thus the total time is
 ****
 
 
-This theorem, proved by Brent 1974, shows that the lower bound can be
-approximated within a factor of latexmath:[$2$], and in fact quite
-easily.  
+This theorem called
+https://www.google.com/search?q=Brent%27s+theorem&gws_rd=ssl [Brent's
+theorem] was proved by Brent in 1974. It shows that the lower bound
+can be approximated within a factor of latexmath:[$2$].
 
 Brent's theorem has later been generalized to all greedy schedules.  A
 *_greedy schedule_* is a schedule that never leaves a process idle
@@ -307,12 +259,12 @@ processes can contribute to the idle bucket.  Furthermore at each
 step, where there is at least one idle process, we know that the
 number of ready vertices is less than the number of available
 processes.  Note now that at that step, all the ready vertices have no
-incoming edges in the red sub-DAG consisting of the vertices that are
+incoming edges in the red sub-dag consisting of the vertices that are
 not yet executed, and all the vertices that have no incoming edges in
-the red sub-DAG are ready.  Thus executing all the ready vertices at
+the red sub-dag are ready.  Thus executing all the ready vertices at
 the step reduces the length of all the paths that originate at these
 vertices and end at the final vertex by one. This means that the span
-of the red sub-DAG is reduced by one because all paths with length
+of the red sub-dag is reduced by one because all paths with length
 equal to span must originate in a ready vertex. Since the red-subdag
 is initially equal to the dag latexmath:[$G$], its span is
 latexmath:[$S$], and thus there are at most latexmath:[$S$] steps at
@@ -321,7 +273,6 @@ the idle bucket is at most $S \cdot (P-1)$].
 
 Since we collect latexmath:[$P$] tokens in each step, the bound thus
 follows.
-
 
 ********
 
@@ -333,8 +284,78 @@ greedy scheduler is within a factor latexmath:[$2$] of optimal.
 
 ****
 
+=== Online Scheduling
 
+In offline scheduling, we are given a dag and are interested in
+finding a schedule with minimal length.  When executing multithreaded
+program, however, we don't have full knowledge of the dag.  Instead,
+the dag unfolds as we run the program.  Furthermore, we are interested
+in not minimizing the length of the schedule but also the work and
+time it takes to compute the schedule.  These two additional
+conditions define the *_online scheduling problem._*
+
+
+There are many different algorithms for online scheduling but these
+algorithms all operate similarly. We can outline a typical scheduling
+algorithm as follows. The algorithm maintain a *_work pool_* of work,
+consisting of ready threads, and execute them. Execution starts with
+the root thread in the pool.  It ends when the final vertex is
+executed.  In order to minimize the cost of computing the schedule,
+the algorithm executes a thread until there is a need for
+synchronization with other threads.
+
+To obtain work, a process removes a thread from the pool and executes
+its ready vertex. We refer to the thread executed by a process as the
+*_assigned thread_*.  When executed, the ready vertex can make the
+next vertex of the thread ready, which then also gets executed an so
+on until one of the following *_synchronization_* actions occur.
+
+. *_Die:_* The process executes last vertex of the thread, causing
+the thread to die. The process then obtains other work.
+
+. *_Block:_* The assigned vertex executes but the next vertex does not
+become ready. This blocks the thread and thus the process obtains
+other work.
+
+. *_Enable:_* The assigned vertex makes ready the continuation of the
+vertex and unblocks another previously blocked thread by making a
+vertex from that thread ready. In this case, the process inserts both
+(any) one thread into the work pool and continues to execute the
+other.
+
+. *_Spawn:_* The assigned vertex spaws another thread.  As in the
+previous case, the process inserts one thread into the work pool and
+continues to execute the other.
+
+These actions are not mutually exclusive.  For example, a thread may
+spawn/enable a thread and die.  In this case, the process performs the
+corresponding steps for each action.
 				   
+
+.Exercise: Scheduling Invariant
+****
+Convince yourself that the scheduling invariant holds in online scheduling.
+****
+
+For a given schedule generated by an online scheduling algorithm, we
+can define a tree of vertices, which tell us far a vertex, the vertex
+that enabled it.
+
+.Definition: Enabling Tree
+****
+
+Consider the execution of a dag.  If the execution of a vertex
+latexmath:[$u$] enables another vertex latexmath:[$v$], then we call
+the edge latexmath:[$(u,v)$] an *_enabling edge_* and we call
+latexmath:[$u$] the *_enabling parent_* of latexmath:[$v$].  For
+simplicity, we simply use the term *_parent_* instead of enabling
+parent.
+
+Note that any vertex other than the root vertex has one enabling
+parent.  Thus the subgraph induced by the enabling edges is a rooted
+tree that we call the *_enabling tree_*.  
+
+****
 
 === Writing Multithreaded Programs: Pthreads
 

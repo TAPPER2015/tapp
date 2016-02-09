@@ -1,5 +1,4 @@
-Parallel Computing: Theory and Practice
-=======================================
+= Parallel Computing: Theory and Practice
 
 v1.0 2016-01
 
