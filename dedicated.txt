@@ -243,7 +243,7 @@ sequence of the process consists of all the vertices in the deque and
 the lemma follows easily.
 
 
-[[dedicated::structural-popbottom]]
+[[dedicated::structural-popbottom-execute]]
 .Structural lemma illustrated after the assigned vertex is executed.
 image::deques-and-enabling-tree-execute.png["",width="200pt",align="center"]
 
@@ -260,7 +260,7 @@ latexmath:[$x$], which is pushed to the bottom of the deque.  In this
 case, latexmath:[$v_0$] becomes the parent of latexmath:[$x$].  The
 lemma holds.
 
-[[dedicated::structural-popbottom]]
+[[dedicated::structural-popbottom-enable-one]]
 .Structural lemma illustrated after the assigned vertex enables one child.
 image::deques-and-enabling-tree-one-child.png["",width="200pt",align="center"]
 
@@ -272,7 +272,7 @@ image::deques-and-enabling-tree-one-child.png["",width="200pt",align="center"]
 In this case, latexmath:[$v_0$] becomes the parent of latexmath:[$x$]
   and latexmath:[$y$].  The lemma holds.
 
-[[dedicated::structural-popbottom]]
+[[dedicated::structural-popbottom-enable-two]]
 .Structural lemma illustrated after the assigned vertex enables two children.
 image::deques-and-enabling-tree-two-children.png["",width="200pt",align="center"]
 

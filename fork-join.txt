@@ -396,7 +396,7 @@ image::inc-parallel-dag.png["DAG for parallel increment",width="800pt",align="ce
 <<fig:parallel-inc-dag, The Figure above>> illustrates the DAG for an execution
 of `map_incr_rec`.  We partition each invocation of this function into
 two threads labeled by "M" and "C" respectively.  The threads labeled
-by latexmath:[$M[i,j]$] corresponds to the part of the invocation of
+by latexmath:[$M\lbrack i,j \rbrack $] corresponds to the part of the invocation of
 `map_incr_rec` with arguments `lo` and `hi` set to latexmath:[$i$] and
 latexmath:[$j$] respectively; this first part corresponds to the part
 of execution up and including the `fork2` or all of the function if

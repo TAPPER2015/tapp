@@ -568,7 +568,7 @@ exectime 78.960
 
 The rest of the results confirm that it takes about ten processors to
 see a little improvement and forty processors to see approximately a
-2.5x speedup. <<quicksort-speedup, This plot>> shows the speedup plot
+2.5x speedup. <<sorting::quicksort-speedup, This plot>> shows the speedup plot
 for this program. Clearly, it does not look good.
 
 ----
@@ -586,7 +586,7 @@ bench.opt -bench quicksort -n 100000000 -proc 40
 exectime 4.761
 ----
 
-[[quicksort-speedup, Figure 11]]
+[[sorting::quicksort-speedup, Figure 11]]
 .Speedup plot for quicksort with latexmath:[$100000000$] elements.
 image::quicksort-speedup.png["Speedup plot for quicksort with latexmath:[$100000000$] elements.",width="500pt",align="center"]
 
@@ -746,15 +746,15 @@ Results written to results.txt.
 $ pplot speedup -series bench
 ----
 
-The <<quicksort-speedup, plot below>> shows one speedup curve for each of
-our two quicksort implementations. The in-place quicksort is always
-faster. However, the in-place quicksort starts slowing down a lot at
-20 cores and stops after 30 cores. So, we have one solution that is
-observably not work efficient and one that is, and another that is the
-opposite. The question now is whether we can find a happy middle
-ground.
+The <<sorting::quicksort-speedup-compare, plot below>> shows one
+speedup curve for each of our two quicksort implementations. The
+in-place quicksort is always faster. However, the in-place quicksort
+starts slowing down a lot at 20 cores and stops after 30 cores. So, we
+have one solution that is observably not work efficient and one that
+is, and another that is the opposite. The question now is whether we
+can find a happy middle ground.
 
-[[in-place-quicksort-speedup, Figure 12]]
+[[sorting::quicksort-speedup-compare, Figure 12]]
 .Speedup plot showing our quicksort and the in-place quicksort side by side. As before, we used latexmath:[$100000000$] elements.
 image::in-place-quicksort-speedup.png["Speedup plot for quicksort with latexmath:[$100000000$] elements.",width="500pt",align="center"]
 
