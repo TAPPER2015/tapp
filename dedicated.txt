@@ -113,7 +113,7 @@ don't care to account for.
 
 The deque supports three methods: 
 
-. `pushBottom`, which pushed a vertex at the bottom end of the deque.
+. `pushBottom`, which pushes a vertex at the bottom end of the deque.
 
 . `popBottom`, which returns the vertex at the bottom end of the
 deque if any, or returns `NULL` otherwise.
@@ -154,7 +154,7 @@ Consider the deque for a process shows below along with the assigned
 vertex.  The work sequence for this process is latexmath:[$\langle
 v_0, v_1, v_2, v_3 \rangle$].
 
-image::deque-example-1.png["",width="100pt",align="center"]
+image::deque-example-1.png["",width="50pt",align="center"]
 
 Now, if the process completes executing $v_0$, which enables no new
 children, then the work sequence consist of the vertices in the deque,
@@ -186,7 +186,7 @@ Consider the following computation dag.
 image::dag-example-1.png["",width="300pt",align="center"]
 
 The following drawings illustrate a 2-process execution of this dag
-using work stealing. Time flows top to bottom and left to right.
+using work stealing. Time flows left to right and top to bottom.
 
 {nbsp}{nbsp}{nbsp}{nbsp}{nbsp}
 image:work-stealing-example-1.png["",height="150pt",align="left"]
@@ -409,9 +409,13 @@ Thus,
 
 latexmath:[$E \lbrack W_i - X_i \rbrack  = W_i \cdot (1-1/P)^P \le W_i / e.$]
 
-It follows that 
-latexmath:[$ E\lbrack W - X \rbrack \le W / e $].
+We know that  latexmath:[$\lim_{P \rightarrow \infty} (1-1/P)^P =
+1/e$] and furthermore that the derivative of this function is
+positive (the function is nondecreasing).  Thus we know that 
+latexmath:[$(1-1/P)^P  \le 1/e$].
 
+It follows that latexmath:[$ E\lbrack W - X \rbrack \le W / e $].
+				   
 Since the random variable latexmath:[$W - X$] is a non-negative random
 variable, we can apply  Markov's inequality:
 
