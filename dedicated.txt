@@ -121,9 +121,9 @@ deque if any, or returns `NULL` otherwise.
 . `popTop`, returns the vertex at the top end of the deque, if any, or
 returns `NULL` if the deque is empty.
 
-These operations take place atomically.  We can think of them start by
-first obtaining a lock for the deque and then performing the desired
-operation.
+For the analysis, we assume that these operations take place
+atomically.  We can think of them as starting by taking a lock for the
+deque, performing the desired operation, and releasing the lock.
 
 For the analysis, we shall assume that all these operations take
 constant time and in fact complete in one step.  This assumption is
@@ -145,14 +145,29 @@ latexmath:[$q$] as the sequence of vertices defined by the assigned
 vertex of latexmath:[$q$] followed by the vertices in its deque
 ordered from bottom to top. If a vertex is in the work sequence of a
 process, then we say that it *_belongs_* to that process.
+
+
+.Work sequence
+====
+
+Consider the deque for a process shows below along with the assigned
+vertex.  The work sequence for this process is latexmath:[$\langle
+v_0, v_1, v_2, v_3 \rangle$].
+
+image::deque-example-1.png["",width="100pt",align="center"]
+
+Now, if the process completes executing $v_0$, which enables no new
+children, then the work sequence consist of the vertices in the deque,
+i.e., latexmath:[$\langle v_1, v_2, v_3 \rangle$].  If the process,
+later removes latexmath:[$v_1$] from its deque and starts working on
+it, i.e., latexmath:[$v_1$] becomes the assigned vertex, then the work
+sequence remains the same, i.e., latexmath:[$\langle v_1, v_2, v_3
+\rangle$].
+
+====
  
-
-For example, if a process has just completed the execution of its
-assigned vertex but has not pushed the children enabled onto its
-deque, then the work sequence consist of the vertices in the deque in
-the bottom to top order.
-
-==== Enabling Tree and Weights
+				   
+==== Enabling Tree
 
 Let's recall first the notion of an enabling three.  If execution of
 latexmath:[$u$] enables latexmath:[$v$], then we call the edge
@@ -163,13 +178,39 @@ consisting of the enabling edges form a rooted tree, called the
 *_enabling tree_*.  Note each execution can have a different enabling
 tree.
 
-If latexmath:[$d(u)$] is the depth of a node latexmath:[$u$] in the
-enabling tree, then we define the weight of latexmath:[$u$], written
-latexmath:[$w(u)$] as follows latexmath:[$w(u) = S - d(u)$].  The root
-has weight latexmath:[$S$].  Intuitively, the weight is equal to the
-distance of a vertex from the completion.
 
+==== An Example Run with Work Stealing
 
+Consider the following computation dag.
+
+image::dag-example-1.png["",width="300pt",align="center"]
+
+The following drawings illustrate a 2-process execution of this dag
+using work stealing. Time flows top to bottom and left to right.
+
+{nbsp}{nbsp}{nbsp}{nbsp}{nbsp}
+image:work-stealing-example-1.png["",height="150pt",align="left"]
+{nbsp}{nbsp}{nbsp}{nbsp}{nbsp}{nbsp}{nbsp}{nbsp}
+image:work-stealing-example-2.png["",height="150pt",align="right"]
+
+image:work-stealing-example-3.png["",height="150pt",align="left"]
+{nbsp}{nbsp}{nbsp}{nbsp}{nbsp}{nbsp}{nbsp}{nbsp}
+image:work-stealing-example-4.png["",height="150pt",align="right"]
+
+image:work-stealing-example-5.png["",height="150pt",align="left"]
+{nbsp}{nbsp}{nbsp}{nbsp}{nbsp}{nbsp}{nbsp}{nbsp}
+image:work-stealing-example-6.png["",height="150pt",align="right"]
+
+image:work-stealing-example-7.png["",height="150pt",align="left"]
+{nbsp}{nbsp}{nbsp}{nbsp}{nbsp}{nbsp}{nbsp}{nbsp}
+image:work-stealing-example-8.png["",height="150pt",align="right"]
+
+{nbsp}{nbsp}{nbsp}{nbsp}{nbsp}
+image:work-stealing-example-9.png["",height="150pt",align="left"]
+
+The enabling tree for this execution is shown below.
+
+image:enabling-tree-example-1.png["",width="300pt",align="center"]
 
 ==== Structural Lemma
 
@@ -179,13 +220,13 @@ distance of a vertex from the completion.
 
 Consider any time in an execution of the work-stealing algorithm after
 the execution of the root vertex. Let latexmath:[$v_0, v_1, \ldots,
-v_k$] denote the work sequence of a process. Let latexmath:[$u_0, u_1,
-\ldots, u_k$] be the sequence consisting of the parents of the
-vertices in the working sequence in the same order.  Then
+v_k$] denote the work sequence of any process. Let latexmath:[$u_0,
+u_1, \ldots, u_k$] be the sequence consisting of the designated
+parents of the vertices in the work sequence in the same order.  Then
 latexmath:[$u_i$] is an ancestor of latexmath:[$u_{i-1}$] in the
 enabling tree.  Moreover, we may have latexmath:[$u_0 = u_1$] but for
-any latexmath:[$2 \le i \le k$] latexmath:[$u_{i-1} \neq u_i$], that is
-the ancestor relationship is proper.
+any latexmath:[$2 \le i \le k$] latexmath:[$u_{i-1} \neq u_i$], that
+is the ancestor relationship is proper.
 
 ************************
 
@@ -198,38 +239,29 @@ image:deques-and-enabling-tree-case-1.png["",width="100pt",align="left"]
 image:deques-and-enabling-tree-case-2.png["",width="100pt",align="right"]
 ****
 
-Before we prove the lemma, we state an important corollary.
-
-.Corrollary
-***********
-
-Let latexmath:[$v_0, v_1, v_2 \ldots v_k$] defined as in the structural lemma
-above.  Then, we have latexmath:[$w(v_0) \le w(v_1) < w(v_2) \ldots w(k-1) <
-w(v_k)$] defined as in the structural lemma above.
-
-***********
-
-
-
 The proof of the structural lemma is by induction on the number of
-rounds.
+rounds of the execution.  
 
-At the initialization and before the beginning of the first round, all
-deques are empty, root is assigned to a process but has not been
-executed.  The root vertex is then executed and enables a single
-vertex, this vertex is pushed onto the deque and popped again becoming
-the assigned vertex at the beginning of the second round.  At any of
-these points in time after the execution of the root, process zero's
-work sequence consist of the child of the root, latexmath:[$v$].  The
-designated parent of latexmath:[$v$] is root and the lemma holds trivially.
+
+Consider the first round.  At the initialization and before the
+beginning of the first round, all deques are empty, root vertex is
+assigned to process zero but has not been executed.  The root vertex
+is then executed. By assumption, the root vertex has a single child
+latexmath:[$v$], which becomes enabled and pushed onto the deque and
+popped again becoming the assigned vertex at the beginning of the
+second round.  At any of point in time after the execution of the
+root, process zero's work sequence consist of latexmath:[$v$].  The
+designated parent of latexmath:[$v$] is the root vertex and the lemma
+holds trivially.
 
 For the inductive case, assume that the lemma holds up to beginning of
 some later round.  We will show that it holds at any point during the
 round and also after the completion of the round.
 
+
 Consider any process and its deque.  We have two cases to consider.
 
-*Case 1:* There is an assigned node, latexmath:[$v_0$], which is executed. 
+*Case 1:* There is an assigned vertex, latexmath:[$v_0$], which is executed. 
 
 By the definition of work sequences, we know that latexmath:[$v_1,
 \ldots, v_k$] are the vertices in the deque. Let latexmath:[$u_1,
@@ -239,7 +271,7 @@ enabling tree and the ancestor relationship is proper except for
 latexmath:[$i = 1$], where it is possible that latexmath:[$u_0 =
 u_1$].  Immediately after the execution of the assigned node, the work
 sequence of the process consists of all the vertices in the deque and
-the lemma follows easily.
+the lemma follows.
 
 
 [[dedicated::structural-popbottom-execute]]
@@ -269,7 +301,9 @@ image::deques-and-enabling-tree-one-child.png["",width="100pt",align="center"]
   arbitrary order.
 
 In this case, latexmath:[$v_0$] becomes the parent of latexmath:[$x$]
-  and latexmath:[$y$].  The lemma holds.
+  and latexmath:[$y$].  We need to show that latexmath:[$v_0 \neq
+  u_1$].  This holds because latexmath:[$v_0 \neq u_0$] and
+  latexmath:[$v_0 \neq u_1$].  The lemma holds.
 
 [[dedicated::structural-popbottom-enable-two]]
 .Structural lemma illustrated after the assigned vertex enables two children.
@@ -292,17 +326,50 @@ lemma.
 *Case 2:* A successful steal takes place and removes the top vertex in
   the deque.  In this case, the victim process loses its top vertex,
   which becomes the assigned vertex of the thief.  The work sequence
-  of the victim loses its rightmost element and the lemma continues to
-  hold for the victim.  When the stolen vertex is assigned, the work
-  sequence of the thief consist of just the stolen vertex and the
-  lemma holds for the thief. 
+  of the victim loses its rightmost element. It is easy to see that
+  the lemma continues to hold for the victim.  When the stolen vertex
+  is assigned, the work sequence of the thief consist of just the
+  stolen vertex and the lemma holds for the thief.
 				   
+// TODO: SOMETHING FISHY.  WE NEED TO SAY THAT THE LEMMA HOLDS BY
+// INDUCTION FOR THE VICTIM.  BUT WE CAN'T BECAUSE TIME HAS PASSED SINCE
+// THE LAST ROUND.
+//
+// DOESN'T IT SUFFICE TO SHOW THIS LEMMA FOR THE BEGINNING OF EACH ROUND.
 
 === Analysis
 
+The strategy analysis is to assign a potential to each vertex and show
+that the potential decreases geometrically as the execution proceeds.
+
+==== Weights
+
+If latexmath:[$d(u)$] is the depth of a vertex latexmath:[$u$] in the
+enabling tree, then we define the weight of latexmath:[$u$], written
+latexmath:[$w(u)$] as follows latexmath:[$w(u) = S - d(u)$].  The root
+has weight latexmath:[$S$].  Intuitively, the weight is equal to the
+distance of a vertex from the completion.
+
+A crucial corollary of the structural lemma is that the weights
+of the vertices decrease from top to bottom.
+
+.Corrollary
+***********
+
+Consider the work sequence of a process latexmath:[$v_0, v_1, v_2
+\ldots v_k$]. We have latexmath:[$w(v_0) \le w(v_1) < w(v_2) \ldots
+w(k-1) < w(v_k)$].
+
+***********
+
 ==== Balls and Bins Game
 
-One crucial fact behind the analysis is a probabilistic lemma.
+One crucial fact behind the analysis is a probabilistic lemma, called
+the Balls and Bins lemma. This lemma proves something relatively
+intuitive: if you throw as many ball as there are bins, chances are
+good that you will have a ball in at least a constant fraction of the
+bins, because chances of all balls landing in a small number of bins
+is low.
 
 .Lemma[Balls and Bins]
 **********************
@@ -314,7 +381,7 @@ each bin, define the random variable
 
 [latexmath]
 +++++++++++
-$
+$$
 X_i = \left\{
 \begin{array}{ll}
 W_i & \mbox{if a ball lands in bin}~i
@@ -322,7 +389,7 @@ W_i & \mbox{if a ball lands in bin}~i
 0 & \mbox{otherwise}
 \end{array}
 \right.
-$
+$$
 +++++++++++
 
 If latexmath:[$X = \sum_{i=1}^{P}{X_i}$], then for any
@@ -330,25 +397,6 @@ latexmath:[$\beta, 0 < \beta <  1$], we
 	      have latexmath:[$P \lbrack X \ge \beta W \rbrack > 1 - \frac{1}{(1-\beta)e}$].
 
 ************************
-
-.An application of the lemma
-====
-
-Let's calculate the probability for latexmath:[$\beta = 1/2$].  By the
-lemma, we know that if latexmath:[$P$] balls are thrown into
-latexmath:[$P$] bins, then the probability that the total weight of
-the bins that have a ball in them is at least half the total weight is 
-latexmath:[$P \lbrack X \ge \frac{W}{2} \rbrack 1 - \frac{1}{0.5e}$].
-Since latexmath:[$e > 2.71$], this quantity can be canculated as at
-least latexmath:[$0.25$]. We thus conclude that we using the Ball and
-Bins lemma, we can "collect" at least half of the weight with
-probability at least latexmath:[$0.25$] 
-====
-
-The Ball and Bins lemma proves something relatively intuitive.  If you
-throw as many ball as there are bins, changes are non-trivial that you
-will have a ball in at least a constant fraction of the bins, because
-chances of all balls landing in a small number of bins is law.  
 
 .Proof
 ****
@@ -364,12 +412,33 @@ latexmath:[$E \lbrack W_i - X_i \rbrack  = W_i \cdot (1-1/P)^P \le W_i / e.$]
 It follows that 
 latexmath:[$ E\lbrack W - X \rbrack \le W / e $].
 
-By Markov's inequality we have 
+Since the random variable latexmath:[$W - X$] is a non-negative random
+variable, we can apply  Markov's inequality:
 
-latexmath:[$P \lbrack W-X > (1-\beta) W \rbrack \le \frac{E \lbrack W-X \rbrack}{(1-\beta)W}$], and thus
+latexmath:[$P \lbrack W-X > (1-\beta) W \rbrack \le \frac{E \lbrack
+W-X \rbrack}{(1-\beta)W}$].
+
+From this we can conclude that 
 latexmath:[$P \lbrack X < \beta W \rbrack < \frac{1}{(1-\beta)e}.$]
 
 **** 
+
+.An application of the lemma
+====
+
+Let's calculate the probability for latexmath:[$\beta = 1/2$].  By the
+lemma, we know that if latexmath:[$P$] balls are thrown into
+latexmath:[$P$] bins, then the probability that the total weight of
+the bins that have a ball in them is at least half the total weight is 
+latexmath:[$P \lbrack X \ge \frac{W}{2} \rbrack 1 - \frac{1}{0.5e}$].
+Since latexmath:[$e > 2.71$], this quantity can be calculated as at
+least latexmath:[$0.25$]. We thus conclude that we using the Ball and
+Bins lemma, we can "collect" at least half of the weight with
+probability at least latexmath:[$0.25$] 
+====
+
+
+
 
 ==== Bound in terms of Throws
 
@@ -377,23 +446,17 @@ latexmath:[$P \lbrack X < \beta W \rbrack < \frac{1}{(1-\beta)e}.$]
 *******************
 
 Consider any multithreaded computation with work latexmath:[$W$].  The
-latexmath:[$P$]-processor execution time is latexmath:[$O(W/P + S/P)$]
-steps where latexmath:[$S$] is the number of throws.
+latexmath:[$P$]-processor execution time is latexmath:[$O(W/P + H/P)$]
+steps where latexmath:[$H$] is the number of throws.
 
 *******************
-
-IMPORTANT:: The proof assumes that each instructions including deque
-operations takes one step by assuming that each round contributes to
-the work or to the steal bucket.  If this assumption is not valid,
-then we might need to change the notion of rounds.  This is what ABP
-does.
 
 .Proof
 ****
 
 We shall consider the execution in terms of rounds and collect a token
 from each processor in each round.  Since rounds are a constant number
-of steps, we will thus collect as many tokes as total number of steps
+of steps, we will thus collect as many tokens as total number of steps
 divided by some constant.
 
 Consider the execution in terms of rounds
@@ -404,14 +467,22 @@ token into the work bucket.
 . If a steal attempt takes place in that round, then a throw occurs in
 this round, and the processor places a token into the throw bucket.
 
-There are exactly latexmath:[$S$] tokens in the throw bucket and
+There are exactly latexmath:[$H$] tokens in the throw bucket and
 exactly latexmath:[$W$] tokens is the work bucket.  Thus the total
-number of tokens is at most latexmath:[$W + S$].  Since in each round
+number of tokens is at most latexmath:[$W + H$].  Since in each round
 a process either executes a vertex or performs a throw,
 latexmath:[$P$]-process execution time, latexmath:[$T_P = \frac{W +
-S}{P}$].
+H}{P}$].
 
 ****
+
+NOTE: The proof assumes that each instructions including deque
+operations takes a (fixed) constant number of steps, because it
+assumes that each round contributes to the work or to the steal
+bucket.  If this assumption is not valid, then we might need to change
+the notion of rounds so that they are large enough for steals to
+complete.
+
 
 
 ==== Bounding the Number of Throws
