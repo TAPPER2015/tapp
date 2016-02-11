@@ -394,7 +394,7 @@ $$
 
 If latexmath:[$X = \sum_{i=1}^{P}{X_i}$], then for any
 latexmath:[$\beta, 0 < \beta <  1$], we
-	      have latexmath:[$P \lbrack X \ge \beta W \rbrack > 1 - \frac{1}{(1-\beta)e}$].
+have latexmath:[$P \lbrack X \ge \beta W \rbrack > 1 - \frac{1}{(1-\beta)e}$].
 
 ************************
 
@@ -405,25 +405,55 @@ The proof of the lemma is a relatively straightforward application of
 Markov's inequality.  Consider the random variable latexmath:[$W_i -
 X_i$].  This random variable takes on the value latexmath:[$0$] if a
 ball lands in bin latexmath:[$i$] and latexmath:[$W_i$] otherwise.
-Thus,
+Thus, we have
 
-latexmath:[$E \lbrack W_i - X_i \rbrack  = W_i \cdot (1-1/P)^P \le W_i / e.$]
+[latexmath]
+++++
+$$
+\begin{array}{lll}
+E \lbrack W_i - X_i \rbrack  & = & W_i \cdot (1-1/P)^P, \mbox{and}
+\\
+E \lbrack W - X \rbrack  & = & W \cdot (1-1/P)^P.
+\end{array}
+$$
+++++
 
-We know that  latexmath:[$\lim_{P \rightarrow \infty} (1-1/P)^P =
-1/e$] and furthermore that the derivative of this function is
-positive (the function is nondecreasing).  Thus we know that 
-latexmath:[$(1-1/P)^P  \le 1/e$].
+We know that latexmath:[$\lim_{P \rightarrow \infty} (1-1/P)^P = 1/e$]
+and furthermore that the derivative of this function is non-negative
+(the function is non-decreasing).  Thus we know that
+latexmath:[$(1-1/P)^P \le 1/e$].
 
 It follows that latexmath:[$ E\lbrack W - X \rbrack \le W / e $].
 				   
 Since the random variable latexmath:[$W - X$] is a non-negative random
 variable, we can apply  Markov's inequality:
 
-latexmath:[$P \lbrack W-X > (1-\beta) W \rbrack \le \frac{E \lbrack
-W-X \rbrack}{(1-\beta)W}$].
+[latexmath]
+++++
+$$
+P \lbrack W-X > (1-\beta) W \rbrack \le \frac{E \lbrack
+W-X \rbrack}{(1-\beta)W}.
+$$
+++++
+				   
+It follows that 
 
-From this we can conclude that 
-latexmath:[$P \lbrack X < \beta W \rbrack < \frac{1}{(1-\beta)e}.$]
+[latexmath]
+++++
+$$
+P \lbrack X < \beta W \rbrack < \frac{1}{(1-\beta)e},
+$$
+++++
+
+and thus 
+
+[latexmath]
+++++
+$$
+P \lbrack X \ge \beta W \rbrack > 1 - \frac{1}{(1-\beta)e}.
+$$
+++++
+				   
 
 **** 
 
@@ -1580,7 +1610,7 @@ $$
 +++++++++++
 
 Thus the probabilty that the executian takes latexmath:[$64S + 18
-\ln{1/epsilon)}$] phases or more is less than latexmath:[$\epsilon$].
+\ln{1/\epsilon)}$] phases or more is less than latexmath:[$\epsilon$].
 
 We conclude that the number of throws is latexmath:[$O(S +
 \lg{1/\epsilon}P)$] with probability at least latexmath:[$1 -
