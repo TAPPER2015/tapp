@@ -24,6 +24,9 @@ dvpt.pdf: dvpt.txt
 book.html: $(SOURCES)
 	asciidoc -a toc book.txt
 
+current.html: $(SOURCES)
+	asciidoc -a toc current.txt
+
 
 tapp.html: $(SOURCES)
 	asciidoc -a data-uri  -a toc book.txt

@@ -1,0 +1,57 @@
+= Parallel Computing: Theory and Practice
+
+v1.0 2016-01
+
+:author: Umut A. Acar
+:doctype: book
+:imagesdir: ./originals
+:toc:
+:cpp: {basebackend@docbook:c++:cpp}
+:numbered:
+:cplusplus: Clatexmath:[++]
+
+Author: {author}
+
+//include::preface.txt[]
+
+//include::admin.txt[]
+
+//include::preliminaries.txt[]
+
+//include::intro.txt[]
+
+//include::multithreading.txt[]
+
+//include::fork-join.txt[]
+
+//include::mutual-exclusion.txt[]
+
+//include::benchmarking.txt[]
+
+// include::scheduling.txt[]
+
+//include::work-efficiency.txt[]
+
+//include::granularity-control.txt[]
+
+//include::parallel-arrays.txt[]
+
+//include::sorting.txt[]
+
+//include::graphs.txt[]
+
+include::dedicated.txt[]
+
+// include::synchronization.txt[]
+				   
+// include::concurrency.txt[]
+
+// include::multiprogrammed.txt[]
+
+
+
+				   
+[index]
+Index
+-----
+
