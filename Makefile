@@ -4,7 +4,7 @@ GENERATED_FILES=$(PROJECT_NAME).pdf $(PROJECT_NAME).html
 
 COMMON_OPTS=-s -S $(PROJECT_BIB) --toc --number-sections --highlight-style haddock --mathjax
 
-SOURCES= book.txt preliminaries.txt background.txt dedicated.txt multithreading.txt mutual-exclusion.txt fork-join.txt scheduling.txt benchmarking.txt intro.txt  preface.txt work-efficiency.txt granularity-control.txt parallel-arrays.txt sorting.txt synchronization.txt work-stealing.txt graphs.txt
+SOURCES= book.txt preliminaries.txt background.txt dedicated.txt graph-theory.txt multithreading.txt mutual-exclusion.txt fork-join.txt scheduling.txt benchmarking.txt intro.txt  preface.txt work-efficiency.txt granularity-control.txt parallel-arrays.txt sorting.txt synchronization.txt trees.txt work-stealing.txt graphs.txt
 
 
 TARGETS=$(PROJECT_NAME).html

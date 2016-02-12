@@ -1,0 +1,43 @@
+[[ch:graph-theory]]
+== Graph Theory Terminology
+
+
+[[sec:graph-theory::walks]]
+=== Walk, Trails, Paths
+
+A *_walk_* in a graph is a sequence of alternating vertex-edge pairs,
+latexmath:[$v_0, e_1, v_1, \ldots, v_{n-1}, e_n, v_n$], such that
+latexmath:[$e_i = (v_{i-1},v_i) \in E$].  Note that vertices and edges
+can be repeated.  A walk corresponds to the intuitive notion of
+``taking a walk in the graph.''
+
+In a simple graph, where there are no parallel or multiple edges, we
+can specify a walk as a sequence of vertices (which imply) the edges.
+
+A *_trail_* in a graph is a walk where all edges are distinct, that is
+no edge is traversed more than once.  Note that there can be repeated
+vertices in a trail.  A trail corresponds to the intuitive notion that
+it is a path with a purpose so it does not repeat the same edges.
+
+A *_path_* is a graph is a walk where all edges and vertices are
+distinct.
+
+We say that a walk or a trail is *_closed_* if the initial and
+terminal vertices are the same.
+
+[[sec:graph-theory::euler-tours]]
+=== Euler Tours
+
+Given an undirected graph latexmath:[$G = (V,E)$], an *_Euler trail_*
+is a trail that uses each edge exactly once.  An *_Euler tour_* is a
+trail that is closed. In other words, it starts and terminates at the
+same vertex.  We say that a graph is *_Eulerian_* if it has an Euler
+tour.
+
+It can be proven that a connected graph latexmath:[$G = (V,E)$] is
+Eulerian if and only if every vertex latexmath:[$v \in V$]has even
+degree.
+
+These definitions generalize naturally to digraphs.
+
+

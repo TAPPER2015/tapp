@@ -40,7 +40,11 @@ include::sorting.txt[]
 
 include::graphs.txt[]
 
-include::dedicated.txt[]
+// include::dedicated.txt[]
+
+include::graph-theory.txt[]
+
+include::trees.txt[]
 
 // include::synchronization.txt[]
 				   
