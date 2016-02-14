@@ -77,6 +77,8 @@ example.
 
 ====
 
+=== Rake Operation
+
 The contraction algorithm might be a bit less obvious.  To develop
 this algorithm, lets define a *_rake_* as an operation that when
 applied to a leaf node deletes the leaf node and stores its size in
@@ -96,8 +98,7 @@ In the example tree above, we rake all the leaves and store their size
 in the parents.  We can rake the leaves again until only the roons
 remain.  This is illustrated by the drawings below.
 
-image::perfect-binary-tree-8-rake-2.png["Computing
-ranks",width="550pt",align="center"]
+image::perfect-binary-tree-8-rake-2.png["Computing ranks",width="550pt",align="center"]
 
 image::perfect-binary-tree-8-rake-3.png["Computing ranks",width="550pt",align="center"]
 
@@ -119,8 +120,7 @@ recursion as $W(n) = W(n/2) + n$.  This solves to $W(n) = O(n)$.
 Since perfect trees are balanced, for the span we have $S(n) = S(n/2)
 + \log{n}$.  This solves to $S(n) = O(\lg^2{n})$.
 
-
-
+=== Compress Operation
 
 As with our divide-and-conquer algorithm, the contraction algorithm
 does very poorly on a chain, in fact even more poorly then the divide
@@ -128,14 +128,128 @@ and conquer algorithm, performing $O(n^2)$ work in $O(n^2)$ span.
 
 Can we do better?  Let's consider the worst-case example of the chain
 and suppose that we can design a different contraction algorithm that
-works well just on chains.  
+works well just on chains.  Define *_compress_* as an operation that
+when applied to a node $u$ with a single child $v$ and parent $w$
+deletes $u$ and the edges incident on it and inserts an edge from the
+parent to the child, i.e., $(w,v)$.  To keep track of the size
+information, we can label this edge with a weight that is equal to the
+weight of the vertices and edges deleted, assuming that initially all
+edges have weight $0$.  
+
+We can design a contraction algorithm for chains by selecting in each
+round an independent set of nodes (nodes with no edges in between) and
+compressing them.  To maximize the amount of contraction, we want to
+select a maximal independent set and do so in parallel.  To do this,
+we can use randamization.  We can flip for each node a coin and select
+a vertex if it flipped heads and its child flipped tails.  This
+guarantees that no two adjacent nodes are selected.  To contract the
+chain, we can apply this contraction step recursively until we are
+left with a single edge.
+
+.Contraction with Compress
+====
+
+image::chain-9.png["Computing ranks",width="400pt",align="center"]
+
+In the example chain above, we compress every other internal node to
+obtain the new chain below.
+
+image::chain-9-compress-1.png["Computing ranks",width="400pt",align="center"]
+
+We can then repeat this process until we are down to a single edge.
+
+image::chain-9-compress-2.png["Computing ranks",width="400pt",align="center"]
+
+image::chain-9-compress-3.png["Computing ranks",width="400pt",align="center"]
+
+====
+
+Since the algorithm is randomized its analysis requires a bit care.
+The probability that such a node is compressed is $1/4$ because it has
+to flip heads and its child has to flip tails.  Thus the expected
+fraction of the nodes that are not compressed in this round is $3/4$.
+Define $X_i$ as the size of the tree at the beginning of round $i$.
+Since each round of contraction selects the nodes to compress
+independently, at round $i$, the expected number of nodes that remain
+in the tree is $E[X_i] = \frac{3^i}{4^i} \cdot n$.
+
+From this bound alone, we can bound the work as follows.
+
+$$
+\begin{array}{lll}
+W(n) & = & \sum_{i = 1}^{\infty}{X_i}
+\\
+E \lbrack W(n) \rblack & = & \sum_{i = 1}^{\infty}{\frac{3^i}{4^i} \cdot n}
+\\
+E \lbrack W(n) \rbrack & = & O(n).
+\end{array}
+$$
+
+To bound the span, we need a high-probability bound.  Let's consider the
+probability that the number of nodes is non-trivial after $i = 10
+\lg{n}$ rounds.  By Markov's inequality we have
+
+$$
+P \lbrack X_i \ge 1 \rbrack \le E \lbrack X_i \rbrack / 1  = n^{-3.15}.
+$$
+
+This means that after $10\log{n}$ rounds, the probability that the
+tree constains more than a few nodes is tiny.  We can thus state with
+high probability that the algorithm terminates after $O(\log{n})$
+rounds. If it does not, we can just perform some linear work algorithm
+to solve the problem.  This leads directly to a span bound $E \lbrack
+S(n) \rbrack = O(\lg{n})$, assuming that each round can be implemented
+in constant span.
+
+The second pass of the algorithm, where we determine the pre-order
+traversal of the nodes, can be implemented by "undoing" the
+contraction step as we pass the edge weights to the "re-inserted"
+nodes.  This is straightforward and is left as an exercise.
+
+=== Tree Contraction
+
+In this chapter thus far, we have seen that we can compute the
+in-order rank a perfect binary tree, which is a perfectly balanced
+tree, by using a contraction algorithm that rakes the leaves of the
+tree until the tree reduces to a single vertex.  We have also seen
+that we can compute in-order ranks of nodes in a worst-case unbalanced
+tree, a chain, by using a contraction algorithm that compresses nodes
+with single child's until the tree reduces to a single edge.
+
+We shall now see that we can in fact compute in-order ranks for any
+tree, balanced or unbalanced, by simultaneosly appliyng the same two
+operations to the tree.
+
+.Algorithm: Tree Contraction
+****
+Input: Tree $T$
+Output: A single node
+
+[source, {cpp}]
+----
+tree_contract ($T$)
+if $|T| < 1$ 
+  $T$
+else
+    $T'$ = rake leaves of $T$ 
+    $T''$ = compress out-degree 1 nodes ot $T'$
+    tree_contract ($T'$)
+----
+****  
 
 
 
+.Tree Contraction 
+====
+An example tree contraction illustrated on the  input tree below. 
+image::unbalanced-binary-tree-6.png["Input tree",width="500pt",align="center"]
 
+image::unbalanced-binary-tree-6-tc-1.png["Tree contraction, round 1",width="500pt",align="center"]
 
+image::unbalanced-binary-tree-6-tc-2.png["Tree contraction, round 2",width="500pt",align="center"]
 
-
+image::unbalanced-binary-tree-6-tc-3.png["Tree contraction, round 3",width="500pt",align="center"]
+====
 
 
 Let's consider separately these two cases, balanced and unbalanced. 
@@ -158,7 +272,6 @@ image::perfect-binary-tree-8-inorder-ranks.png["Compting ranks",width="500pt",al
 In the example tree above, each node is labeled with the size of its
 subtree computed in the first pass and each edge is labeled with the
 rank information it is given in the second pass.
-
 ====
 
 
@@ -190,7 +303,6 @@ linear.
 
 In the rest of this chapter, we discuss two techniques for solving
 such problems on trees.  
-
 
 === Euler Tour Trees
 
