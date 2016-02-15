@@ -1,10 +1,381 @@
-[[ch:tree-contraction]]
+[[ch:trees]]
 == Chapter: Tree Computations
 
+Trees are a basic structure for representing relations.  It is thus
+ natural to ask whether we can perform tree operations in parallel.
 
-Trees are a basic technique for organizing data in computer
-science. It is thus natural to ask whether we can perform tree
-operations in parallel.  
+As our first motivating example, let's consider the following
+question: we are given a binary tree $T$ and asked to determine for
+*_in-order rank_* of each node in the tree, defined as the order of
+the node in an in-order traversal of the tree. 
+
+
+As two important special cases of this problem, let's consider a
+perfect binary tree, where each internal node has exactly two children
+and a chain, where each internal node has exactly one child. A perfect
+binary tree is a balanced tree whereas a chain is an unbalanced tree.
+
+.In-Order Traversal 
+====
+image::perfect-binary-tree-8.png["An example perfect binary tree",width="500pt",align="center"]
+
+An in-order traversal of the perfect binary tree above traverses the
+nodes in the following order: *a,b,c,d,e,f,g,h,i,j,k,l,m,n,o*.  
+
+====
+
+To compute in-order rank of each node, we can use a two-pass
+ algorithm:
+
+. First pass: compute the size of each subtree in the
+tree. 
+
+. Second pass: Compute the in-order ranks by traversing the tree from
+root to leaves as we propagate to each subtree in-order rank of its
+root, which can be calculated based on the sizes of the left and the
+right subtrees.
+
+
+.Two-Pass Algorithm for Computing Ranks
+====
+
+image::perfect-binary-tree-8-inorder-ranks.png["Compting ranks",width="550pt",align="center"]
+
+In the example tree above, each node is labeled with the size of its
+subtree computed in the first pass and each edge is labeled with the
+rank information it is given in the second pass.
+====
+
+We can implement the two-pass algorithm using two different
+techniques: divide and conquer and contraction. 
+
+The first phase of the divide-and-conquer algorithm proceeds by
+computing the recursively the sizes of each subtree in parallel, and
+the computing the size for the tree by adding the sizes and adding one
+for the root. Similarly, the second phase of the algorithm computes
+the rank of the root as the size of the left-subtree (assuming we are
+counting rank's from zero) plus an offset (initially zero), and
+recurses  on the left and the right subtrees.  For the left subtree,
+the offset is the same as the offset of the root and for the right
+subtree, the offset is the calculated by adding the size of the left
+subtree plus one.   
+
+If the tree is balanced, as for example in our example, we can show
+that this algorithm performs $O(n)$ work in $O(\lg{n})$ span.  If
+however, the tree is not balanced the algorithm can do poorly,
+requiring as much as $O(n)$ span.
+
+
+.Divide and Conquer on Chains
+====
+image::chain-9.png["An example chain",width="400pt",align="center"]
+
+An in-order traversal of a chain of nodes yields *a,b,c,d,e,f,g,h,i*
+assuming that the left child of each node is "empty." The
+divide-and-conquer algorithm would require linear span on this
+example.
+
+====
+
+=== Rake Operation
+
+The contraction algorithm might be a bit less obvious.  To develop
+this algorithm, lets define a *_rake_* as an operation that when
+applied to a leaf node deletes the leaf node and stores its size in
+its parent. With some care, we can rake all the leaves in parallel: we
+just need to have a place for each leaf to store their size at their
+parent so that the rakes can be performed in parallel without
+interfence.  We can repeat this process of raking the leaves until we
+have a just the root left.
+
+
+.Contraction with Rakes
+====
+
+image::perfect-binary-tree-8-rake-1.png["Computing ranks",width="550pt",align="center"]
+
+In the example tree above, we rake all the leaves and store their size
+in the parents.  We can rake the leaves again until only the roons
+remain.  This is illustrated by the drawings below.
+
+image::perfect-binary-tree-8-rake-2.png["Computing ranks",width="550pt",align="center"]
+
+image::perfect-binary-tree-8-rake-3.png["Computing ranks",width="550pt",align="center"]
+
+
+====
+
+The second phase of the algorithm is essentially the same as in the
+divide-and-conquer phase.
+
+Let's calculate the work and span of this algorithm assuming that we
+have a perfect binary tree, which is a tree where all internal nodes
+have exactly two children and all the leaves are collected at the last
+two levels of the tree.
+
+
+Since a perfect binary tree is a full binary tree, raking all the
+leaves removes half of the nodes.  Thus we can write the work
+recursion as $W(n) = W(n/2) + n$.  This solves to $W(n) = O(n)$.
+Since perfect trees are balanced, for the span we have $S(n) = S(n/2)
++ \log{n}$.  This solves to $S(n) = O(\lg^2{n})$.
+
+=== Compress Operation
+
+As with our divide-and-conquer algorithm, the contraction algorithm
+does very poorly on a chain, in fact even more poorly then the divide
+and conquer algorithm, performing $O(n^2)$ work in $O(n^2)$ span.
+
+Can we do better?  Let's consider the worst-case example of the chain
+and suppose that we can design a different contraction algorithm that
+works well just on chains.  Define *_compress_* as an operation that
+when applied to a node $u$ with a single child $v$ and parent $w$
+deletes $u$ and the edges incident on it and inserts an edge from the
+parent to the child, i.e., $(w,v)$.  To keep track of the size
+information, we can label this edge with a weight that is equal to the
+weight of the vertices and edges deleted, assuming that initially all
+edges have weight $0$.  
+
+We can design a contraction algorithm for chains by selecting in each
+round an independent set of nodes (nodes with no edges in between) and
+compressing them.  To maximize the amount of contraction, we want to
+select a maximal independent set and do so in parallel.  To do this,
+we can use randamization.  We can flip for each node a coin and select
+a vertex if it flipped heads and its child flipped tails.  This
+guarantees that no two adjacent nodes are selected.  To contract the
+chain, we can apply this contraction step recursively until we are
+left with a single edge.
+
+.Contraction with Compress
+====
+
+image::chain-9.png["Computing ranks",width="400pt",align="center"]
+
+In the example chain above, we compress every other internal node to
+obtain the new chain below.
+
+image::chain-9-compress-1.png["Computing ranks",width="400pt",align="center"]
+
+We can then repeat this process until we are down to a single edge.
+
+image::chain-9-compress-2.png["Computing ranks",width="400pt",align="center"]
+
+image::chain-9-compress-3.png["Computing ranks",width="400pt",align="center"]
+
+====
+
+Since the algorithm is randomized its analysis requires a bit care.
+The probability that such a node is compressed is $1/4$ because it has
+to flip heads and its child has to flip tails.  Thus the expected
+fraction of the nodes that are not compressed in this round is $3/4$.
+Define $X_i$ as the size of the tree at the beginning of round $i$.
+Since each round of contraction selects the nodes to compress
+independently, at round $i$, the expected number of nodes that remain
+in the tree is $E[X_i] = \frac{3^i}{4^i} \cdot n$.
+
+From this bound alone, we can bound the work as follows.
+
+$$
+\begin{array}{lll}
+W(n) & = & \sum_{i = 1}^{\infty}{X_i}
+\\
+E \lbrack W(n) \rblack & = & \sum_{i = 1}^{\infty}{\frac{3^i}{4^i} \cdot n}
+\\
+E \lbrack W(n) \rbrack & = & O(n).
+\end{array}
+$$
+
+To bound the span, we need a high-probability bound.  Let's consider the
+probability that the number of nodes is non-trivial after $i = 10
+\lg{n}$ rounds.  By Markov's inequality we have
+
+$$
+P \lbrack X_i \ge 1 \rbrack \le E \lbrack X_i \rbrack / 1  = n^{-3.15}.
+$$
+
+This means that after $10\log{n}$ rounds, the probability that the
+tree constains more than a few nodes is tiny.  We can thus state with
+high probability that the algorithm terminates after $O(\log{n})$
+rounds. If it does not, we can just perform some linear work algorithm
+to solve the problem.  This leads directly to a span bound $E \lbrack
+S(n) \rbrack = O(\lg{n})$, assuming that each round can be implemented
+in constant span.
+
+The second pass of the algorithm, where we determine the pre-order
+traversal of the nodes, can be implemented by "undoing" the
+contraction step as we pass the edge weights to the "re-inserted"
+nodes.  This is straightforward and is left as an exercise.
+
+=== Tree Contraction
+
+In this chapter thus far, we have seen that we can compute the
+in-order rank a perfect binary tree, which is a perfectly balanced
+tree, by using a contraction algorithm that rakes the leaves of the
+tree until the tree reduces to a single vertex.  We have also seen
+that we can compute in-order ranks of nodes in a worst-case unbalanced
+tree, a chain, by using a contraction algorithm that compresses nodes
+with single child's until the tree reduces to a single edge.
+
+We shall now see that we can in fact compute in-order ranks for any
+tree, balanced or unbalanced, by simultaneosly appliyng the same two
+operations to the tree.
+
+.Algorithm: Tree Contraction
+****
+Input: Tree $T$
+Output: A single node
+
+[source, {cpp}]
+----
+tree_contract ($T$)
+if $|T| < 1$ 
+  $T$
+else
+    $T'$ = rake leaves of $T$ 
+    $T''$ = compress out-degree 1 nodes ot $T'$
+    tree_contract ($T'$)
+----
+****  
+
+
+
+.Tree Contraction 
+====
+An example tree contraction illustrated on the  input tree below. 
+image::unbalanced-binary-tree-6.png["Input tree",width="500pt",align="center"]
+
+image::unbalanced-binary-tree-6-tc-1.png["Tree contraction, round 1",width="500pt",align="center"]
+
+image::unbalanced-binary-tree-6-tc-2.png["Tree contraction, round 2",width="500pt",align="center"]
+
+image::unbalanced-binary-tree-6-tc-3.png["Tree contraction, round 3",width="500pt",align="center"]
+====
+
+
+Let's consider separately these two cases, balanced and unbalanced. 
+
+
+Consider a perfect binary tree.  
+
+As a first-step in determining the
+in-order rank of each node, we can start by computing the size of each
+subtree in the tree. Once we have this information, we can compute the
+in-order ranks by traversing the tree from root to leaves as we
+propagate to each subtree in-order rank of its root, which can be
+calculated based on the sizes of the left and the right subtrees.
+
+
+.In-Order Traversal 
+====
+image::perfect-binary-tree-8-inorder-ranks.png["Compting ranks",width="500pt",align="center"]
+
+In the example tree above, each node is labeled with the size of its
+subtree computed in the first pass and each edge is labeled with the
+rank information it is given in the second pass.
+====
+
+
+
+
+
+ the number of nodes in the tree.  One way to do
+this would be to use divide-and-conquer.  We recursively parallel
+compute the size of the left subtree, right subtree, and add one for
+the root.  Since the left and the right subtrees are independent, the
+computtaions can be don in parallel. If the tree $T$ is balanced, then
+such an algorithm performs $Theta(n)$ work in $\Theta(\lg{n})$ span.
+If, howener, $T$ is unbalanced, then span can be as large as
+$\Omega(n)$.
+
+As our second mativating example, suppose that we are given a rooted
+tree $T$ that represents a mathemetical expression consisting of
+addition and multiplication operations over real numbers and we wish
+to compute the value of this expression.  In such a tree, each
+internal node is an operation (plus or multiply) and each leaf is a
+real number.  Again, we can solve this problem by using a
+divide-and-conquer algorithm, whic computes the values of the
+expressions on the left and the right subtrees and combines them
+acconding to the operation at the root.  If the tree $T$ is balanced,
+then such an algorithm performs $Theta(n)$ work in $\Theta(\lg{n})$
+span.  If, however, $T$ is unbalanced, then span can be as large as
+linear.
+
+
+In the rest of this chapter, we discuss two techniques for solving
+such problems on trees.  
+
+=== Euler Tour Trees
+
+Recall the definiton of <<sec:graph-theory::euler-tours, Euler Tours>>.
+
+A tree $T$ may not be Eulerian.  For example, in a binary tree, the
+leaves have degree one.  We can, however, transform a tree to a
+directed graph by replacing each (undirected) edge with two edges, one
+in each direction. Such a tree corresponds to a graph where each
+vertex has even degree (some on in and outgoing edges) and thus is
+guarantee to be Eulerian.
+
+INSERT EXAMPLE. 
+
+For the rest of this chapter, we shall consider *_rooted trees_* where
+a single vertex is identified as a root.  In rooted trees, edges can
+be oriented towards or away from the root.  We shall orient them away
+from the root, because this is more consistent with the typical way
+trees are represented as a data structure.
+
+The Euler tour of a rooted tree starts at the root, and *_enters_* the
+first child, performs an Euler tour of the subtree rooted at the
+child, and *_exits_* the child to returt to the root, and enters the
+second child and so on.
+
+
+INSERT EXAMPLE. 
+
+Note that the Euler Tour of a tree is composed of the Euler Tour trees
+of the subtrees of the tree.  This makes it possible to perform
+certain computations on trees using Euler Tour trees. 
+
+For example, let's suppose that we wish to compute the "sum" of the
+elements in a subtree by using a specified associative operation
+latexmath:[$\oplus$] with identity latexmath:[$id$]. Suppose
+furthermore that we have the inverse for each element under this
+operation, such that latexmath:[$x \oplus x^{-1} = id$].  We can use
+sequences and scan to perform the computation as follows.
+
+First, we construct the Euler Tour for the tree and represent it as a
+sequence.  The sequence contains two entries for each node of the
+tree, corresponding to the entry and the ext points.  Now, for the
+entry point of each node, we write the label of that node, and we
+write latexmath:[$id$] for all the rest of the. We then perform a
+sequence scan on this tree with latexmath:[$\oplus$] and
+latexmath:[$id$] as our monoid.  We can then compute the sum for any
+subtree as taking the result of the scan at the exit point and then
+"subtract" the elemen at the entery point, and finally "substract" the
+label of the node itself.  
+
+INSERT EXAMPLE
+
+
+Since sequence scan requires latexmath:[$O(n)$] work in
+latexmath:[$O(\lg{n})$] span, this algorithm also has the same work
+and span, and this is quite a good parallel algorithm.  The problem is
+that it requires an invese operation.  In other words, it does not
+suffice to be given a manoid, we actually need a
+https://en.wikipedia.org/wiki/Group_(mathematics)[group], which is
+algebraic structure that requires an invertibility. 
+
+
+
+===  Tree Contraction
+
+
+
+
+
+//////////
+Older version
+Trees are a basic structure for representing relations.  It is thus
+ natural to ask whether we can perform tree operations in parallel.
 
 As our first motivating example, let's consider a very simple
 question: we are given a rooted binary tree $T$ and a root $r$ and
@@ -101,3 +472,4 @@ algebraic structure that requires an invertibility.
 
 
 
+//////////

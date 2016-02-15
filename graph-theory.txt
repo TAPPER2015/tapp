@@ -2,6 +2,7 @@
 == Graph Theory Terminology
 
 
+
 [[sec:graph-theory::walks]]
 === Walk, Trails, Paths
 
@@ -40,4 +41,43 @@ degree.
 
 These definitions generalize naturally to digraphs.
 
+
+[[sec:graph-theory::trees]]
+=== Trees
+
+
+A *_tree_* is an undirected graph in which any two of vertices are
+connected by exactly one path.
+
+A *_forest_* is a set of disjoint trees. 
+
+A *_rooted tree_* is a tree with a designated root.
+
+A rooted tree may be directed by pointing all edges towards the root
+or away from the root.  Both are acceptable.
+
+For a rooted tree, we can define the a parent-child relationship
+between nodes.  If a node $u$ is the first node on the path that
+connects another node $v$ to the root, then $u$ is the parent of $v$
+and $v$ is the child of $u$.
+
+An *_ordered tree_* is a tree where the children of each node are
+totally ordered.
+
+==== Binary Trees
+
+A *_binary tree_* is a rooted, directed, ordered tree where each node
+has has at most two children, called the *_left_* and the *_right
+child_*, corresponding to the first and the second respectively.
+
+For a binary tree, we can define couple of different kinds of
+traverses.  An *_in-order traversal_* traverses the binary tree by
+performing an in-order traversal of the left subtree, visiting the
+root, and then performing an in-order traversal of the right subtree.
+An *_post-order traversal_* traverses the binary tree by performing an
+post-order traversal of the right subtree, visiting the root, and then
+performing an post-order traversal of the right subtree.  An
+*_pre-order traversal_* traverses the binary tree by visiting the
+root, performing an pre-order traversal of the left subtree, and then
+performing an pre-order traversal of the right subtree.
 
