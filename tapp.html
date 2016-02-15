@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
-<meta name="generator" content="AsciiDoc 8.6.9" />
+<meta name="generator" content="AsciiDoc 8.6.8" />
 <title>Parallel Computing: Theory and Practice</title>
 <style type="text/css">
 /* Shared CSS for AsciiDoc xhtml11 and html5 backends */
@@ -94,9 +94,7 @@ ul > li > * { color: black; }
   padding: 0;
   margin: 0;
 }
-pre {
-  white-space: pre-wrap;
-}
+
 
 #author {
   color: #527bbd;
@@ -225,7 +223,7 @@ div.exampleblock > div.content {
 }
 
 div.imageblock div.content { padding-left: 0; }
-span.image img { border-style: none; vertical-align: text-bottom; }
+span.image img { border-style: none; }
 a.image:visited { color: white; }
 
 dl {
@@ -890,7 +888,7 @@ is parameterized by the identifier <code>T</code>.  The  definition of
 array defines a pointer to element sequences of type <code>T</code>, and the
 <code>sub</code> function returns an element of type <code>T</code> etc.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -914,7 +912,7 @@ especially in the context of the C++ language.</p></div>
 variables by using the <code>&lt; &gt;</code> syntax.  For examples, we can define
 different arrays such as the following.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -927,7 +925,7 @@ eliminate explicitly parametricity by specifying the argument type.</p></div>
 example, the following declarations defines a generic identity
 function.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -939,7 +937,7 @@ C++ does provide some type inference for calls to
 templated functions.  So generic functions can be specialized
 implicitly, as shown in the examples below.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -1087,8 +1085,7 @@ computation represents the partial ordering of the dependencies
 between the instructions in the computation.</p></div>
 <div class="imageblock" id="multithreading::general-threads" style="text-align:center;">
 <div class="content">
-<img alt="A multithreaded computation." width="500pt"
-src="data:image/png;base64,
+<img alt="A multithreaded computation." width="500pt" src="data:image/png;base64,
 iVBORw0KGgoAAAANSUhEUgAABk4AAAH2CAYAAAA28XDyAAAMGWlDQ1BJQ0MgUHJvZmlsZQAASImV
 lwdYU8kWx+eWFEJCC0RASuhNkF6l9yIgHWyEJEAoIQSCir0sKrAWVESxoqsgiq4FkLUgooiyCNjr
 gojKyrpYwILKmySAPt/b731vvm/u/eXMOef+Z+7MzQwA8rYsgSADVQAgk58rjPD3YsbFJzBJfwAK
@@ -3235,7 +3232,7 @@ terminates. Since the main thread does not wait for the children to
 terminate, it may terminate before the children does, depending on how
 threads are scheduled on the available processors.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -3349,8 +3346,7 @@ forks thread A, which then spaws thread B.  Thread B then joins thread
 A, which then joins Thread M.</p></div>
 <div class="imageblock" id="multithreading:general" style="text-align:center;">
 <div class="content">
-<img alt="A multithreaded, fork-join computation." width="500pt"
-src="data:image/png;base64,
+<img alt="A multithreaded, fork-join computation." width="500pt" src="data:image/png;base64,
 iVBORw0KGgoAAAANSUhEUgAABhAAAAH6CAYAAADm7gZyAAAMGWlDQ1BJQ0MgUHJvZmlsZQAASImV
 lwdYU8kWx+eWFEJCC0RASuhNkF6l9yIgHWyEJEAoIQSCir0sKrAWVESxoqsgiq4FkLUgooiyCNjr
 gojKyrpYwILKmySAPt/b731vvm/u/eXMOef+Z+7MzQwA8rYsgSADVQAgk58rjPD3YsbFJzBJfwAK
@@ -5138,7 +5134,7 @@ lambda expression.</p></div>
 cell <code>b1</code> and the second 2 into <code>b2</code>; at the join point, the sum of
 the contents of <code>b1</code> and <code>b2</code> is written into the cell <code>j</code>.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -5215,7 +5211,7 @@ point between at most two processors.</p></div>
 <div class="paragraph"><p>In the example below, both writes into <code>b1</code> and <code>b2</code> are guaranteed to
 be performed before the print statement.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -5265,7 +5261,7 @@ as follows. This function for computing the Fibonacci numbers is
 inefficient because the algorithm takes exponential time, whereas
 there exist dynamic programming solutions that take linear time.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -5288,7 +5284,7 @@ can therefore perform the recursive calls in parallel.  In general,
 any two independent functions can be run in parallel.  To indicate
 that two functions can be run in parallel, we use <code>fork2()</code>.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -5314,7 +5310,7 @@ http://www.gnu.org/software/src-highlite -->
 element by one.  We can write the code for a function <code>map_incr</code> that
 performs this computation serially.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -5327,7 +5323,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="content">
 <div class="paragraph"><p>The code below illustrates  an example use of <code>map_incr</code>.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -5348,7 +5344,7 @@ std<span style="color: #990000">::</span>cout <span style="color: #990000">&lt;&
 a parallel algorithm for incrementing an array. The code for such an
 algorithm is given below.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -5382,7 +5378,7 @@ written by replacing the call to <code>fork2()</code> with a statement that
 performs the two calls (arguments of <code>fork2()</code>) sequentially as
 follows.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -5431,7 +5427,7 @@ programs.  Let&#8217;s see more precisely how we can "map" a fork-join
 program to a multithreaded program. An our running example, let&#8217;s use the
 <code>map_incr_rec</code>, whose code is reproduced below.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -5471,8 +5467,7 @@ the very end.</p></div>
 </div></div>
 <div class="imageblock" id="fig:parallel-inc-dag" style="text-align:center;">
 <div class="content">
-<img alt="Dag for parallel increment" width="500pt"
-src="data:image/png;base64,
+<img alt="Dag for parallel increment" width="500pt" src="data:image/png;base64,
 iVBORw0KGgoAAAANSUhEUgAACMAAAAQuCAYAAAAwHtOjAAAMRWlDQ1BJQ0MgUHJvZmlsZQAASA2t
 V3dYU9cb/u5IAiEJIxABGWEvUfaUvQUFmUIdhCSQMGIIBBX3KK1gHag4cFS0KuKqA5A6EHFbFLd1
 FLUoKLU4cKHyOzcM+/Rp//vd5znnvnm/73z3/b577sk5AJq2Ark8F9cCyJMVKuIjgvkTUtP4jN8B
@@ -9647,8 +9642,7 @@ cellspacing="0" cellpadding="4">
 <div class="content">
 <div class="imageblock" id="multithreading::centralized-scheduler" style="text-align:center;">
 <div class="content">
-<img alt="Centralized scheduler illustrated" width="500pt"
-src="data:image/png;base64,
+<img alt="Centralized scheduler illustrated" width="500pt" src="data:image/png;base64,
 iVBORw0KGgoAAAANSUhEUgAACMAAAAciCAYAAAB2NAlFAAAMRWlDQ1BJQ0MgUHJvZmlsZQAASA2t
 V3dYU9cb/u5IAiEJIxABGWEvUfaUvQUFmUIdhCSQMGIIBBX3KK1gHag4cFS0KuKqA5A6EHFbFLd1
 FLUoKLU4cKHyOzcM+/Rp//vd5znnvnm/73z3/b577sk5AJq2Ark8F9cCyJMVKuIjgvkTUtP4jN8B
@@ -15531,8 +15525,7 @@ IECAAAECBAgQIECAAAECBAgQIECAAIGhAv8HbQSiSkX2/QMAAAAASUVORK5CYII=" />
 <div class="content">
 <div class="imageblock" id="multithreading::distributed-scheduler" style="text-align:center;">
 <div class="content">
-<img alt="Distributed scheduler illustrated" width="500pt"
-src="data:image/png;base64,
+<img alt="Distributed scheduler illustrated" width="500pt" src="data:image/png;base64,
 iVBORw0KGgoAAAANSUhEUgAACMAAAAciCAYAAAB2NAlFAAAMRWlDQ1BJQ0MgUHJvZmlsZQAASA2t
 V3dYU9cb/u5IAiEJIxABGWEvUfaUvQUFmUIdhCSQMGIIBBX3KK1gHag4cFS0KuKqA5A6EHFbFLd1
 FLUoKLU4cKHyOzcM+/Rp//vd5znnvnm/73z3/b577sk5AJq2Ark8F9cCyJMVKuIjgvkTUtP4jN8B
@@ -21717,7 +21710,7 @@ conditions.
 <div class="paragraph"><p>In the code below, both branches of <code>fork2</code> are writing into <code>b</code>.
 What should then the output of this program be?</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -21751,7 +21744,7 @@ write, we can see both possibilities:</p></div>
 function.  By "inlining" the plus operation in both branches, the
 programmer got rid of the addition operation after the <code>fork2</code>.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -21776,7 +21769,7 @@ update consists of an addition operation, which reads the value and
 then writes to i. The race condition might be easier to see if we
 expand out the applications of the <code>+=</code> operator.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -21897,7 +21890,7 @@ operation.</p></div>
 <div class="paragraph"><p>Access to the contents of any given cell is achieved by the <code>load()</code>
 and <code>store()</code> methods.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -21945,7 +21938,7 @@ Otherwise, returns <code>false</code>.
 <div class="title">Example 12. Reading and writing atomic objects</div>
 <div class="content">
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -21978,7 +21971,7 @@ locations, or by using an atomic class and using a
 <div class="paragraph"><p>The following implementation of Fibonacci is not safe because the
 variable <code>result</code> is shared and updated by multiple threads.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -21998,7 +21991,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="paragraph"><p>We can solve this problem by declaring <code>result</code> to be an atomic type
 and using a standard busy-waiting protocol based on compare-and-swap.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -22615,8 +22608,7 @@ Produced file plots.pdf.</code></pre>
 </div></div>
 <div class="imageblock" id="speedup-plot-fib" style="text-align:center;">
 <div class="content">
-<img alt="Speedup curve for the computation of the 39th Fibonacci number." width="500pt"
-src="data:image/png;base64,
+<img alt="Speedup curve for the computation of the 39th Fibonacci number." width="500pt" src="data:image/png;base64,
 iVBORw0KGgoAAAANSUhEUgAAAkMAAAIDCAYAAAAHYRr3AAABF2lDQ1BJQ0MgUHJvZmlsZQAAKJFj
 YGBSSCwoyGESYGDIzSspCnJ3UoiIjFJgv8fAzcDPwMwgw2CYmFxc4BgQ4MOAE3y7xsAIoi/rgszC
 rQ4r4EpJLU4G0n+AODu5oKiEgYExA8hWLi8pALF7gGyRpGwwewGIXQR0IJC9BcROh7BPgNVA2HfA
@@ -23111,8 +23103,7 @@ at the calculation of the $45^{th}$ Fibonacci number, the
 speedup curve is close to being linear.</p></div>
 <div class="imageblock" id="fib-weak-scaling" style="text-align:center;">
 <div class="content">
-<img alt="Speedup plot showing speedup curves at different problem sizes." width="500pt"
-src="data:image/png;base64,
+<img alt="Speedup plot showing speedup curves at different problem sizes." width="500pt" src="data:image/png;base64,
 iVBORw0KGgoAAAANSUhEUgAAAjoAAAINCAYAAAA3N9XVAAABF2lDQ1BJQ0MgUHJvZmlsZQAAKJFj
 YGBSSCwoyGESYGDIzSspCnJ3UoiIjFJgv8fAzcDPwMzAwCCWmFxc4BgQ4MOAE3y7xsAIoi/rgszC
 rQ4r4EpJLU4G0n+AODu5oKiEgYExA8hWLi8pALF7gGyRpGwwewGIXQR0IJC9BcROh7BPgNVA2HfA
@@ -24239,8 +24230,7 @@ is not enough parallelism in the early and late stages of our
 Fibonacci computation.</p></div>
 <div class="imageblock" id="fib-39-utilization" style="text-align:center;">
 <div class="content">
-<img alt="Utilization plot for computation of 39th Fibonacci number." width="500pt"
-src="data:image/png;base64,
+<img alt="Utilization plot for computation of 39th Fibonacci number." width="500pt" src="data:image/png;base64,
 iVBORw0KGgoAAAANSUhEUgAAAyIAAAM6CAYAAAB9yPeoAAAKvGlDQ1BJQ0MgUHJvZmlsZQAASImV
 lwdQk9kWx+/3pYeEFghFSugd6VV6DUWQDqISkhBCCSEFFRsqiyu4FkREQF3QpSq4KnUtiAULImCv
 C7IoqOtiQVBU3gc8wntv3s6bd2bufL+cOd8/59zcO/MPAKQRBp+fBssCkM4TCcL8PGkxsXE03DNA
@@ -24804,8 +24794,7 @@ and finally to 1% for the $45^{th}$. At just 1% idle time,
 the utilization is excellent.</p></div>
 <div class="imageblock" id="fib-utilization-by-n" style="text-align:center;">
 <div class="content">
-<img alt="How processor utilization of Fibonacci computation varies with input size." width="500pt"
-src="data:image/png;base64,
+<img alt="How processor utilization of Fibonacci computation varies with input size." width="500pt" src="data:image/png;base64,
 iVBORw0KGgoAAAANSUhEUgAAAkEAAAILCAYAAADvx0inAAABF2lDQ1BJQ0MgUHJvZmlsZQAAKJFj
 YGBSSCwoyGESYGDIzSspCnJ3UoiIjFJgv8fAzcDPwMwgxsCfmFxc4BgQ4MOAE3y7xsAIoi/rgszC
 rQ4r4EpJLU4G0n+AODu5oKiEgYExA8hWLi8pALF7gGyRpGwwewGIXQR0IJC9BcROh7BPgNVA2HfA
@@ -25198,8 +25187,7 @@ much less prominent overall and the idle regions at the beginning and
 end are barely noticeable.</p></div>
 <div class="imageblock" id="fib-45-utilization" style="text-align:center;">
 <div class="content">
-<img alt="Utilization plot for computation of 45th Fibonacci number." width="500pt"
-src="data:image/png;base64,
+<img alt="Utilization plot for computation of 45th Fibonacci number." width="500pt" src="data:image/png;base64,
 iVBORw0KGgoAAAANSUhEUgAAAyAAAAM2CAYAAAAO/+fuAAAKvGlDQ1BJQ0MgUHJvZmlsZQAASImV
 lwdQk9kWx+/3pYeEFghFSugd6VV6DUWQDqISkhBCCSEFFRsqiyu4FkREQF3QpSq4KnUtiAULImCv
 C7IoqOtiQVBU3gc8wntv3s6bd2bufL+cOd8/59zcO/MPAKQRBp+fBssCkM4TCcL8PGkxsXE03DNA
@@ -25892,7 +25880,7 @@ document, we use the term "tuning."</p></div>
 sequential algorithm when the input falls below an established
 threshold.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -26009,7 +25997,7 @@ $[lo, hi)$ of an array has work cost $cn = c
 lambda expression is one valid complexity function for our parallel
 <code>map_incr_rec</code> program.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -26022,7 +26010,7 @@ associated computation.  The following lambda expression is another
 valid complexity function for function <code>map_incr_rec</code>.  The complexity
 function above is preferable, however, because it is simpler.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -26074,7 +26062,7 @@ semantics.</p></div>
 run time, the threshold size for our parallel array-increment
 function.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -26154,7 +26142,7 @@ the "sequential elision."</p></div>
 <div class="title">Example 25. Array-increment function with automatic granularity control and sequential body</div>
 <div class="content">
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -26229,7 +26217,7 @@ is much more compact and readable. Moreover, this code takes advantage
 of our automatic granularity control, also by replacing the
 parallel-for with a serial-for.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -26261,7 +26249,7 @@ complexity function takes as argument the range <code>[lo, hi)</code>. In this
 case, the complexity is linear in the number of iterations. The
 function simply returns the number of iterations as the complexity.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -26282,7 +26270,7 @@ rows of the matrix. The complexity function in this case gives to each
 of these row-wise iterations a cost in proportion to the number of
 scalars in each column.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -26314,8 +26302,7 @@ sample run of this code.  Observe that the speedup is rather good,
 achieving nearly excellent utilization.</p></div>
 <div class="imageblock" id="mm-speedup" style="text-align:center;">
 <div class="content">
-<img alt="Speedup plot for matrix multiplication for latexmath:[$25000 	imes 25000$] matrices." width="500pt"
-src="data:image/png;base64,
+<img alt="Speedup plot for matrix multiplication for latexmath:[$25000 	imes 25000$] matrices." width="500pt" src="data:image/png;base64,
 iVBORw0KGgoAAAANSUhEUgAAAlIAAAIUCAYAAADR3sICAAABF2lDQ1BJQ0MgUHJvZmlsZQAAKJFj
 YGBSSCwoyGESYGDIzSspCnJ3UoiIjFJgv8fAzSDCwMegxiCVmFxc4BgQ4MOAE3y7xsAIoi/rgszC
 rQ4r4EpJLU4G0n+AODu5oKiEgYExA8hWLi8pALF7gGyRpGwwewGIXQR0IJC9BcROh7BPgNVA2HfA
@@ -26893,7 +26880,7 @@ in particular, they are monomorphic and fixed to values of type
 be achieved by use of C++ templates.  We stick to
 monomorphic arrays here to simplify the presentation.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -26997,7 +26984,7 @@ item at the second position in the array. The third line extracts the
 size of the array. The fourth line assigns to the second cell the
 value 5. The fifth prints the contents of the cell.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -27022,7 +27009,7 @@ xs[2] = 5</code></pre>
 <div class="title">Example 30. Allocation and deallocation</div>
 <div class="content">
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -27064,7 +27051,7 @@ deallocation scheme below.</p></div>
 frame of <code>foo</code> is deallocated just before <code>foo</code> returns, because the
  variable <code>xs</code>  containing it goes out of scope.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -27079,7 +27066,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="paragraph"><p>Care must be taken when managing arrays, because nothing prevents the
 programmer from returning a dangling pointer.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -27105,7 +27092,7 @@ the contents of the array are used strictly when the array is in scope.</p></div
 <div class="exampleblock">
 <div class="content">
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -27148,7 +27135,7 @@ The program will be rejected by the compiler.  The code below does
 <strong>not</strong> compile, because we have disabled the copy constructor of our
 <code>sparray</code> class.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -27167,7 +27154,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="paragraph"><p>The following code does compile, because in this case we pass
 the array <code>xs</code> to <code>foo</code> by reference.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -27194,7 +27181,7 @@ achieved by the "move-assignment operator" of <code>sparray</code> class.</p></d
 <div class="title">Example 35. Create and initialize an array (sequentially)</div>
 <div class="content">
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -27223,7 +27210,7 @@ Consider the following program.</p></div>
 <div class="title">Example 36. Move constructor</div>
 <div class="content">
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -27255,7 +27242,7 @@ and arrays. To this end, the exercise is to implement two
 functions. The first, namely <code>duplicate</code>, is to return a new array in
 which each item appearing in the given array <code>xs</code> appears twice.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -27264,7 +27251,7 @@ http://www.gnu.org/software/src-highlite -->
 <span style="color: #FF0000">}</span></tt></pre></div></div>
 <div class="paragraph"><p>For example:</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -27279,7 +27266,7 @@ std<span style="color: #990000">::</span>cout <span style="color: #990000">&lt;&
 returned by <code>ktimes</code> should be an array in which each item <code>x</code> that is
 in the given array <code>xs</code> is replaced by <code>k</code> duplicate items.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -27288,7 +27275,7 @@ http://www.gnu.org/software/src-highlite -->
 <span style="color: #FF0000">}</span></tt></pre></div></div>
 <div class="paragraph"><p>For example:</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -27331,7 +27318,7 @@ given size and initializes the contents according to a given
 length <code>n</code> and assigns to each valid index in the array <code>i</code> the value
 returned by <code>g(i)</code>.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -27343,7 +27330,7 @@ formula.</p></div>
 <div class="title">Example 37. Sequences of even numbers</div>
 <div class="content">
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -27360,7 +27347,7 @@ std<span style="color: #990000">::</span>cout <span style="color: #990000">&lt;&
 <div class="title">Example 38. Parallel array copy function using tabulation</div>
 <div class="content">
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -27379,7 +27366,7 @@ homework, this time using tabulations.</p></div>
 <div class="title">Example 39. Solution to <code>duplicate</code> and <code>ktimes</code> exercises</div>
 <div class="content">
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -27395,7 +27382,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="paragraph"><p>The implementation of tabulate is a straightforward application of the
 parallel-for loop.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -27461,7 +27448,7 @@ above to the one below, which relies on C++ template programming to
 effectively key accesses to the granularity controller object by the
 type of the generator function.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -27593,7 +27580,7 @@ of this operator in our framework is specified below. The first
 parameter corresponds to $\oplus$, the second to the
 identity element, and the third to the sequence to be processed.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -27605,7 +27592,7 @@ $\oplus$ and 0 as $\mathbf{I}$.</p></div>
 <div class="title">Example 43. Summing elements of array</div>
 <div class="content">
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -27633,7 +27620,7 @@ case? Why?</p></div>
 <div class="paragraph"><p>Let us start by solving a special case: the one where the input
 sequence is nonempty.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -27653,7 +27640,7 @@ provisional maximum value to be the item at the first position of the
 input sequence. Now let us handle the general case by seeding with the
 smallest possible value of type <code>long</code>.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -27675,7 +27662,7 @@ sequence $ [ x_0, x_1, x_2, \ldots, x_{n-1} ] $ to
 $ [ x_0, x_0 \oplus x_1, x_0 \oplus x_1 \oplus x_2,
 \ldots, x_0 \oplus x_1 \oplus \ldots \oplus x_{n-1} ] $.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -27685,7 +27672,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="title">Example 45. Inclusive scan</div>
 <div class="content">
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -27702,7 +27689,7 @@ x_2, \ldots, x_{n-1} ] $ to $ [ \mathbf{I}, x_0, x_0
 the exclusive form with the total $ x_0 \oplus \ldots
 \oplus x_{n-1} $.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -27720,7 +27707,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="paragraph"><p>The example below represents the logical behavior of <code>scan</code>, but
 actually says nothing about the way scan is implemented.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -27745,7 +27732,7 @@ list.</p></div>
 <div class="paragraph"><p>The expansions shown above suggest the following sequential
 algorithm.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -27763,7 +27750,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="paragraph"><p>If we just blindly follow the specification above, we might be tempted
 to try the solution below.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -27811,7 +27798,7 @@ scan.</p></div>
 the array of results. It is straightforward to implement as a kind of
 tabulation, as we have at our disposal efficient indexing.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -27825,7 +27812,7 @@ lecture is simple to express via <code>map</code>.</p></div>
 <div class="title">Example 47. Incrementing via <code>map</code></div>
 <div class="content">
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -27852,7 +27839,7 @@ because internally the <code>fill</code> operation can take advantage of special
 hardware optimizations, such as SIMD instructions, that increase
 parallelism.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -27861,7 +27848,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="title">Example 48. Creating an array of all 3s</div>
 <div class="content">
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -27881,7 +27868,7 @@ hardware optimizations that accellerate memory traffic. For the same
 reason, the <code>copy</code> operation is a good choice when a full copy is
 needed.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -27890,7 +27877,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="title">Example 49. Copying an array</div>
 <div class="content">
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -27912,7 +27899,7 @@ ys = { 3, 2, 1 }</code></pre>
 <code>slice</code> operation we can copy out a range of positions from a given
 array rather than the entire array.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -27924,7 +27911,7 @@ range.</p></div>
 <div class="title">Example 50. Slicing an array</div>
 <div class="content">
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -27944,7 +27931,7 @@ std<span style="color: #990000">::</span>cout <span style="color: #990000">&lt;&
 <div class="paragraph"><p>In contrast to <code>slice</code>, the <code>concat</code> operation lets us "copy in" to a
 fresh array.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -27953,7 +27940,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="title">Example 51. Concatenating two arrays</div>
 <div class="content">
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -27973,7 +27960,7 @@ std<span style="color: #990000">::</span>cout <span style="color: #990000">&lt;&
 defined two solutions for two variants of the problem: one for the
 exclusive prefix sums and one for the inclusive case.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -27983,7 +27970,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="title">Example 52. Inclusive and exclusive prefix sums</div>
 <div class="content">
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -28006,7 +27993,7 @@ excl.partials = { 0, 2, 3, 11 }; excl.total = 147</code></pre>
 the operation that copies out items from a given array based on
 a given predicate function.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -28021,7 +28008,7 @@ value of type <code>long</code> (i.e., <code>value_type</code>) and returns a va
 <div class="paragraph"><p>The following function copies out the even numbers it receives in the
 array of its argument.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -28053,7 +28040,7 @@ to the items, to determine which items are to be written to the output
 array. Furthermore, we need to track how many items are to be written
 so that we know how much space to allocate for the output array.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -28094,7 +28081,7 @@ two passes. What is the assumption?</p></div>
 <h4 id="_parallel_filter_problem">11.8.8. Parallel-filter problem</h4>
 <div class="paragraph"><p>The starting point for our solution is the following code.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -28110,7 +28097,7 @@ that contains (in the same relative order as the items from the input)
 the values selected by the flags. Your solution should take linear
 work and logarithmic span in the size of the input.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -28119,7 +28106,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="title">Example 55. The allocation problem</div>
 <div class="content">
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -28165,7 +28152,7 @@ write polymorphic containers.</td>
 <div class="sect3">
 <h4 id="_tabulate">11.9.1. Tabulate</h4>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -28189,7 +28176,7 @@ $$</div></div>
 <div class="sect3">
 <h4 id="_reduce">11.9.2. Reduce</h4>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -28198,7 +28185,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="paragraph"><p>The call <code>reduce(b, id, xs)</code> is logically equal to <code>id</code> if <code>xs.size()
 == 0</code>, <code>xs[0]</code> if <code>xs.size() == 1</code>, and</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -28214,7 +28201,7 @@ implementation of <code>reduce</code>.</p></div>
 <div class="sect3">
 <h4 id="_scan_2">11.9.3. Scan</h4>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -28224,13 +28211,13 @@ http://www.gnu.org/software/src-highlite -->
 return result of the call <code>scan_incl(b, id, xs)</code> is logically
 equivalent to</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
 <pre><tt><span style="font-weight: bold"><span style="color: #000000">tabulate</span></span><span style="color: #990000">([&amp;]</span> <span style="color: #990000">(</span><span style="color: #009900">long</span> i<span style="color: #990000">)</span> <span style="color: #FF0000">{</span> <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> <span style="font-weight: bold"><span style="color: #000000">reduce</span></span><span style="color: #990000">(</span>b<span style="color: #990000">,</span> id<span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #000000">slice</span></span><span style="color: #990000">(</span>xs<span style="color: #990000">,</span> <span style="color: #993399">0</span><span style="color: #990000">,</span> i<span style="color: #990000">+</span><span style="color: #993399">1</span><span style="color: #990000">));</span> <span style="color: #FF0000">}</span><span style="color: #990000">,</span> xs<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">size</span></span><span style="color: #990000">())</span></tt></pre></div></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -28246,14 +28233,14 @@ http://www.gnu.org/software/src-highlite -->
 call <code>scan_excl(b, id, xs)</code> returns the object <code>res</code>, such that
 <code>res.partials</code> is logically equivalent to</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
 <pre><tt><span style="font-weight: bold"><span style="color: #000000">tabulate</span></span><span style="color: #990000">([&amp;]</span> <span style="color: #990000">(</span><span style="color: #009900">long</span> i<span style="color: #990000">)</span> <span style="color: #FF0000">{</span> <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> <span style="font-weight: bold"><span style="color: #000000">reduce</span></span><span style="color: #990000">(</span>b<span style="color: #990000">,</span> id<span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #000000">slice</span></span><span style="color: #990000">(</span>xs<span style="color: #990000">,</span> <span style="color: #993399">0</span><span style="color: #990000">,</span> i<span style="color: #990000">));</span> <span style="color: #FF0000">}</span><span style="color: #990000">,</span> xs<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">size</span></span><span style="color: #990000">())</span></tt></pre></div></div>
 <div class="paragraph"><p>and <code>res.total</code> is logically equivalent to</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -28267,7 +28254,7 @@ implementation of <code>scan_incl</code> and <code>scan_excl</code>.</p></div>
 <div class="sect3">
 <h4 id="_map_2">11.9.4. Map</h4>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -28291,7 +28278,7 @@ $$</div></div>
 <div class="sect3">
 <h4 id="_fill_2">11.9.5. Fill</h4>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -28302,7 +28289,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="sect3">
 <h4 id="_copy_2">11.9.6. Copy</h4>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -28313,7 +28300,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="sect3">
 <h4 id="_slice_2">11.9.7. Slice</h4>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -28325,7 +28312,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="sect3">
 <h4 id="_concat_2">11.9.8. Concat</h4>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -28336,7 +28323,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="sect3">
 <h4 id="_prefix_sums_2">11.9.9. Prefix sums</h4>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -28344,13 +28331,13 @@ http://www.gnu.org/software/src-highlite -->
 <div class="paragraph"><p>The result of the call <code>prefix_sums_incl(xs)</code> is logically equivalent
 to the result of the call</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
 <pre><tt><span style="font-weight: bold"><span style="color: #000000">scan_incl</span></span><span style="color: #990000">([&amp;]</span> <span style="color: #990000">(</span><span style="color: #008080">value_type</span> x<span style="color: #990000">,</span> <span style="color: #008080">value_type</span> y<span style="color: #990000">)</span> <span style="color: #FF0000">{</span> <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> x<span style="color: #990000">+</span>y<span style="color: #990000">;</span> <span style="color: #FF0000">}</span><span style="color: #990000">,</span> <span style="color: #993399">0</span><span style="color: #990000">,</span> xs<span style="color: #990000">)</span></tt></pre></div></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -28358,7 +28345,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="paragraph"><p>The result of the call <code>prefix_sums_excl(xs)</code> is logically equivalent
 to the result of the call</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -28368,7 +28355,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="sect3">
 <h4 id="_filter_2">11.9.10. Filter</h4>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -28523,8 +28510,7 @@ quicksort function and is labeled with the key at that call. Note that
 the tree is a binary search tree.</p></div>
 <div class="imageblock" id="ch:qsort-bst-example" style="text-align:center;">
 <div class="content">
-<img alt="Quicksort call tree" width="500pt"
-src="data:image/png;base64,
+<img alt="Quicksort call tree" width="500pt" src="data:image/png;base64,
 iVBORw0KGgoAAAANSUhEUgAAA5oAAAKoCAYAAAAWMICZAAAMFmlDQ1BJQ0MgUHJvZmlsZQAASImV
 lwdUk8kWx+crKYSEFoiAlNCbIL1K7x3pYCMkAUIJIRBU7GVRgbWgIoKioisiKq4FkMWGXVkE7PUF
 FZWVdbFgQ+VNEkCf+/a88+ac+fLLnXvv/Gcy82UGAEV7lkCQjSoBkMMvEEYH+jATk5KZJDFAABEo
@@ -29666,8 +29652,7 @@ $T_i$ and $T_j$ are compared, i.e.,
 $P(A_{ij} = 1)$, and working out the sum.</p></div>
 <div class="imageblock" id="ch:sorting::qsort-cases" style="text-align:center;">
 <div class="content">
-<img alt="Relationship between the pivot and other keys.}" width="500pt"
-src="data:image/png;base64,
+<img alt="Relationship between the pivot and other keys.}" width="500pt" src="data:image/png;base64,
 iVBORw0KGgoAAAANSUhEUgAAAxgAAAFACAYAAAA/P9rXAAAMFmlDQ1BJQ0MgUHJvZmlsZQAASImV
 lwdUk8kWx+crKYSEFoiAlNCbIL1K7x3pYCMkAUIJIRBU7GVRgbWgIoKioisiKq4FkMWGXVkE7PUF
 FZWVdbFgQ+VNEkCf+/a88+ac+fLLnXvv/Gcy82UGAEV7lkCQjSoBkMMvEEYH+jATk5KZJDFAABEo
@@ -30131,8 +30116,7 @@ likely to be selected as a pivot this probability is $\frac{3n/4 -
 n/4}{n} = 1/2$.  The figure below illustrates this.</p></div>
 <div class="imageblock" id="qsort-span-intuition" style="text-align:center;">
 <div class="content">
-<img alt="Quicksort span intuition." width="500pt"
-src="data:image/png;base64,
+<img alt="Quicksort span intuition." width="500pt" src="data:image/png;base64,
 iVBORw0KGgoAAAANSUhEUgAAA0wAAADcCAYAAABDEyFpAAAMFmlDQ1BJQ0MgUHJvZmlsZQAASImV
 lwdUk8kWx+crKYSEFoiAlNCbIL1K7x3pYCMkAUIJIRBU7GVRgbWgIoKioisiKq4FkMWGXVkE7PUF
 FZWVdbFgQ+VNEkCf+/a88+ac+fLLnXvv/Gcy82UGAEV7lkCQjSoBkMMvEEYH+jATk5KZJDFAABEo
@@ -30609,7 +30593,7 @@ input, we use our parallel <code>filter</code> function from the previous lectur
 to parallelize the partitioning phase. Similarly, we use our parallel
 concatenation function to constructed the sorted output.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -30707,8 +30691,7 @@ exectime 4.761</code></pre>
 </div></div>
 <div class="imageblock" id="sorting::quicksort-speedup" style="text-align:center;">
 <div class="content">
-<img alt="Speedup plot for quicksort with latexmath:[$100000000$] elements." width="500pt"
-src="data:image/png;base64,
+<img alt="Speedup plot for quicksort with latexmath:[$100000000$] elements." width="500pt" src="data:image/png;base64,
 iVBORw0KGgoAAAANSUhEUgAAAmEAAAIWCAYAAAAf0loyAAABF2lDQ1BJQ0MgUHJvZmlsZQAAKJFj
 YGBSSCwoyGESYGDIzSspCnJ3UoiIjFJgv8fAzSDEIMigxCCXmFxc4BgQ4MOAE3y7xsAIoi/rgszC
 rQ4r4EpJLU4G0n+AODu5oKiEgYExA8hWLi8pALF7gGyRpGwwewGIXQR0IJC9BcROh7BPgNVA2HfA
@@ -31172,7 +31155,7 @@ code is mostly in place because the algorithm copies out the input
 array in the beginning, but otherwise sorts in place on the result
 array. The code for this algorithm appears just below.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -31186,7 +31169,7 @@ http://www.gnu.org/software/src-highlite -->
   <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> result<span style="color: #990000">;</span>
 <span style="color: #FF0000">}</span></tt></pre></div></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -31307,8 +31290,7 @@ is, and another that is the opposite. The question now is whether we
 can find a happy middle ground.</p></div>
 <div class="imageblock" id="sorting::quicksort-speedup-compare" style="text-align:center;">
 <div class="content">
-<img alt="Speedup plot for quicksort with latexmath:[$100000000$] elements." width="500pt"
-src="data:image/png;base64,
+<img alt="Speedup plot for quicksort with latexmath:[$100000000$] elements." width="500pt" src="data:image/png;base64,
 iVBORw0KGgoAAAANSUhEUgAAAjsAAAIJCAYAAABDZPz9AAABFmlDQ1BJQ0MgUHJvZmlsZQAAKJFj
 YGBSSCwoyGESYGDIzSspCnJ3UoiIjFJgv8/AwiDKABRlME9MLi5wDAjwYcAJvl1jYATRl3VBZuFW
 hxVwpaQWJwPpP0CcnVxQVMLAwJgBZCuXlxSA2D1AtkhSNpi9AMQuAjoQyN4CYqdD2CfAaiDsO2A1
@@ -31998,7 +31980,7 @@ scratch space by the merge operation. The function writes the result
 from the temporary array back into the original range of the source
 array: <code>[lo, hi)</code>.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -32007,7 +31989,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="title">Example 56. Use of merge function</div>
 <div class="content">
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -32045,7 +32027,7 @@ already.</p></div>
 has changed between this parallel code and the serial code: just erase
 the parallel annotations and we have a textbook sequential mergesort!</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -32178,8 +32160,7 @@ little faster than the one we presented here. That&#8217;s pretty good,
 considering the simplicity of the code that we had to write.</p></div>
 <div class="imageblock" id="mergesort-speedups" style="text-align:center;">
 <div class="content">
-<img alt="Speedup plot for three different implementations of mergesort using 100 million 32-bit items." width="500pt"
-src="data:image/png;base64,
+<img alt="Speedup plot for three different implementations of mergesort using 100 million 32-bit items." width="500pt" src="data:image/png;base64,
 iVBORw0KGgoAAAANSUhEUgAAAksAAAIHCAYAAACPJxgVAAABFWlDQ1BJQ0MgUHJvZmlsZQAAKJFj
 YGBSSCwoyGESYGDIzSspCnJ3UoiIjFJgv8fAzSAEhNYMionJxQWOAQE+DDjBt2sMjCD6si7ILNzq
 sAKulNTiZCD9B4izkwuKShgYGDOAbOXykgIQuwfIFknKBrMXgNhFQAcC2VtA7HQI+wRYDYR9B6wm
@@ -32943,8 +32924,7 @@ that with 32-bit items is a greater amount of computation relative to
 the number of memory transfers.</p></div>
 <div class="imageblock" id="better-speedups" style="text-align:center;">
 <div class="content">
-<img alt="Speedup plot for three different implementations of mergesort using 250 million 32-bit items." width="500pt"
-src="data:image/png;base64,
+<img alt="Speedup plot for three different implementations of mergesort using 250 million 32-bit items." width="500pt" src="data:image/png;base64,
 iVBORw0KGgoAAAANSUhEUgAAAjUAAAIFCAYAAAAqbww1AAABF2lDQ1BJQ0MgUHJvZmlsZQAAKJFj
 YGBSSCwoyGESYGDIzSspCnJ3UoiIjFJgv8fAzSDCIM7AxCCcmFxc4BgQ4MOAE3y7xsAIoi/rgszC
 rQ4r4EpJLU4G0n+AODu5oKiEgYExA8hWLi8pALF7gGyRpGwwewGIXQR0IJC9BcROh7BPgNVA2HfA
@@ -33754,8 +33734,7 @@ of the vertices are stored is a single array, which  the
 <div class="title">A graph (top) and its compressed-array representation (bottom).</div>
 <div class="imageblock" style="text-align:center;">
 <div class="content">
-<img alt="An example di-graph." width="200pt"
-src="data:image/png;base64,
+<img alt="An example di-graph." width="200pt" src="data:image/png;base64,
 iVBORw0KGgoAAAANSUhEUgAAC0kAAAgICAYAAACluRs2AAAWVGlDQ1BJQ0MgUHJvZmlsZQAAWIW1
 mAVQlV23x/dzmq5Dd3c3SHd3I90lHBoFBASlJEVKkJASQZQGaUlFEQUEVBARREQUEQWVe9RP33tn
 7jd37sy9a2af+c2afdYT69l7rf8GgK7QNTg4AEYOQGBQGM5cR53N1s6eDf0CQIAUEAEywOTqHhqs
@@ -36870,8 +36849,7 @@ SUVORK5CYII=" />
 </div>
 <div class="imageblock" style="text-align:center;">
 <div class="content">
-<img alt="The compressed-array representation." width="250pt"
-src="data:image/png;base64,
+<img alt="The compressed-array representation." width="250pt" src="data:image/png;base64,
 iVBORw0KGgoAAAANSUhEUgAACPQAAANQCAYAAACliaPeAAAWVGlDQ1BJQ0MgUHJvZmlsZQAAWIW1
 mAVQlV23x/dzmq5Dd3c3SHd3I90lHBoFBASlJEVKkJASQZQGaUlFEQUEVBARREQUEQWVe9RP33tn
 7jd37sy9a2af+c2afdYT69l7rf8GgK7QNTg4AEYOQGBQGM5cR53N1s6eDf0CQIAUEAEywOTqHhqs
@@ -37616,7 +37594,7 @@ area of research at present.</p></div>
 <div class="paragraph"><p>We implemented the adjacency-list representation based on compressed
 arrays with a class called <code>adjlist</code>.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -37639,7 +37617,7 @@ to express an edge. The type is a pair type where the first component
 of the pair represents the source and the second the destination
 vertex, respectively.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -37647,7 +37625,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="paragraph"><p>In order to create an edge, we use the following function, which takes
 a source and a destination vertex and returns the corresponding edge.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -37658,7 +37636,7 @@ http://www.gnu.org/software/src-highlite -->
 specifying an edge list. Moreover, getting a textual representation of
 the graph is as easy as printing the graph by <code>cout</code>.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -37690,8 +37668,7 @@ using online tools, such is Click
 </div>
 <div class="imageblock" style="text-align:center;">
 <div class="content">
-<img alt="Sample graph." width="100pt"
-src="data:image/png;base64,
+<img alt="Sample graph." width="100pt" src="data:image/png;base64,
 iVBORw0KGgoAAAANSUhEUgAAALMAAACbCAYAAAAp66qoAAAABmJLR0QA/wD/AP+gvaeTAAAJPklE
 QVR4nO2dbZKyPBOF27eefcCsBO6V6KxEXAnMSsSVEFeS94cVRx0+gibp06GvqvmjJek+nGmaAGFn
 rbWkKBnwP+4AFCUUamYlG9TMSjaomZVsEGHm3W7HHcKmkaL/jns2I6RQOjGznpz0/y/lYGPChRQg
@@ -37742,7 +37719,7 @@ SNFfhJkVxQddakDJBjWzkg1qZiUb1MxKNvwfxI5izZvqpUIAAAAASUVORK5CYII=" />
 <div class="title">Example 58. Adjacency-list interface</div>
 <div class="content">
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -37950,7 +37927,7 @@ array by an atomic type.</p></div>
 <div class="paragraph"><p>Access to the contents of any given cell is achieved by the <code>load()</code>
 and <code>store()</code> methods.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -37990,7 +37967,7 @@ Otherwise, just return <code>false</code>.
 </li>
 </ol></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -38022,7 +37999,7 @@ function signature is the signature for our parallel BFS
 implementation. The function takes as parameters a graph and the
 identifier of a source vertex and returns an array of boolean flags.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -38037,7 +38014,7 @@ returned by <code>bfs</code>.</p></div>
 <div class="title">Example 60. Parallel BFS</div>
 <div class="content">
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -38052,8 +38029,7 @@ std<span style="color: #990000">::</span>cout <span style="color: #990000">&lt;&
 <div class="paragraph"><p>The following diagram shows the structure represented by <code>graph</code>.</p></div>
 <div class="imageblock" style="text-align:center;">
 <div class="content">
-<img alt="Graph from the example." width="120pt"
-src="data:image/png;base64,
+<img alt="Graph from the example." width="120pt" src="data:image/png;base64,
 iVBORw0KGgoAAAANSUhEUgAAANgAAAFbCAYAAAC3c0AvAAAABmJLR0QA/wD/AP+gvaeTAAATKklE
 QVR4nO3d4ZGjOrMG4ObWlwc4EphIYCIxEwk4EnAkliPh/vCRh/ECxrak7pbep2rr1JmtHUSLF0mA
 cTZN00QA4MX/cTcAIGYIGIBHCBiARwgYgEcI2AeyLONuQtI01D/DVcRlLjsPJX5dLPX/H9uWBVnq
@@ -38167,7 +38143,7 @@ called <code>edge_map</code> with the following signature the "edge
 map" operation. This operation takes as parameters a graph, an array
 of atomic flag values, and a frontier and returns a new frontier.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -38176,7 +38152,7 @@ http://www.gnu.org/software/src-highlite -->
 function to advance level by level through the graph. The traversal
 stops when the frontier is empty.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -38206,7 +38182,7 @@ because it is more convenient for us to program with ordinary
 <div class="title">Example 61. A run of <code>edge_map</code></div>
 <div class="content">
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -38238,7 +38214,7 @@ at level $i+1$.</p></div>
 <div class="paragraph"><p>To implement <code>edge_map</code>, we shall use the following sentinel value to
 represent empty cells in sparse arrays of vertex identifiers.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -38249,7 +38225,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="paragraph"><p>The following array represents a set of three valid vertex
 identifiers, with two positions in the array being empty.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -38258,7 +38234,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="paragraph"><p>Let us define two helper functions. The first one takes a sparse array
 of vertex identifiers and copies out the valid vertex identifiers.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -38268,7 +38244,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="paragraph"><p>The other function takes a graph and an array of vertex identifiers
 and returns the array of the degrees of the vertex identifiers.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -38286,7 +38262,7 @@ the vertex ids from the frontier of the previous level and the inner
 loop processes the neighbors of each vertex in the frontier of the
 previous level, adding newly visited neighbors to the result set.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -38473,7 +38449,7 @@ algebraic structure that requires an invertibility.</p></div>
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-02-11 21:47:30 EST
+Last updated 2016-02-12 13:40:48 EST
 </div>
 </div>
 </body>
