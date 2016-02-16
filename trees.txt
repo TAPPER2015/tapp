@@ -17,7 +17,7 @@ binary tree is a balanced tree whereas a chain is an unbalanced tree.
 
 .In-Order Traversal 
 ====
-image::perfect-binary-tree-8.png["An example perfect binary tree",width="500pt",align="center"]
+image:perfect-binary-tree-8.png["An example perfect binary tree",width="500pt",align="center"]
 
 An in-order traversal of the perfect binary tree above traverses the
 nodes in the following order: *a,b,c,d,e,f,g,h,i,j,k,l,m,n,o*.  
@@ -39,7 +39,7 @@ right subtrees.
 .Two-Pass Algorithm for Computing Ranks
 ====
 
-image::perfect-binary-tree-8-inorder-ranks.png["Compting ranks",width="550pt",align="center"]
+image:perfect-binary-tree-8-inorder-ranks.png["Compting ranks",width="550pt",align="center"]
 
 In the example tree above, each node is labeled with the size of its
 subtree computed in the first pass and each edge is labeled with the
@@ -68,7 +68,7 @@ requiring as much as $O(n)$ span.
 
 .Divide and Conquer on Chains
 ====
-image::chain-9.png["An example chain",width="400pt",align="center"]
+image:chain-9.png["An example chain",width="400pt",align="center"]
 
 An in-order traversal of a chain of nodes yields *a,b,c,d,e,f,g,h,i*
 assuming that the left child of each node is "empty." The
@@ -92,15 +92,15 @@ have a just the root left.
 .Contraction with Rakes
 ====
 
-image::perfect-binary-tree-8-rake-1.png["Computing ranks",width="550pt",align="center"]
+image:perfect-binary-tree-8-rake-1.png["Computing ranks",width="550pt",align="center"]
 
 In the example tree above, we rake all the leaves and store their size
 in the parents.  We can rake the leaves again until only the roons
 remain.  This is illustrated by the drawings below.
 
-image::perfect-binary-tree-8-rake-2.png["Computing ranks",width="550pt",align="center"]
+image:perfect-binary-tree-8-rake-2.png["Computing ranks",width="550pt",align="center"]
 
-image::perfect-binary-tree-8-rake-3.png["Computing ranks",width="550pt",align="center"]
+image:perfect-binary-tree-8-rake-3.png["Computing ranks",width="550pt",align="center"]
 
 
 ====
@@ -149,18 +149,18 @@ left with a single edge.
 .Contraction with Compress
 ====
 
-image::chain-9.png["Computing ranks",width="400pt",align="center"]
+image:chain-9.png["Computing ranks",width="400pt",align="center"]
 
 In the example chain above, we compress every other internal node to
 obtain the new chain below.
 
-image::chain-9-compress-1.png["Computing ranks",width="400pt",align="center"]
+image:chain-9-compress-1.png["Computing ranks",width="400pt",align="center"]
 
 We can then repeat this process until we are down to a single edge.
 
-image::chain-9-compress-2.png["Computing ranks",width="400pt",align="center"]
+image:chain-9-compress-2.png["Computing ranks",width="400pt",align="center"]
 
-image::chain-9-compress-3.png["Computing ranks",width="400pt",align="center"]
+image:chain-9-compress-3.png["Computing ranks",width="400pt",align="center"]
 
 ====
 
@@ -242,13 +242,14 @@ else
 .Tree Contraction 
 ====
 An example tree contraction illustrated on the  input tree below. 
-image::unbalanced-binary-tree-6.png["Input tree",width="500pt",align="center"]
 
-image::unbalanced-binary-tree-6-tc-1.png["Tree contraction, round 1",width="500pt",align="center"]
+image:unbalanced-binary-tree-6.png["Input tree",width="500pt",align="center"]
 
-image::unbalanced-binary-tree-6-tc-2.png["Tree contraction, round 2",width="500pt",align="center"]
+image:unbalanced-binary-tree-6-tc-1.png["Tree contraction, round 1",width="500pt",align="center"]
 
-image::unbalanced-binary-tree-6-tc-3.png["Tree contraction, round 3",width="500pt",align="center"]
+image:unbalanced-binary-tree-6-tc-2.png["Tree contraction, round 2",width="500pt",align="center"]
+
+image:unbalanced-binary-tree-6-tc-3.png["Tree contraction, round 3",width="500pt",align="center"]
 ====
 
 
@@ -267,7 +268,7 @@ calculated based on the sizes of the left and the right subtrees.
 
 .In-Order Traversal 
 ====
-image::perfect-binary-tree-8-inorder-ranks.png["Compting ranks",width="500pt",align="center"]
+image:perfect-binary-tree-8-inorder-ranks.png["Compting ranks",width="500pt",align="center"]
 
 In the example tree above, each node is labeled with the size of its
 subtree computed in the first pass and each edge is labeled with the
@@ -364,9 +365,6 @@ suffice to be given a manoid, we actually need a
 https://en.wikipedia.org/wiki/Group_(mathematics)[group], which is
 algebraic structure that requires an invertibility. 
 
-
-
-===  Tree Contraction
 
 
 
@@ -467,9 +465,5 @@ https://en.wikipedia.org/wiki/Group_(mathematics)[group], which is
 algebraic structure that requires an invertibility. 
 
 
+/////////
 
-===  Tree Contraction
-
-
-
-//////////
