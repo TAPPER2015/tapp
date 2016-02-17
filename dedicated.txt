@@ -3,9 +3,9 @@
 
 The work-stealing algorithm is a solution to the *_online scheduling
 problem_*, where we are given a latexmath:[$P$] processes and a
-computation dag, and asked to construct an execution schedule with
-minimal length, while spending as little work and time for scheduling
-itself.
+computation dag that unfolds dynamically during execution, and asked
+to construct an execution schedule with minimal length, while spending
+as little work and time for scheduling itself.
 
 We consider multithreaded computations represented as dags as
 described in <<ch:multithreading, an earlier chapter>>.  To streamline the
@@ -44,15 +44,14 @@ The algorithm operates in *_rounds_*.  In each round, a process
 executes the assigned vertex if any, pushes the newly enabled vertices
 to its deque, and obtains a new assigned vertex from its deque.  If
 the round starts with no assigned vertex then the process becomes a
-thief performs a steal attempt.  For simplicity, we refer to a steal
-attempt as a *_throw_*. Noe that a steal attempt start and completes
-in the same round.
+thief performs a steal attempt. Note that a steal attempt start and
+completes in the same round.
 
 Such a *_steal attempt_* can fail if 
 
 . the victim's deque is empty, or
 
-. contention between processors occurs and the vertex targeted by the
+. contention between processes occurs and the vertex targeted by the
 thief is executed by the process that own the dequer or stolen by
 another thief.
 
@@ -154,7 +153,7 @@ Consider the deque for a process shows below along with the assigned
 vertex.  The work sequence for this process is latexmath:[$\langle
 v_0, v_1, v_2, v_3 \rangle$].
 
-image::deque-example-1.png["",width="50pt",align="center"]
+image:deque-example-1.png["",width="50pt",align="center"]
 
 Now, if the process completes executing $v_0$, which enables no new
 children, then the work sequence consist of the vertices in the deque,
@@ -178,12 +177,14 @@ consisting of the enabling edges form a rooted tree, called the
 *_enabling tree_*.  Note each execution can have a different enabling
 tree.
 
+////
+// Commented out because the images require too much memory.
 
 ==== An Example Run with Work Stealing
 
 Consider the following computation dag.
 
-image::dag-example-1.png["",width="300pt",align="center"]
+image:dag-example-1.png["",width="300pt",align="center"]
 
 The following drawings illustrate a 2-process execution of this dag
 using work stealing. Time flows left to right and top to bottom.
@@ -211,6 +212,8 @@ image:work-stealing-example-9.png["",height="150pt",align="left"]
 The enabling tree for this execution is shown below.
 
 image:enabling-tree-example-1.png["",width="300pt",align="center"]
+
+////
 
 ==== Structural Lemma
 
@@ -474,39 +477,35 @@ probability at least latexmath:[$0.25$]
 
 
 
-==== Bound in terms of Throws
+==== Bound in terms of Work and Steal Attempts
 
 .Lemma[Work-Throw Bound] 
 *******************
 
 Consider any multithreaded computation with work latexmath:[$W$].  The
-latexmath:[$P$]-processor execution time is latexmath:[$O(W/P + H/P)$]
-steps where latexmath:[$H$] is the number of throws.
+latexmath:[$P$]-process execution time is latexmath:[$O(W/P + A/P)$]
+steps where latexmath:[$A$] is the number of steal attempts.
 
 *******************
 
 .Proof
 ****
 
-We shall consider the execution in terms of rounds and collect a token
-from each processor in each round.  Since rounds are a constant number
-of steps, we will thus collect as many tokens as total number of steps
-divided by some constant.
 
 Consider the execution in terms of rounds
 
 . If a vertex is executed in that round, then the processor places a
 token into the work bucket.
 
-. If a steal attempt takes place in that round, then a throw occurs in
-this round, and the processor places a token into the throw bucket.
+. If a steal attempt takes place in that round, then the process
+places a token into the steal-attempt bucket.
 
-There are exactly latexmath:[$H$] tokens in the throw bucket and
-exactly latexmath:[$W$] tokens is the work bucket.  Thus the total
-number of tokens is at most latexmath:[$W + H$].  Since in each round
-a process either executes a vertex or performs a throw,
-latexmath:[$P$]-process execution time, latexmath:[$T_P = \frac{W +
-H}{P}$].
+There are exactly latexmath:[$A$] tokens in the steal-attempt bucket
+and exactly latexmath:[$W$] tokens is the work bucket.  Thus the total
+number of tokens is at most latexmath:[$W + A$].  Since in each round
+a process either executes a vertex or attempts a steal, and since each
+round is a constant number of steps, the latexmath:[$P$]-process
+execution time is latexmath:[$T_P = O(\frac{W + A}{P})$].
 
 ****
 
@@ -519,26 +518,54 @@ complete.
 
 
 
-==== Bounding the Number of Throws
+==== Bounding the Number of Steal Attempts
 
 Our analysis will use a potential-function based method.  We shall
 divide the computation into phases each of which decreases the
 potential by a constant factor.
 
 
-Consider some round latexmath:[$i$] and let latexmath:[$R_i$] denote
-the set of ready vertices in the beginning of that round. A vertex is
-latexmath:[$R_i$] is either assigned to a process or is in a deque.
-For each vertex latexmath:[$v \in R_i$], we define its *_potential_*
+We start with a few definitions.  Consider some round latexmath:[$i$].
+
+. Let latexmath:[$R_i$] denote the set of *_ready vertices_* in the
+beginning of that round.  
+
+. A vertex is latexmath:[$R_i$] is either assigned to a process or is
+in a deque.  Let latexmath:[$R_i(q)$] denote the set of *_ready
+vertices_* belonging to a process latexmath:[$q$] at the beginning of
+round latexmath:[$i$]; these are exactly the vertices in the work
+sequence of that process.
+
+. For each vertex latexmath:[$v \in R_i$], we define its *_potential_*
 as
 
-. latexmath:[$\phi_i(v) = 3^{2w(v)} - 1$], if latexmath:[$v$] is assigned, or
-. latexmath:[$3^{2w(v)}$], otherwise.
+.. latexmath:[$\phi_i(v) = 3^{2w(v) - 1}$], if latexmath:[$v$] is
+assigned, or 
 
-We define the potential at round latexmath:[$i$], written
-latexmath:[$\Phi_i$] as
+.. latexmath:[$\phi_i(v) = 3^{2w(v)}$], otherwise.
 
-latexmath::[$\Phi_i = \sum_{v \in R_i}{\phi_i(v)}.$]
+
+. The *_potential of process latexmath:[$q$]_* is
+latexmath:[$\Phi_i(q) = \sum_{v \in R_i(q)}{\phi_i(v)}.$]
+
+.  We write latexmath:[$H_i$] (mnemonic for "Hood") for the set of
+processes whose deques are empty at the beginning of round
+latexmath:[$i$].  We write latexmath:[$\Phi_i(H_i)$] for *_the total
+potential of the processes latexmath:[$H_i$]_*,
+latexmath:[$\Phi_i(H_i) = \sum_{q \in H_i}{\Phi_i(q)}$].
+
+. We write latexmath:[$D_i$] for the set of other processes.  We write
+latexmath:[$\Phi_i(D_i)$] for *_the total potential of the processes
+latexmath:[$D_i$]_*, latexmath:[$\Phi_i(D_i) = \sum_{q \in
+D_i}{\Phi_i(q)}$].
+
+. Define the *_total potential at round latexmath:[$i$]_*, written
+latexmath:[$\Phi_i$] as latexmath:[$\Phi_i = \sum_{v \in
+R_i}{\phi_i(v)}$].  We can write the total potential in round
+latexmath:[$i$] as follows latexmath:[$\Phi_i = \Phi_i(H_i) + \Phi_i(D_i)$].
+
+
+Note that potential is always a natural number.
 
 .Definition: Beginning and termination potential
 ****
@@ -546,45 +573,46 @@ latexmath::[$\Phi_i = \sum_{v \in R_i}{\phi_i(v)}.$]
 At the beginning of the computation, the only ready vertex is the
 root, which has a weight of latexmath:[$S$], because it is also the
 root of the enabling tree.  Therefore the potential in the beginning
-of the computation is latexmath:[$3^{2S-1}$].
-
-At the end of the computation, there are no ready notes and thus the
-potential is zero.
-
-****
-
-.Definition: Basic definitions for potentials
-****
-
-. The *_potential of process latexmath:[$q$]_* is
-latexmath:[$\Phi_i(q) = \sum_{v \in R_i(q)}{\phi_i(v)}.$]
-
-
-. We write latexmath:[$A_i$] for the set of processes whose deques are
-empty at the beginning of round latexmath:[$i$].  We write
-latexmath:[$\Phi_i(A_i)$] for the total potential of the processes
-latexmath:[$A_i$], latexmath:[$\Phi_i(A_i) = \sum_{q \in
-A_i}{\Phi_i(q)}$].
-
-. We write latexmath:[$D_i$] for the set of other processes.  We write
-latexmath:[$\Phi_i(D_i)$] for the total potential of the processes
-latexmath:[$D_i$], latexmath:[$\Phi_i(D_i) = \sum_{q \in
-D_i}{\Phi_i(q)}$].
-
-
-. We can write the total potential in round latexmath:[$i$] as follows
-latexmath:[$\Phi_i = \Phi_i(A_i) + \Phi_i(D_i)$].
+of the computation is latexmath:[$3^{2S-1}$]. At the end of the
+computation, there are no ready vertices and thus the potential is
+zero.
 
 ****
 
 
-.Lemma: Vertex Assignment 
+.Lemma[Top-Heavy Deques]
+************************
+
+Consider any round latexmath:[$i$] and any process latexmath:[$q \in
+D_i$].  The topmost vertex in latexmath:[$q$]'s deque contributes at
+least latexmath:[$3/4$] of the potential of process latexmath:[$q$].
+
+************************
+
+.Proof
+****
+This lemma follows directly from the structural lemma.  The case in
+which the topmost vertex latexmath:[$v$] contributes the least of the
+process is when the assigned vertex and latexmath:[$v$] have the same
+parent.  In this case, both vertices have the same depth and thus we
+have
+
+[latexmath]
++++++++++++
+$$
+\Phi_i(q) = \phi_i(v) + \phi_i(x) = 3^{2w(v)} + 3^{2w(x)-1} =
+3^{2w(v)} + 3^{2w(v)-1} =  (4/3) \phi_i(v).
+$$
++++++++++++
+****
+
+.Lemma[Vertex Assignment] 
 ****
 
 Consider any round latexmath:[$i$] and let latexmath:[$v$] be a vertex
-that is ready but not assigned in the beginning of that round. Suppose
+that is ready but not assigned at the beginning of that round. Suppose
 that the scheduler assigns latexmath:[$v$] to a process in that round.
-In this case, the potential decreases by latexmath:[$2/3\phi_i(v)$].
+In this case, the potential decreases by latexmath:[$2/3 \cdot \phi_i(v)$].
 
 ****
 
@@ -602,7 +630,7 @@ $
 
 ****
 
-.Lemma: Monotonicity of Total Potential
+.Lemma[Monotonicity of Total Potential]
 ****
 
 Total potential does not increase from one round to the next, i.e.,
@@ -618,7 +646,7 @@ There are two cases to consider based on scheduler actions.
 
 *Case 1:* Suppose that the scheduler assign a vertex latexmath:[$v$]
 to a process. By the Vertex Assignment Lemma, we know that the
-potential decreases by latexmath:[$2/3 \phi_i(v)$]. Since
+potential decreases by latexmath:[$2/3 \cdot \phi_i(v)$]. Since
 latexmath:[$\phi_i(v)$] is positive, the potential decreases.
 
 Note that this calculation holds regardless of where in the deque the
@@ -663,54 +691,29 @@ $$
 +++++++++++
 
 Since latexmath:[$\phi_i(v)$] is positive, the potential decreases in
-both cases. 
+both cases.  Note that, it is safe to assume that the children remain
+in the deque until the next round, because assignment of a vertex
+decreases the potential further.
 
 In each round each process performs none, one, or both of these
 actions.  Thus the potential never increases.
 
-Remark: in the second case, it is safe to assume that the children
-remain in the deque until the next round, because assignment of a
-vertex only decreases the potential further.
-
 ****
 
-We have thus ustablished that the potential decreases but this  by
+We have thus ustablished that the potential decreases but this by
 itself does not suffice.  We also need to show that it decreases by
-some significant amount. This is our next step in the analysis.
-
-We are now going to show that after latexmath:[$P$] throws the total
-potential decreases with constant probability.
-
-.Lemma[Top-Heavy Deques]
-************************
-
-Consider any round latexmath:[$i$] and any process latexmath:[$q \in
-D_i$].  The topmost vertex in latexmath:[$q$]'s deque contributes at
-least latexmath:[$3/4$] of the potential of process latexmath:[$q$].
-
-************************
-
-This lemma follows directly from the structural lemma.  The case in
-which the topmost vertex latexmath:[$v$] contributes the least of the
-process is when the assigned vertex and latexmath:[$v$] have the same
-parent.  In this case, both vertices have the same depth and thus we
-have
-
-[latexmath]
-+++++++++++
-$$
-\Phi_i(q) = \phi_i(v) + \phi_i(x) = 3^{2w(v)} + 3^{2w(x)-1} =
-3^{2w(v)} + 3^{2w(v)-1} =  (4/3) \phi_i(v).
-$$
-+++++++++++
+some significant amount. This is our next step in the analysis. We
+show that after latexmath:[$P$] steal attempts the total potential
+decreases with constant probability.
 
 
 
-.Lemma: latexmath:[$P$] Throws
+
+.Lemma[latexmath:[$P$] Steal Attempts]
 *******
 
 Consider any round latexmath:[$i$] and any later round latexmath:[$j$]
-such that at least latexmath:[$P$] throws occur at rounds from
+such that at least latexmath:[$P$] steal attempts occur at rounds from
 latexmath:[$i$] (inclusive) to latexmath:[$j$] (exclusive). Then, we
 have
 
@@ -726,7 +729,7 @@ $$
 ****
 
 *First* we use the Top-Heavy Deques Lemma to establish the
-following. If a throw targets a process with a nonempty deque as its
+following. If a steal attempt targets a process with a nonempty deque as its
 victim, then the potential decreases by at least of a half of the
 potential of the victim.
 
@@ -735,9 +738,9 @@ latexmath:[$v$] denote the vertex at the top of its deque at round
 latexmath:[$i$].  By Top-Heavy Deques Lemma, we have 
 latexmath:[$\phi_i(v) \ge \frac{3}{4} \Phi_i(q)$].
 
-Consider any throw that occurs at round latexmath:[$k \ge i$].
+Consider any steal attempt that occurs at round latexmath:[$k \ge i$].
 
-. Suppose that this throw is sucessful with `popTop` returning a
+. Suppose that this steal attempt is sucessful with `popTop` returning a
 vertex. The two subcases both follow by the Vertex Assignment Lemma.
 
 .. If the returned vertex is latexmath:[$v$], then after round
@@ -749,7 +752,7 @@ latexmath:[$\frac{2}{3}\, \phi_i(u)$].
 is already assigned and possibly executed. Thus, the potential has
 decreased by at least latexmath:[$\frac{2}{3}\, \phi_i(v)$].
 
-. Suppose that the throw is not succesful, and `popTop` returns
+. Suppose that the steal attempt is not succesful, and `popTop` returns
 `NULL`.  In this case, we know that latexmath:[$q$]'s deque was empty
 during `popTop`, or some other `popTop` or `popBottom` operation
 returned latexmath:[$v$].  In all cases, vertex latexmath:[$u$] has
@@ -772,11 +775,11 @@ $$
 *Second*, we use Ball and Bins Lemma to establish the total decrease
  in potential.
 
-Consider now all latexmath:[$P$] processes and latexmath:[$P$] throws
-that occur at or after round latexmath:[$i$].  For each process
-latexmath:[$q$] in latexmath:[$D_i$], assign a weight of
+Consider now all latexmath:[$P$] processes and latexmath:[$P$] steal
+attempts that occur at or after round latexmath:[$i$].  For each
+process latexmath:[$q$] in latexmath:[$D_i$], assign a weight of
 latexmath:[$\frac{1}{2}\Phi_i(q)$] and for each process in
-latexmath:[$A_i$], we assign a weight of latexmath:[$0$].  The total
+latexmath:[$H_i$], assign a weight of latexmath:[$0$].  The total
 weight is thus latexmath:[$\frac{1}{2} \Phi_i(D_i)$].  Using the
 Balls-and-Bins Lemma with latexmath:[$\beta = 1/2$], we conclude that
 the potential decreases by at least latexmath:[$\beta W = \frac{1}{4}
@@ -788,10 +791,12 @@ the potential decreases by at least latexmath:[$\beta W = \frac{1}{4}
 
 IMPORTANT: For this lemma to hold, it is crucial that a steal attempt
 does not fail unless the deque is empty or the vertex being targeted
-at the time is popped from the deque is some other way. 
+at the time is popped from the deque is some other way.  This is why,
+we required the `popTop` operation called by a process to fail only if
+the top vertex is removed from the deque by another process.
 
 
-.Theorem: Dedicated Environments
+.Theorem[Run-Time Bound]
 ****
 
 Consider any multithreaded computation with work latexmath:[$W$] and
@@ -809,65 +814,71 @@ latexmath:[$1-\epsilon$] for any latexmath:[$\epsilon > 0$].
 .Proof
 ****
 
-The Throw-Bound Lemma bounds the execution time in terms of throws.
-We shall prove bounds on the number of throws.
+The Steal Attempt-Bound Lemma bounds the execution time in terms of
+steal attempts.  We shall prove bounds on the number of steal
+attempts.
 
 
-We break execution into *_phases_* of latexmath:[$\Theta(P)$] throws.
-We show that with constant probability, a phase causes the potential
-to drop by a constant factor, and since we that the the potential
-starts at latexmath:[$\Phi_0 = 3^{2S -1}$] and ends at zero, we can
-bound the number of phases.
+We break execution into *_phases_* of latexmath:[$\Theta(P)$] steal
+attempts.  We show that with constant probability, a phase causes the
+potential to drop by a constant factor, and since the potential starts
+at latexmath:[$\Phi_0 = 3^{2S -1}$] and ends at zero, and is always an
+natural number, we can bound the number of phases.
 
-The first phase begins at round latexmath:[$t_1 = 1$] and ends at the
-first round latexmath:[$t_i'$], where at least latexmath:[$P$] thorws occun
-during the interval latexmath:[$\lbrack t_1,t_1' \rbrack $].  The second phase begins at round
-latexmath:[$t_2 = t_1' + 1$] and so on.
+The first phase begins at round latexmath:[$1$] and ends at the first
+round latexmath:[$k$], where at least latexmath:[$P$] throws occur
+during the interval latexmath:[$\lbrack 1,k \rbrack $].  The
+second phase begins at round latexmath:[$k + 1$] and so on.
 
-Consider a phase latexmath:[$[i,j)$], where the next round begins at
-round latexmath:[$j$].  We show that latexmath:[$\Pr \lbrack \Phi_j \le
-\frac{3}{4} \Phi_i \rbrack < \frac{1}{4}$].
+Consider a phase latexmath:[$[i,j)$], where the next phase begins at
+round latexmath:[$j$].  We show that latexmath:[$\Pr \lbrack \Phi_j
+\le \frac{3}{4} \Phi_i \rbrack < \frac{1}{4}$].
 
 Recall that the potential can be partitioned as latexmath:[$\Phi_i =
-\Phi_i(A_i) + \Phi_i(D_i)$].
+\Phi_i(H_i) + \Phi_i(D_i)$].
 
-. Since the phase contains at least latexmath:[$P$] throws, by
-latexmath:[$P$] Throws Lemma, we know that latexmath:[$P \lbrack
+. Since the phase contains at least latexmath:[$P$] steal attempts, by
+latexmath:[$P$] Steal Attempts Lemma, we know that latexmath:[$P \lbrack
 \Phi_i - \Phi_j \ge \frac{1}{4} \Phi_i(D_i) \rbrack > \frac{1}{4}$].
 
 . We need to show that the potential also drops by a constant fraction
-of latexmath:[$\Phi_i(A_i)$].  Consider some process latexmath:[$q$]
-in latexmath:[$A_i$].  If latexmath:[$q$] does not have an assigned
-node, then latexmath:[$\Phi_i(q) = 0$].  If latexmath:[$q$] has an
-assigned node latexmath:[$u$], then latexmath:[$\Phi_i(q) =
-\phi_i(u)$].  In this case, process latexmath:[$q$] executes node
-latexmath:[$u$] at round latexmath:[$i$] and the potential drops by at
-least latexmath:[$\frac{5}{9} \phi_i(u)$].  Summing over all processes
-in latexmath:[$A_i$], we have latexmath:[$\Phi_i - \Phi_j \ge \frac{5}{9}
-\Phi_i(A_i)$].
+of latexmath:[$\Phi_i(H_i)$].  Consider some process latexmath:[$q$]
+in latexmath:[$H_i$].  If latexmath:[$q$] does not have an assigned
+vertex, then latexmath:[$\Phi_i(q) = 0$].  If latexmath:[$q$] has an
+assigned vertex latexmath:[$v$], then latexmath:[$\Phi_i(q) =
+\phi_i(v)$].  In this case, process latexmath:[$q$] executes
+latexmath:[$v$] at round latexmath:[$i$] and the potential decreases
+by at least latexmath:[$\frac{5}{9} \phi_i(u)$].  Summing over all
+processes in latexmath:[$H_i$], we have latexmath:[$\Phi_i - \Phi_j
+\ge \frac{5}{9} \Phi_i(H_i)$].
 
-Thus we conclude that latexmath:[$P \lbrack \Phi_i - \Phi_j \ge \frac{1}{4}
-\Phi_i \rbrack > \frac{1}{4}$].  In other words, we have established that in
-any phase, potential drops by a quarter with some probability
-latexmath:[$\frac{1}{4}$].
+Thus we conclude that latexmath:[$P \lbrack \Phi_i - \Phi_j \ge
+\frac{1}{4} \Phi_i \rbrack > \frac{1}{4}$].  In other words, we
+established that in any phase, potential drops by a quarter with some
+probability latexmath:[$\frac{1}{4}$].
 
 
-Define a phase to be *_successful_* if it causes the potential do trop
-by at least a quarter fraction.  We just established that phase is
-successful with probability at least latexmath:[$0.25$]. Since the
-start potential latexmath:[$\Phi_0 = 3^{2S -1}$] and ends at zero and is always
-an integer, the number of successful phases it as most
-latexmath:[$(2S-1)\, \log_{4/3}{3} < 8 S$].
+Define a phase to be *_successful_* if it causes the potential do
+decrease by at least a quarter fraction.  We just established that
+phase is successful with probability at least
+latexmath:[$0.25$]. Since the start potential latexmath:[$\Phi_0 =
+3^{2S -1}$] and ends at zero and is always an integer, the number of
+successful phases it as most latexmath:[$(2S-1)\, \log_{4/3}{3} < 8
+S$].
 
-Thus, the expceted number of phases is latexmath:[$O(S)$] and since
-each contains latexmath:[$O(P)$] throws, the expected number of throws is
-latexmath:[$O(SP)$].
+
+The expected number of phases to obtain a single successful phase is
+distributed geometrically with expectation latexmath:[$4$].
+Therefore, the total expected number of phases is latexmath:[$32S$],
+i.e., latexmath:[$O(S)$].  Since each phase contains
+latexmath:[$O(P)$] steal attempts, the expected number of steal
+attempts is latexmath:[$O(SP)$].
 
 We now establish the high-probability bound.  
 
 Suppose that the execution takes latexmath:[$n = 32S + m$] phases.
 Each phase succeds with probability at least latexmath:[$p =
-\frac{1}{4}$], so the expceted number of successes is at least
+\frac{1}{4}$], so the expected number of successes is at least
 latexmath:[$np = 8S + m/4$].  Let latexmath:[$X$] the number of
 successes.  By Chernoff bound
 
@@ -891,731 +902,26 @@ P \lbrack X < 8 S \rbrack < e^{-(m/4)^2 / (16S + m/2)}
 $$
 +++++++++++
 
-Thus the probabilty that the executian takes latexmath:[$64S + 18
-\ln{1/epsilon)}$] phases or more is less than latexmath:[$\epsilon$].
-
-We conclude that the number of throws is latexmath:[$O(S +
-\lg{1/\epsilon}P)$] with probability at least latexmath:[$1 -
-\epsilon$].
-
-****
-
-
-
-//////////////////////////////////////////////////////////////////////
-///
-
-THE MATERIAL IN THIS PART IS DEPRACATED.
-
-
-== Chapter: Work Stealing in Dedicated Environments
-
-
-
-We will present a randomized work stealing algorithm and analyze its
-complexity.
-
-
-We consider multithreaded computations represented as dags as
-described in Chapter <<ch:multithreading>>.
-
-
-=== Offline and online scheduling
-
-INSERT LOWER BOUNDS
-
-INSERT UPPER BOUND FOR BRENT
-
-INSERT UPPER BOUND GREEDY
-
- 
-Online scheduling
-+++++++++++++++++
-
-Offline scheduling problem discussed above shows that any greedy
-scheduler has within factor two of the optimal, based on the lower
-bounds established above.  We now turn our attention to the problem of
-constructing such an execution schedule online.  In this *_online
-scheduling problem_*, we are given a P-processor kernel schedule and a
-computation dag, and we are interested in constructing an execution
-schedule with minimal length.  As we shall describe next, the
-non-blocking work-stealing algorithm achieves this goal, also when
-including the cost of scheduling itself.
-
-
-=== Work-Stealing Algorithm
-
-
-In work stealing, each process maintains a *_deque_*, doubly ended
-queue, of threads.  Each process tries to work on its local deque as
-much as possible. Execution starts with the root thread in the deque
-of one of the processes.  It ends when the final vertex is executed.  
-
-A work stealing scheduler operates as described by our generic
-scheduling algorithm.
-
-To obtain work, a process pops the thread at the bottom of its deque
-and executes its ready vertex. We refer to the thread executed by a
-process as the *_assigned thread_*.  When executed, the ready vertex
-can make the next vertex of the thread ready, which then also gets
-executed an so on until one of the following *_synchronization_*
-actions occur.
-
-. *_Die:_* The process executes last vertex of the thread, causing
-the thread to die. The process then obtains other work.
-
-. *_Block:_* The assigned vertex executes but the next vertex does not
-become ready. This blocks the thread and thus the process obtains
-other work.
-
-. *_Enable:_* The assigned vertex makes ready the continuation of the
-vertex and unblocks another previously blocked thread by making a
-vertex from that thread ready. In this case, the process pushes (any)
-one thread on the bottom of its deque and continues to execute the
-other.
-
-. *_Spawn:_* The assigned vertex spaws another thread.  As in the
-previous case, the process pushes one thread on the bottom of its
-deque and continues to execute the other.
-
-These actions are not mutually exclusive.  For example, a thread may
-spawn/enable a thread and die.  In this case, the process performs the
-corresponding steps for each action.
-
-To obtain work, a process attempts to pop a thread from its deque.  If
-there is a thread, that thread becomes the new assigned thread.  If
-the deque is empty, the process becomes a *_thief_*.  A thief picks a
-*_victim_* process at random and attempts to steals a thread from
-another it by popping a thread off the top of the victim's deque.
-
-Such a *_steal attempt_* can fail if 
-. the victim's deque is empty, or
-. contention between multiple thieves occurs.
-
-The thief performs steal attempts until it successfully steals a
-thread, at which point, the thief goes back to work and the stolen
-thread becomes its assigned thread.
-
-[source,{cpp}]
-----
-// Assign root to process zero.
-assignedVertex = NULL
-if (self == ProcessZero) {
-  assignedVertex = rootVertex
-}
-
-
-// Run scheduling loop.
-while (computationDone == false) {
-
-  // Execute assigned vertex.
-  if (assignedVertex <> NULL) {
-    (nChildren, child1, child2) = execute (assignedVertex)
-    if (nChildren == 0) {         // Die or block.
-      assignedVertex = self.popBottom ()
-    }
-    else if (nChildren == 1) {   // Continue, no synchronization.
-      assignedVertex = child1
-    } 
-    else {                      // Enable or spawn.
-      self.pushBottom (child1)
-      assignedVertex = child2
-    }
-  } 
-  else {                        // No local work.
-    // Make steal attempt.
-    victim = randomProcess ()
-    assignedVertex = victim.popTop ()
-  }
-}
-----
-
-==== Deque Specification
-
-
-The deque supports three methods: 
-
-. `pushBottom`, which pushed a vertex at the bottom end of the deque.
-
-. `popBottom`, which returns the vertex at the bottom end of the
-deque if any, or returns `NULL` otherwise.
-
-. `popTop`, returns the vertex at the top end of the deque, if any, or
-returns `NULL` if the deque is empty.
-
-These operations take place atomically.  We can think of them start by
-first obtaining a lock for the deque and then performing the desired
-operation.
-
-We shall assume, somewhat unrealistically that all these operations
-take constant time.  In reality, it is not know whether `popTop` can
-be implemented in constant time.  But a relaxed version of it, which
-allows `popTop` to return `NULL` if another concurrent operation
-removes the top vertex in the deque, accepts a constant-time
-implementation.  This relaxed version suffices for our purposes.
-
-MAKE SURE THAT YOU DON'T ASSUME ANYTHING ELSE IN THE PROOF.
-
-==== Enabling Tree and Weights
-Let's recall first the notion of an emabling three.  If execution of
-latexmath:[$u$] enables latexmath:[$v$, then we call the edge
-latexmath:[$(u,v)$] an *_enabling edge_* and call latexmath:[$u$] the
-*_designated parent_* of latexmath:[$v$].  Every vertex except for the
-root has a designated parent.  Therefore the subgraph of the dag
-consisting of the enabling edges form a rooted tree, called the
-*_enabling tree_*.  Note each execution can have a different enabling
-tree.
-
-If latexmath:[$d(u)$] is the depth of a node latexmath:[$u$] in the
-enabling tree, then we define the weight of latexmath:[$u$, written
-latexmath:[$w(u) = S - d(u)$].  The root has weight latexmath:[$S$].
-Intuitively, the weight is equal to the distance of a vertex to the
-completion.
-
-==== Structural Lemma
-
-
-.Lemma[Structural Lemma] 
-************************
-
-Let latexmath:[$k$] be the number of vertices in a give deque in an
-execution of the work-stealing algorithm.  Let latexmath:[$v_1 \ldots
-v_k$] denote the vertices, from bottom to top. Let latexmath:[$v_0$]
-denote the assigned vertex if there is one. For latexmath:[$0 \le i
-\le k$, let latexmath:[$u_i$] denote the designated parent of
-latexmath:[$v_i$].  Then latexmath:[$u_i$] is an ancestor of
-latexmath:[$u_{i-1}$] in the enabling tree.  Moreover, for any
-latexmath:[$2 \le i \le k$] latexmath:[$u_{i-1} \neq u_i$, that is the
-ancestor relationship is proper.
-
-************************
-
-
-[[dedicated::structural]]
-.Structural lemma illustrated.
-image::deques-and-enabling-tree.png["",width="100pt",align="center"]
-
-Before we prove the lemma, we state an important corallary.
-
-.Corrollary
-***********
-
-Let latexmath:[$v_0, v_1, v_2 \ldots v_k$] defined as in the structural lemma
-above.  Then, we have latexmath:[$w(v_0)\ le w(v_1) < w(v_2) \ldots w(k-1) <
-w(v_k)$] defined as in the structural lemma above.
-
-***********
-
-
-
-
-I DIDN'T WORK OUT ALL THE DETAILS BUT THERE IS NOTHING REALLY TRICKY
-HERE.  NO CONCURRENCY ASSUMPTION ON THE DEQUE OPERATIONS IS MADE.
-
-
-To prove this lemma, fix any deque.  The deque state and the assigned
-vertex change only when either the ownter executies its assigned
-vertex or a thief performs a successful steal.
-
-The proof is by induction on the number of assigned-vertex exectuions
-and steals since the deque was lat empty.
-
-In the base case, the deque is empty and the lemma holds trivially.
-
-For the inductive case, assume that the lemma holds before a given
-assigned-node execution or a successful steal.  We will show that the
-lemma holds after one.  
-
-Let latexmath:[$v_0$] be the assigned node.
-
-Let  latexmath:[$v_1, \ldots, v_k$] denote the vertices in the deque
-and let  latexmath:[$u_1, \ldots, u_k$] be their designated parents.
-
-By induction, we know that $u_i$ is an ancestor of $u_{i-1}$ in the
-enabling tree and the ancestor relationship is proper except for $i =
-1$, where it is possible that $u_0 = u_1$.
-
-
-Consider the case now after an event.  Let latexmath:[$v_0'$] be the
-assigned vertex and let latexmath:[$v_1', \ldots, v_{k'}'$] denote the
-vertices in the deque from bottom to top and let let latexmath:[$u_1',
-\ldots, u_{k'}'$] be their designated parents.
-
-We now show that the lemma holds.
-
-*Case 1:* The assigned node latexmath:[$v_0$] is executed. 
-
-We have several cases to consider. 
-
-. Execution of latexmath:[$v_0$] enables no children.  In this case,
-the owner pops the bottommost vertex off its deque and makes that node
-its new assigned vertex. 
-
-.. If the deque is empty, then the owner finds no vertex in its deque
-and the lemma holds trivially.
-
-.. If the deque is not empty, then latexmath:[$v_1$] becomes the new
-assigned vertex. The lemma holds.
-
-
-[[dedicated::structural-popbottom]]
-.Structural lemma illustrated after the owner removes the bottom vertex.
-image::deques-and-enabling-tree-popbottom.png["",width="100pt",align="center"]
-
-
-. Execution of latexmath:[$v_0$] enables one child latexmath:[$x$].
-  In this case, latexmath:[$v_0$] becomes the designated parent of
-  latexmath:[$x$].  The lemma holds.
-
-
-[[dedicated::structural-popbottom]]
-.Structural lemma illustrated after the assigned vertex enables one child.
-image::deques-and-enabling-tree-one-child.png["",width="100pt",align="center"]
-
-
-
-. Execution of latexmath:[$v_0$] enables two children latexmath:[$x,y$].
-  In this case, latexmath:[$v_0$] becomes the designated parent of
-  latexmath:[$x$].  The lemma holds.
-
-
-
-[[dedicated::structural-popbottom]]
-.Structural lemma illustrated after the assigned vertex enables two children.
-image::deques-and-enabling-tree-two-children.png["",width="100pt",align="center"]
-
-
-* Case 2:*  A successful steal takes place and removes the top vertex
-  in the deque.  The lemma holds.
-
-
-==== Analysis
-
-
-
-
-===== Milestones
-
-
-We define an instruction executed by some process latexmath:[$q$] as a
-*_milestone_* if and only if one of the following two conditions
-hold: 
-
-. execution of a vertex by process latexmath:[$q$] occurs at that instruction, or
-. a `popTop` invocation completes.
-
-Inspect now the scheduling loop and bound the number of instructions
-that a process executes between milestones.  We can observe that this
-bound is constant.  
-
-
-===== Rounds 
-
-In the analysis, we shall consider the execution of each process at
-the granularity of *_rounds_* rather than steps. A round completes
-with the completion of a milestone. A new round starts immediately at
-the beginning of the computation or immediately after the completion
-of the previous round.
-
-===== Throws 
-
-We identify the completion of a steal attempt by its `popTop`
-invocation and call a steal attempt a *_throw_*.  Note that a throw
-starts and completes in the same round. It starts by the selection of
-a random process from which ste
-
-
-===== Bound in terms of Throws
-
-.Lemma[Throw Bound] 
-*******************
-
-Consider any multithreaded computation with work latexmath:[$W$].  The execution
-time is latexmath:[$O(W/Q + S/Q)$] where latexmath:[$S$] is the number of throws. 
-
-*******************
-
-.Proof
-****
-We shall consider the execution in terms of rounds and collect a token
-from each processor scheduled in each cound.  Since rounds are a
-constant number of steps, we will thus collect as many tokes as total
-number of steps divided by the constant (the scheduling-quantum).
-
-Consider the execution in terms of rounds and inspect the
-corresponding milestone.
-
-. If the milestone corresponds to the execution of a vertex, then the
-processor places a token into the work bucket.
-
-. If the milestone corresponds to the completion of a steal attempt,
-then this is a throw, and the processor places a token into the throw
-bucket.
-
-. The milestone cannot be anything else.  
-
-There are exactly latexmath:[$S$] tokens in the throw bucket and at
-most latexmath:[$W$] tokens is the work bucket.  Thus the total number
-of tokens is at most latexmath:[$W + S$]. The bound follows by the
-definion of processor-average.
-
-****
-
-.NOTE 
-====
-THE REST OF THE ANALYSIS HAS NOT BEEN CHANGED AT ALL FOR THE DEDICATED
-CASE.
-
-====
-
-===== Bounding the Number of Throws
-
-Our analysis will use a potential-function based method.  We shall
-divide the computation into phases each of which decreases the
-potential by a constant factor.
-
-Consider some round latexmath:[$i$] and let latexmath:[$R_i$] denote
-the set of ready vertices in the beginning of that round. A vertex is
-latexmath:[$R_i$] is either assigned to a process or is in a deque.
-For each vertex latexmath:[$v \in R_i$], we define its *_potential_* as
-
-. latexmath:[$\phi_i(v) = 3^{2w(v)} - 1$], if latexmath:[$v$] is assigned, or
-. latexmath:[$3^{2w(v)}$], otherwise.
-
-
-We define the potential at round latexmath:[$i$], written
-latexmath:[$\Phi_i$] as
-
-latexmath::[$\Phi_i = \sum_{v \in R_i}{\phi_i(v)}.$]
-
-.Beginning and termination potential
-====================================
-
-At the beginning of the computation, the only ready vertex is the
-root, which has a weight of latexmath:[$S$, because it is also the root of the
-enabling tree.  Therefore the potential in the beginning of the
-computation is latexmath:[$3^{2S-1}$].
-
-At the end of the computation, there are no ready notes and thus the
-potential is zero.
-
-====================================
-
-Let latexmath:[$R_i(q)$] denote the set of ready vertices at the
-begining of round $i$] that are in the deque of the process
-latexmath:[$q$] and the vertex assigned to it.  We say that any vertex
-latexmath:[$v \in R_i(q)$] belongs to latexmath:[$q$].
-
-The *_potential of process latexmath:[$q$]_* is
-
-latexmath:[$\Phi_i(q) = \sum_{v \in R_i(q)}{\phi_i(v)}.$]
-
-We write latexmath:[$A_i$] for the set of processes whose deques are
-empty at the beginning of round latexmath:[$i$].  We write
-latexmath:[$D_i$] for the set of other processes.  We can thus write
-the total potential in round latexmath:[$i$] as follows
-
-latexmath:[$\Phi_i = \Phi_i(A_i) + \Phi_i(D_i)$]
-
-where latexmath:[$\Phi_i(X)$] is the pointwise sum, i.e.,
-latexmath:[$\Phi_i(X) = \sum_{x \in X}{\Phi_i(x)}$].
-
-
-Let's now consider how the potential changes during execution based on
-scheduler actions. There are two cases to consider.
-
-.  Suppose that the scheduler assign the bottom vertex latexmath:[$v$]
-to a process.  In this case, the potential decreases by
-
-[latexmath]
-+++++++++++
-$$
-\phi_i(v) - \phi_(i+1}(v) = 3^{2w(v) - 3^{2w(v)-1} = 2/3 \phi_i(u).
-$$
-+++++++++++
-
-Suppose that the scheduler executes a vertex latexmath:[$v$]. There
-are several cases to consider.
-
-.. The execution of latexmath:[$v$] enables two children
-latexmath:[$x$] and latexmath:[$y$].  In this case latexmath:[$x$] is
-placed in the deque and latexmath:[$y$] is assigned.  Thus the
-potential decrease is
-
-[latexmath]
-+++++++++++
-$$
-\phi_i(v) - \phi_(i+1}(x) - \phi_(i+1}(y) = 3^{2w(v)} -
- 3^{2w(v)-2} - 3^{2w(v)-3} = 3^{2w(v)} (1 - 1/3 - 1/9) = 5/9 \cdot
- \phi_i(v).
-$$
-+++++++++++
-
-.. The execution of latexmath:[$v$] enables less than two children.
-In this case the potential decreases more.
-
-We are now going to show that after latexmath:[$P$] throws the total
-potential decreases with constant probability.
-
-.Lemma[Top-Heavy Deques]
-************************
-
-Consider any round latexmath:[$i$] and any process latexmath:[$q \in
-D_i$].  The topmost vertex in latexmath:[$q$]'s deque contributes at
-least latexmath:[$3/4$] of the potential of process latexmath:[$q$].
-
-************************
-
-This lemma follows directly from the structural lemma.  The case in
-which the topmost vertex latexmath:[$v$] contributes the least of the
-process is when the assigned node and latexmath:[$v$] have the same
-designated parent.  In this case, we have
-
-[latexmath]
-+++++++++++
-$$
-\Phi_i(q) = \phi_i(v) + \phi_i(x) = 3^{2w(v)} + 3^{2w(x)-1} =
-3^{2w(v)} + 3^{2w(v)-1} =  (4/3) \phi_i(v).
-$$
-+++++++++++
-
-.Lemma[Balls and Bins]
-**********************
-
-Suppose that latexmath:[$P$] balls are thrown uniformly and randomly
-into latexmath:[$P$ bins, where bin latexmath:[$1 \le i \le P$] has
-weight latexmath:[$W_i$], and latexmath:[$W = \sum_{i=1}^{P}{W_i}$].  For
-each bin, define the random variable
-
-[latexmath]
-+++++++++++
-$$
-X_i = \left\{
-\begin{array}{ll}
-W_i & \mbox{if a ball lands in bin}~i
-\\
-0 & \mbox{otherwise}
-\end{array}
-\right.
-$$
-+++++++++++
-
-If latexmath:[$X = \sum_{i=1}^{P}{X_i}$], then for any latexmath:[$\beta, 0 < \beta  1$], we
-have latexmath:[$\Pr{X \ge \beta W} > 1 - (1/((1-\beta)e)$].
-
-************************
-
-The proof of the lemma is a relatively straightforward application of
-Markov's inequality.  Consider the random variable latexmath:[$W_i - X_i$].  This
-random variable takes on the value latexmath:[$0$] if a ball lands in bin latexmath:[$i$] and
-$W_i$] otherwise.  Thus, 
-
-$E[W_i - X_i]  = W_i \cdot (1-1/P)^P \le W_i / e.$
-
-It follows that 
-$E[W - X ] \le W / e$].
-
-By Markov's inequality we have 
-
-$\Pr{W-X > (1-\beta) W} \le \frac{E[W-X]}{(1-\beta)W}$], and thus
-$\Pr{X < \beta W } < \frac{1}{(1-\beta)e}.$
-
-
-.Lemma: Global Potential
-*******
-
-Consider any round latexmath:[$i$] and any later round latexmath:[$j$]
-such that at least latexmath:[$P$] throws occur at rounds from
-latexmath:[$i$] (inclusive) to latexmath:[$j$] (exclusive). Then, we
-have
-
-[latexmath]
-+++++++++++
-$$
-\Pr{\Phi_i - \Phi_j \ge \frac{1}{4} \Phi_i(D_i)} > \frac{1}{4}.
-$$
-+++++++++++
-*******
-
-.Proof:
-****
-
-*First* we use the Top-Heavy Deques Lemma to establish:
-
-If a throw targets a process with a nonempty deque as its victim, then
-the potential decreases by at least of a half of the potential of the
-victim.
-
-Consider any process latexmath:[$q$] in latexmath:[$D_i$] and let
-latexmath:[$u$] denote the vertex at the top of its deque at round
-latexmath:[$i$].  By Top-Heavy Deques Lemma, we have $\phi_i(u) \ge
-\frac{3}{4} \Phi_i(q)$].
-
-Consider any throw that occurs at round latexmath:[$k \ge i$].
-
-. Suppose that this throw is sucessful with `popTop` returning a
-vertex.
-
-.. If the returned vertex is latexmath:[$u$], then after round
-latexmath:[$k$], vertex latexmath:[$v$] has been assigned and possibly
-executed. Thus, the potential has decreased by at least
-latexmath:[$\frac{2}{3}\, \phi_i(u)$].
-
-.. If the returned vertex is not latexmath:[$u$], then latexmath:[$u$]
-is already assigned and possibly executed. Thus, the potential has
-decreased by at least latexmath:[$\frac{2}{3}\, \phi_i(u)$].
-
-. Suppose that the throw is not succesful, and `popTop` returns
-`NULL`.  In this case, we know that latexmath:[$q$'s deque was empty
-during `popTop`, or some other `popTop` or `popBottom` returned
-latexmath:[$u$].  In all cases, vertex latexmath:[$u$] has been
-assigned or possibly executed by the end of round latexmath:[$k$] and
-thus, potential decrases by latexmath:[$\frac{2}{3}\, \phi_i(u)$].
-
-
-Thus, we conclude that if a thief targets a process latexmath:[$q \in
-D_i$] as victim at round latexmath:[$k \ge i$], then the potential
-decreases by at least
-
-[latexmath]
-+++++++++++
-$$
-\frac{2}{3}\, \phi_i(u) \ge \frac{2}{3} \frac{3}{4} \Phi_i(q)  =
-\frac{1}{2} \Phi_i(q).
-$$
-+++++++++++
-
-*Second*, we use Ball and Bins Lemma to establish the total decrease
- in potential.
-
-Consider now all latexmath:[$P$] processes and latexmath:[$P$] throws
-that occur at or after round latexmath:[$i$].  For each process
-latexmath:[$q$] in latexmath:[$D_i$], assign a weight of
-$\frac{1}{2}\Phi_i(q)$] and for each process in latexmath:[$A_i$], we
-assign a weight of latexmath:[$0$].  The total weight is thus
-latexmath:[$\frac{1}{2} \Phi_i(D_i)$].  Using the Balls-and-Bins
-Lemman with latexmath:[$\beta = 1/2$], we conclude that the potential
-decreases by at least latexmath:[$\beta W = \frac{1}{4} \Phi_i(I_i)$]
-with probability greater that latexmath:[$1 - \frac{1}{(1-\beta) e)} >
-\frac{1}{4}$].
-
-****
-
-.Theorem: Dedicated Environments
-****
-
-Consider any multithreaded computation with work latexmath:[$W$] and
-span latexmath:[$S$] and execute it with non-blocking work stealing
-with latexmath:[$P$] processes in a dedicated environment.  The
-exection time is
-
-. latexmath:[$O(W/P + S)$] in expectation, and 
-
-. latexmath:[$O(W/P + S + \lg{1/\epsilon})$] with probability at least
-latexmath:[$1-\epsilon$] for any latexmath:[$\epsilon > 0$].
-
-****
-
-.Proof
-****
-
-The Throw-Bound Lemma bounds the execution time in terms of throws.
-We shall prove bounds on the number of throws.
-
-
-We break execution into *_phases_* of latexmath:[$\Theta(P)$] throws.
-We show that with constant probability, a phase causes the potential
-to drop by a constant factor, and since we that the the potential
-starts at $\Phi_0 = 3^{2S -1}$] and ends at zero, we can bound the
-number of pases.
-
-The first phase begins at round latexmath:[$t_1 = 1$] and ends at the
-first round latexmath:[$t_i'$], where at least latexmath:[$P$] thorws occun
-during the interval latexmath:[$[t_1,t_1']$].  The second phase begins at round
-latexmath:[$t_2 = t_1' + 1$] and so on.
-
-Consider a phase latexmath:[$[i,j)$], where the next round begins at
-round latexmath:[$j$].  We show that latexmath:[$\Pr{\Phi_j \le
-\frac{3}{4} \Phi_i} < \frac{1}{4}$].
-
-Recall that the potential can be partitioned as latexmath:[$\Phi_i =
-\Phi_i(A_i) + \Phi_i(D_i)$].
-
-. Since the phase contains at least latexmath:[$P$] throws, we know
-that latexmath:[$\Pr{\Phi_i - \Phi_j \ge \frac{1}{4} \Phi_i(D_i)} >
-\frac{1}{4}$].
-
-. We need to shaw that the potential also drops by a constant fraction
-of latexmath:[$\Phi_i(A_i)$].  Consider some process latexmath:[$q$]
-in latexmath:[$A_i$].  If latexmath:[$q$] does not have an assigned
-note, then latexmath:[$\Phi_i(q) = 0$].  If latexmath:[$q$] has an
-assigned node latexmath:[$u$], then latexmath:[$\Phi_i(q) =
-\phi_i(u)$].  In this case, process latexmath:[$q$] executes node
-latexmath:[$u$] at round latexmath:[$i$] and the potential drops by at
-least latexmath:[$\frac{5}{9} \phi_i(u)$].  Summing over all processes
-in $A_i$], we have latexmath:[$\Phi_i - \Phi_j \ge \frac{5}{9}
-\Phi_i(A_i)$].
-
-Thus we conclude that latexmath:[$\Pr{\Phi_i - \Phi_j \ge \frac{1}{4}
-\Phi_i} > \frac{1}{4}$].  In other words, we have established that in
-any phase, potential drops by a quarter with some probability
-latexmath:[$\frac{1}{4}$].
-
-
-DONT WE NEED SOME BOUND ON j. MAYBE IT IS GREATER THAN i.
-
-
-Define a phase to be *_successful_* if it causes the potential do trop
-by at least a quarter fraction.  We just established that phase is
-successful with probability at least latexmath:[$0.25$]. Since the
-start potential latexmath:[$\Phi_0 = 3^{2S -1}$] and ends at zero and is always
-an integer, the number of successful phases it as most
-latexmath:[$(2S-1)\, \log_{4/3}{3} < 8 S$].
-
-DO WE NEED THE INTEGER ASSUMPTION HERE? 
-
-Thus, the expceted number of phases is latexmath:[$O(S)$] and since
-each contains latexmath:[$O(P)$] throws, the expected number of throws is
-latexmath:[$O(SP)$].
-
-WHY O(P) and not just P? 
-
-
-We now establish the high-probability bound.  
-
-Suppose that the execution takes latexmath:[$n = 32S + m$] phases.
-Each phase succeds with probability at least latexmath:[$p =
-\frac{1}{4}$], so the expceted number of successes is at least
-latexmath:[$np = 8S + m/4$].  Let latexmath:[$X$] the number of
-successes.  By Chernoff bound
-
-[latexmath]
-+++++++++++
-$$
-\Pr{X < np -a} < e^{-a^2/2np},
-$$
-+++++++++++
-
-with latexmath:[$a = m/4$].  Thus if we choose latexmath:[$m = 32S + 16 \ln{1/epsilon}$], then we have
-
-[latexmath]
-+++++++++++
-$$
-\Pr{X < 8 S} < e^{-(m/4)^2 / (16S + m/2)} 
-\le  e^{-(m/4)^2 / (m/2 + m/2)} 
-=  e^{-m/16}
-\le  e^{-16\ln{1/\epsilon}/16}
-= \epsilon.
-$$
-+++++++++++
-
-Thus the probabilty that the executian takes latexmath:[$64S + 18
+Thus the probabilty that the execution takes latexmath:[$64S + 18
 \ln{1/\epsilon)}$] phases or more is less than latexmath:[$\epsilon$].
 
-We conclude that the number of throws is latexmath:[$O(S +
+We conclude that the number of steal attempts is latexmath:[$O(S +
 \lg{1/\epsilon}P)$] with probability at least latexmath:[$1 -
 \epsilon$].
 
 ****
 
-//////////////////////////////////////////////////////////////////////
+=== Chapter Notes.
+
+The material presented here is a adapted from the paper:
+
+http://link.springer.com/article/10.1007/s00224-001-0004-z[N. S. Arora,
+R. D. Blufome, and C. Greg Plaxton.  Thread Scheduling for
+Multiprogrammed Multiprocessors. Theory of Computing Systems, 34(2),
+2001].
+
+In this chapter, we consider dedicated environments, and simplify and
+streamline the proof for this case.  The original paper considers
+multiprogrammed environments.
+
+
