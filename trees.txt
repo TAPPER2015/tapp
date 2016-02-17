@@ -5,7 +5,7 @@ Trees are a basic structure for representing relations.  It is thus
  natural to ask whether we can perform tree operations in parallel.
 
 As our first motivating example, let's consider the following
-question: we are given a binary tree $T$ and asked to determine for
+question: we are given a binary tree latexmath:[$T$] and asked to determine for
 *_in-order rank_* of each node in the tree, defined as the order of
 the node in an in-order traversal of the tree. 
 
@@ -61,9 +61,9 @@ subtree, the offset is the calculated by adding the size of the left
 subtree plus one.   
 
 If the tree is balanced, as for example in our example, we can show
-that this algorithm performs $O(n)$ work in $O(\lg{n})$ span.  If
+that this algorithm performs latexmath:[$O(n)$] work in latexmath:[$O(\lg{n})$] span.  If
 however, the tree is not balanced the algorithm can do poorly,
-requiring as much as $O(n)$ span.
+requiring as much as latexmath:[$O(n)$] span.
 
 
 .Divide and Conquer on Chains
@@ -116,25 +116,25 @@ two levels of the tree.
 
 Since a perfect binary tree is a full binary tree, raking all the
 leaves removes half of the nodes.  Thus we can write the work
-recursion as $W(n) = W(n/2) + n$.  This solves to $W(n) = O(n)$.
-Since perfect trees are balanced, for the span we have $S(n) = S(n/2)
-+ \log{n}$.  This solves to $S(n) = O(\lg^2{n})$.
+recursion as latexmath:[$W(n) = W(n/2) + n$.  This solves to latexmath:[$W(n) = O(n)$.
+Since perfect trees are balanced, for the span we have latexmath:[$S(n) = S(n/2)
++ \log{n}$.  This solves to latexmath:[$S(n) = O(\lg^2{n})$.
 
 === Compress Operation
 
 As with our divide-and-conquer algorithm, the contraction algorithm
 does very poorly on a chain, in fact even more poorly then the divide
-and conquer algorithm, performing $O(n^2)$ work in $O(n^2)$ span.
+and conquer algorithm, performing latexmath:[$O(n^2)$] work in latexmath:[$O(n^2)$] span.
 
 Can we do better?  Let's consider the worst-case example of the chain
 and suppose that we can design a different contraction algorithm that
 works well just on chains.  Define *_compress_* as an operation that
-when applied to a node $u$ with a single child $v$ and parent $w$
-deletes $u$ and the edges incident on it and inserts an edge from the
-parent to the child, i.e., $(w,v)$.  To keep track of the size
+when applied to a node latexmath:[$u$] with a single child latexmath:[$v$] and parent latexmath:[$w$
+deletes latexmath:[$u$] and the edges incident on it and inserts an edge from the
+parent to the child, i.e., latexmath:[$(w,v)$.  To keep track of the size
 information, we can label this edge with a weight that is equal to the
 weight of the vertices and edges deleted, assuming that initially all
-edges have weight $0$.  
+edges have weight latexmath:[$0$.  
 
 We can design a contraction algorithm for chains by selecting in each
 round an independent set of nodes (nodes with no edges in between) and
@@ -165,39 +165,46 @@ image:chain-9-compress-3.png["Computing ranks",width="400pt",align="center"]
 ====
 
 Since the algorithm is randomized its analysis requires a bit care.
-The probability that such a node is compressed is $1/4$ because it has
+The probability that such a node is compressed is latexmath:[$1/4$] because it has
 to flip heads and its child has to flip tails.  Thus the expected
-fraction of the nodes that are not compressed in this round is $3/4$.
-Define $X_i$ as the size of the tree at the beginning of round $i$.
+fraction of the nodes that are not compressed in this round is latexmath:[$3/4$.
+Define latexmath:[$X_i$] as the size of the tree at the beginning of round latexmath:[$i$.
 Since each round of contraction selects the nodes to compress
-independently, at round $i$, the expected number of nodes that remain
-in the tree is $E[X_i] = \frac{3^i}{4^i} \cdot n$.
+independently, at round latexmath:[$i$, the expected number of nodes that remain
+in the tree is latexmath:[$E[X_i] = \frac{3^i}{4^i} \cdot n$.
 
 From this bound alone, we can bound the work as follows.
 
+[latexmath]
++++++++++++
 $$
 \begin{array}{lll}
 W(n) & = & \sum_{i = 1}^{\infty}{X_i}
 \\
-E \lbrack W(n) \rblack & = & \sum_{i = 1}^{\infty}{\frac{3^i}{4^i} \cdot n}
+E \lbrack W(n) \rbrack & = & \sum_{i = 1}^{\infty}{\frac{3^i}{4^i} \cdot n}
 \\
 E \lbrack W(n) \rbrack & = & O(n).
 \end{array}
 $$
++++++++++++
 
-To bound the span, we need a high-probability bound.  Let's consider the
-probability that the number of nodes is non-trivial after $i = 10
-\lg{n}$ rounds.  By Markov's inequality we have
+To bound the span, we need a high-probability bound.  Let's consider
+the probability that the number of nodes is non-trivial after
+latexmath:[$i = 10 \lg{n}$] rounds.  By Markov's inequality we have
 
+
+[latexmath]
++++++++++++
 $$
 P \lbrack X_i \ge 1 \rbrack \le E \lbrack X_i \rbrack / 1  = n^{-3.15}.
 $$
-
-This means that after $10\log{n}$ rounds, the probability that the
++++++++++++
+				   
+This means that after latexmath:[$10\log{n}$] rounds, the probability that the
 tree constains more than a few nodes is tiny.  We can thus state with
-high probability that the algorithm terminates after $O(\log{n})$
+high probability that the algorithm terminates after latexmath:[$O(\log{n})$
 rounds. If it does not, we can just perform some linear work algorithm
-to solve the problem.  This leads directly to a span bound $E \lbrack
+to solve the problem.  This leads directly to a span bound latexmath:[$E \lbrack
 S(n) \rbrack = O(\lg{n})$, assuming that each round can be implemented
 in constant span.
 
@@ -222,18 +229,18 @@ operations to the tree.
 
 .Algorithm: Tree Contraction
 ****
-Input: Tree $T$
-Output: A single node
+Input: Binary tree `T`
+Output: The root of `T`
 
 [source, {cpp}]
 ----
-tree_contract ($T$)
-if $|T| < 1$ 
-  $T$
+tree_contract (T)
+if |T| < 1 
+  T
 else
-    $T'$ = rake leaves of $T$ 
-    $T''$ = compress out-degree 1 nodes ot $T'$
-    tree_contract ($T'$)
+    TT = rake leaves of T
+    TTT = compress out-degree 1 nodes of TT
+    tree_contract (TTT)
 ----
 ****  
 
@@ -283,22 +290,22 @@ rank information it is given in the second pass.
 this would be to use divide-and-conquer.  We recursively parallel
 compute the size of the left subtree, right subtree, and add one for
 the root.  Since the left and the right subtrees are independent, the
-computtaions can be don in parallel. If the tree $T$ is balanced, then
-such an algorithm performs $Theta(n)$ work in $\Theta(\lg{n})$ span.
-If, howener, $T$ is unbalanced, then span can be as large as
+computtaions can be don in parallel. If the tree latexmath:[$T$] is balanced, then
+such an algorithm performs latexmath:[$Theta(n)$] work in latexmath:[$\Theta(\lg{n})$] span.
+If, howener, latexmath:[$T$] is unbalanced, then span can be as large as
 $\Omega(n)$.
 
 As our second mativating example, suppose that we are given a rooted
-tree $T$ that represents a mathemetical expression consisting of
+tree latexmath:[$T$] that represents a mathemetical expression consisting of
 addition and multiplication operations over real numbers and we wish
 to compute the value of this expression.  In such a tree, each
 internal node is an operation (plus or multiply) and each leaf is a
 real number.  Again, we can solve this problem by using a
 divide-and-conquer algorithm, whic computes the values of the
 expressions on the left and the right subtrees and combines them
-acconding to the operation at the root.  If the tree $T$ is balanced,
-then such an algorithm performs $Theta(n)$ work in $\Theta(\lg{n})$
-span.  If, however, $T$ is unbalanced, then span can be as large as
+acconding to the operation at the root.  If the tree latexmath:[$T$] is balanced,
+then such an algorithm performs latexmath:[$Theta(n)$] work in latexmath:[$\Theta(\lg{n})$
+span.  If, however, latexmath:[$T$] is unbalanced, then span can be as large as
 linear.
 
 
@@ -309,7 +316,7 @@ such problems on trees.
 
 Recall the definiton of <<sec:graph-theory::euler-tours, Euler Tours>>.
 
-A tree $T$ may not be Eulerian.  For example, in a binary tree, the
+A tree latexmath:[$T$] may not be Eulerian.  For example, in a binary tree, the
 leaves have degree one.  We can, however, transform a tree to a
 directed graph by replacing each (undirected) edge with two edges, one
 in each direction. Such a tree corresponds to a graph where each
@@ -376,27 +383,27 @@ Trees are a basic structure for representing relations.  It is thus
  natural to ask whether we can perform tree operations in parallel.
 
 As our first motivating example, let's consider a very simple
-question: we are given a rooted binary tree $T$ and a root $r$ and
+question: we are given a rooted binary tree latexmath:[$T$] and a root latexmath:[$r$] and
 asked to determine the number of nodes in the tree.  One way to do
 this would be to use divide-and-conquer.  We recursively parallel
 compute the size of the left subtree, right subtree, and add one for
 the root.  Since the left and the right subtrees are independent, the
-computtaions can be don in parallel. If the tree $T$ is balanced, then
-such an algorithm performs $Theta(n)$ work in $\Theta(\lg{n})$ span.
-If, howener, $T$ is unbalanced, then span can be as large as
+computtaions can be don in parallel. If the tree latexmath:[$T$] is balanced, then
+such an algorithm performs latexmath:[$Theta(n)$] work in latexmath:[$\Theta(\lg{n})$] span.
+If, howener, latexmath:[$T$] is unbalanced, then span can be as large as
 $\Omega(n)$.
 
 As our second mativating example, suppose that we are given a rooted
-tree $T$ that represents a mathemetical expression consisting of
+tree latexmath:[$T$] that represents a mathemetical expression consisting of
 addition and multiplication operations over real numbers and we wish
 to compute the value of this expression.  In such a tree, each
 internal node is an operation (plus or multiply) and each leaf is a
 real number.  Again, we can solve this problem by using a
 divide-and-conquer algorithm, whic computes the values of the
 expressions on the left and the right subtrees and combines them
-acconding to the operation at the root.  If the tree $T$ is balanced,
-then such an algorithm performs $Theta(n)$ work in $\Theta(\lg{n})$
-span.  If, however, $T$ is unbalanced, then span can be as large as
+acconding to the operation at the root.  If the tree latexmath:[$T$] is balanced,
+then such an algorithm performs latexmath:[$Theta(n)$] work in latexmath:[$\Theta(\lg{n})$
+span.  If, however, latexmath:[$T$] is unbalanced, then span can be as large as
 linear.
 
 
@@ -408,7 +415,7 @@ such problems on trees.
 
 Recall the definiton of <<sec:graph-theory::euler-tours, Euler Tours>>.
 
-A tree $T$ may not be Eulerian.  For example, in a binary tree, the
+A tree latexmath:[$T$] may not be Eulerian.  For example, in a binary tree, the
 leaves have degree one.  We can, however, transform a tree to a
 directed graph by replacing each (undirected) edge with two edges, one
 in each direction. Such a tree corresponds to a graph where each

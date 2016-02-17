@@ -379,7 +379,7 @@ is low.
 
 Suppose that latexmath:[$P$] balls are thrown uniformly and randomly
 into latexmath:[$P$] bins, where bin latexmath:[$1 \le i \le P$] has
-weight latexmath:[$W_i$], and latexmath:[$W = \sum_{i=1}^{P}{W_i}$].  For
+weight latexmath:[$W_i \ge 0$], and latexmath:[$W = \sum_{i=1}^{P}{W_i}$].  For
 each bin, define the random variable
 
 [latexmath]
@@ -479,7 +479,7 @@ probability at least latexmath:[$0.25$]
 
 ==== Bound in terms of Work and Steal Attempts
 
-.Lemma[Work-Throw Bound] 
+.Lemma[Work and Steal Bound] 
 *******************
 
 Consider any multithreaded computation with work latexmath:[$W$].  The
@@ -532,7 +532,7 @@ beginning of that round.
 
 . A vertex is latexmath:[$R_i$] is either assigned to a process or is
 in a deque.  Let latexmath:[$R_i(q)$] denote the set of *_ready
-vertices_* belonging to a process latexmath:[$q$] at the beginning of
+vertices belonging to a process latexmath:[$q$]_* at the beginning of
 round latexmath:[$i$]; these are exactly the vertices in the work
 sequence of that process.
 
@@ -544,6 +544,7 @@ assigned, or
 
 .. latexmath:[$\phi_i(v) = 3^{2w(v)}$], otherwise.
 
+Note that potential of a vertex is always a natural number.
 
 . The *_potential of process latexmath:[$q$]_* is
 latexmath:[$\Phi_i(q) = \sum_{v \in R_i(q)}{\phi_i(v)}.$]
@@ -565,7 +566,6 @@ R_i}{\phi_i(v)}$].  We can write the total potential in round
 latexmath:[$i$] as follows latexmath:[$\Phi_i = \Phi_i(H_i) + \Phi_i(D_i)$].
 
 
-Note that potential is always a natural number.
 
 .Definition: Beginning and termination potential
 ****
@@ -630,7 +630,8 @@ $
 
 ****
 
-.Lemma[Monotonicity of Total Potential]
+[[lem:work-stealing::potential-decrease]]
+.Lemma[Decreasing Total Potential]
 ****
 
 Total potential does not increase from one round to the next, i.e.,
@@ -707,6 +708,27 @@ show that after latexmath:[$P$] steal attempts the total potential
 decreases with constant probability.
 
 
+//// 
+
+ TODO: The proofs for the following two theorems are somewhat broken.
+The potential should be partitioned into two D_i's and H_i's and we
+should establish that each decreases by a constant fraction.  We then
+put these together.  When doing that we need to argue that we are not
+double counting.  
+
+For example let's say that the potential is partitioned evenly between
+D_i and H_i.  Then we establish that due that my actions decrease the
+potential by 1/4 of the total potential \Phi_i.  Since \Phi_i is
+evenly distributed, this means that I am decreasing the potential of
+each by 1/2 but I am not decreasing the potential by 1/2 but only by
+1/4.  So if I double count, I might get a factor two difference.
+Maybe this is not significant.  
+
+
+In any case, the proofs do not seem to be double counting but it does
+not seem to be considered carefully.
+
+////
 
 
 .Lemma[latexmath:[$P$] Steal Attempts]
@@ -755,9 +777,9 @@ decreased by at least latexmath:[$\frac{2}{3}\, \phi_i(v)$].
 . Suppose that the steal attempt is not succesful, and `popTop` returns
 `NULL`.  In this case, we know that latexmath:[$q$]'s deque was empty
 during `popTop`, or some other `popTop` or `popBottom` operation
-returned latexmath:[$v$].  In all cases, vertex latexmath:[$u$] has
+returned latexmath:[$v$].  In all cases, vertex latexmath:[$v$] has
 been assigned or possibly executed by the end of round latexmath:[$k$]
-and thus, potential decrases by latexmath:[$\frac{2}{3}\, \phi_i(u)$].
+and thus, potential decreases by latexmath:[$\frac{2}{3}\, \phi_i(v)$].
 
 
 Thus, we conclude that if a thief targets a process latexmath:[$q \in
@@ -848,9 +870,12 @@ vertex, then latexmath:[$\Phi_i(q) = 0$].  If latexmath:[$q$] has an
 assigned vertex latexmath:[$v$], then latexmath:[$\Phi_i(q) =
 \phi_i(v)$].  In this case, process latexmath:[$q$] executes
 latexmath:[$v$] at round latexmath:[$i$] and the potential decreases
-by at least latexmath:[$\frac{5}{9} \phi_i(u)$].  Summing over all
-processes in latexmath:[$H_i$], we have latexmath:[$\Phi_i - \Phi_j
-\ge \frac{5}{9} \Phi_i(H_i)$].
+by at least latexmath:[$\frac{1}{3} \phi_i(u)$] by an argument
+included in the proof of <<lem:work-stealing::potential-decrease,
+Decreasing Potential Lemma>>.
+
+Summing over all processes in latexmath:[$H_i$], we have
+latexmath:[$\Phi_i - \Phi_j \ge \frac{1}{3} \Phi_i(H_i)$].
 
 Thus we conclude that latexmath:[$P \lbrack \Phi_i - \Phi_j \ge
 \frac{1}{4} \Phi_i \rbrack > \frac{1}{4}$].  In other words, we
