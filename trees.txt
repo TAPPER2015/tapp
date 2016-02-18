@@ -186,9 +186,9 @@ different contraction algorithm that works well just on chains.
 
 Define *_compress_* as an operation that when applied to a node
 latexmath:[$u$] with a single child latexmath:[$v$] and parent
-latexmath:[$w$ deletes latexmath:[$u$] and the edges incident on it
+latexmath:[$w$] deletes latexmath:[$u$] and the edges incident on it
 and inserts an edge from the parent to the child, i.e.,
-latexmath:[$(w,v)$.  To incorporate into the computation the
+latexmath:[$(w,v)$].  To incorporate into the computation the
 contribution of the compressed vertex, we can construct a *_cluster_*,
 which for example, can be attached to the newly inserted edge.  For
 the in-order traversal example, this cluster will simply be a weight
@@ -265,13 +265,14 @@ image:chain-9-expand.png["Computing ranks",width="400pt",align="center"]
 
 
 Since the algorithm is randomized its analysis requires a bit care.
-The probability that such a node is compressed is latexmath:[$1/4$] because it has
-to flip heads and its child has to flip tails.  Thus the expected
-fraction of the nodes that are not compressed in this round is latexmath:[$3/4$.
-Define latexmath:[$X_i$] as the size of the tree at the beginning of round latexmath:[$i$.
-Since each round of contraction selects the nodes to compress
-independently, at round latexmath:[$i$, the expected number of nodes that remain
-in the tree is latexmath:[$E[X_i] = \frac{3^i}{4^i} \cdot n$.
+The probability that such a node is compressed is latexmath:[$1/4$]
+because it has to flip heads and its child has to flip tails.  Thus
+the expected fraction of the nodes that are not compressed in this
+round is latexmath:[$3/4$.  Define latexmath:[$X_i$] as the size of
+the tree at the beginning of round latexmath:[$i$].  Since each round
+of contraction selects the nodes to compress independently, at round
+latexmath:[$i$, the expected number of nodes that remain in the tree
+is latexmath:[$E[X_i] = \frac{3^i}{4^i} \cdot n$.
 
 From this bound alone, we can bound the work as follows.
 
