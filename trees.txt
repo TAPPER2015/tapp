@@ -17,7 +17,7 @@ unbalanced tree.
 
 .In-Order Traversal 
 ====
-image:perfect-binary-tree-8.png["An example complete binary tree",width="500pt",align="center"]
+image:perfect-binary-tree-8.png["An example complete binary tree",width="350pt",align="center"]
 
 An in-order traversal of the complete binary tree above traverses the
 nodes in the following order: *a,b,c,d,e,f,g,h,i,j,k,l,m,n,o*.  
@@ -55,7 +55,7 @@ subtree plus one.
 .Two-Pass Algorithm for Computing Ranks
 ====
 
-image:perfect-binary-tree-8-inorder-ranks.png["Compting ranks",width="550pt",align="center"]
+image:perfect-binary-tree-8-inorder-ranks.png["Compting ranks",width="400pt",align="center"]
 
 In the example tree above, each node is labeled with the size of its
 subtree computed in the first pass and each edge is labeled with the
@@ -73,7 +73,7 @@ span.
 
 .Divide and Conquer on Chains
 ====
-image:chain-9.png["An example chain",width="400pt",align="center"]
+image:chain-9.png["An example chain",width="300pt",align="center"]
 
 An in-order traversal of a chain of nodes yields *a,b,c,d,e,f,g,h,i*
 assuming that the left child of each node is "empty." The
@@ -119,22 +119,22 @@ for the input tree.
 .Contraction with Rakes
 ====
 
-image:perfect-binary-tree-8.png["Computing ranks",width="550pt",align="center"]
+image:perfect-binary-tree-8.png["Computing ranks",width="400pt",align="center"]
 
 Given the example tree above, we rake all the leaves and store their
 size in clustered stored in the parents.  For the drawings we draw
 the clusters on the edges.
 
-image:perfect-binary-tree-8-rake-1.png["Computing ranks",width="550pt",align="center"]
+image:perfect-binary-tree-8-rake-1.png["Computing ranks",width="400pt",align="center"]
 
 We can rake the leaves again.
 
-image:perfect-binary-tree-8-rake-2.png["Computing ranks",width="550pt",align="center"]
+image:perfect-binary-tree-8-rake-2.png["Computing ranks",width="400pt",align="center"]
 
 And again, until we reach a tree with a single node.  We can then
 compute the rank of the node as the size of its subtree.
 
-image:perfect-binary-tree-8-rake-3.png["Computing ranks",width="550pt",align="center"]
+image:perfect-binary-tree-8-rake-3.png["Computing ranks",width="400pt",align="center"]
 
 ====
 
@@ -144,20 +144,20 @@ image:perfect-binary-tree-8-rake-3.png["Computing ranks",width="550pt",align="ce
 Having reached the base case by contractions, we then perform
 expansion steps to compute the result for the original tree.
 
-image:perfect-binary-tree-8-rake-3.png["Computing ranks",width="550pt",align="center"]
+image:perfect-binary-tree-8-rake-3.png["Computing ranks",width="400pt",align="center"]
 
 As we expand, we compute the in order traversal for the tree
 constructed by "expanding" the tree out.
   
-image:perfect-binary-tree-8-rake-2-expand.png["Computing ranks",width="550pt",align="center"]
+image:perfect-binary-tree-8-rake-2-expand.png["Computing ranks",width="400pt",align="center"]
 
 Each expansion corresponds to the a contraction step.
 
-image:perfect-binary-tree-8-rake-1-expand.png["Computing ranks",width="550pt",align="center"]
+image:perfect-binary-tree-8-rake-1-expand.png["Computing ranks",width="400pt",align="center"]
 
 The expansion step completes when all the contractions are reversed.
 
-image:perfect-binary-tree-8-expand.png["Computing ranks",width="550pt",align="center"]
+image:perfect-binary-tree-8-expand.png["Computing ranks",width="400pt",align="center"]
 
 ====
 
@@ -229,21 +229,21 @@ decisions is sometimes called *_symmetry breaking_*.
 .Contraction with Compress
 ====
 
-image:chain-9.png["Computing ranks",width="400pt",align="center"]
+image:chain-9.png["Computing ranks",width="300pt",align="center"]
 
 In the example chain above, we compress every other internal node to
 obtain the new chain below.
 
-image:chain-9-compress-1.png["Computing ranks",width="400pt",align="center"]
+image:chain-9-compress-1.png["Computing ranks",width="300pt",align="center"]
 
 We then repeat this process.
 
-image:chain-9-compress-2.png["Computing ranks",width="400pt",align="center"]
+image:chain-9-compress-2.png["Computing ranks",width="300pt",align="center"]
 
 And repeat it again until we are down to a single edge at which point
 we can solve the problem.
 
-image:chain-9-compress-3.png["Computing ranks",width="400pt",align="center"]
+image:chain-9-compress-3.png["Computing ranks",width="300pt",align="center"]
 
 ====
 
@@ -251,15 +251,15 @@ image:chain-9-compress-3.png["Computing ranks",width="400pt",align="center"]
 .Expansion with Compress
 ====
 
-image:chain-9-compress-3.png["Computing ranks",width="400pt",align="center"]
+image:chain-9-compress-3.png["Computing ranks",width="300pt",align="center"]
 
 
-image:chain-9-compress-2-expand.png["Computing ranks",width="400pt",align="center"]
+image:chain-9-compress-2-expand.png["Computing ranks",width="300pt",align="center"]
 
 
-image:chain-9-compress-1-expand.png["Computing ranks",width="400pt",align="center"]
+image:chain-9-compress-1-expand.png["Computing ranks",width="300pt",align="center"]
 
-image:chain-9-expand.png["Computing ranks",width="400pt",align="center"]
+image:chain-9-expand.png["Computing ranks",width="300pt",align="center"]
 
 ====
 
@@ -271,8 +271,8 @@ the expected fraction of the nodes that are not compressed in this
 round is latexmath:[$3/4$.  Define latexmath:[$X_i$] as the size of
 the tree at the beginning of round latexmath:[$i$].  Since each round
 of contraction selects the nodes to compress independently, at round
-latexmath:[$i$, the expected number of nodes that remain in the tree
-is latexmath:[$E[X_i] = \frac{3^i}{4^i} \cdot n$.
+latexmath:[$i$], the expected number of nodes that remain in the tree
+is latexmath:[$E \lbrack X_i \rbrack = \frac{3^i}{4^i} \cdot n$].
 
 From this bound alone, we can bound the work as follows.
 
@@ -351,13 +351,13 @@ else
 ====
 An example tree contraction illustrated on the  input tree below. 
 
-image:unbalanced-binary-tree-6.png["Input tree",width="500pt",align="center"]
+image:unbalanced-binary-tree-6.png["Input tree",width="350pt",align="center"]
 
-image:unbalanced-binary-tree-6-tc-1.png["Tree contraction, round 1",width="500pt",align="center"]
+image:unbalanced-binary-tree-6-tc-1.png["Tree contraction, round 1",width="350pt",align="center"]
 
-image:unbalanced-binary-tree-6-tc-2.png["Tree contraction, round 2",width="500pt",align="center"]
+image:unbalanced-binary-tree-6-tc-2.png["Tree contraction, round 2",width="350pt",align="center"]
 
-image:unbalanced-binary-tree-6-tc-3.png["Tree contraction, round 3",width="500pt",align="center"]
+image:unbalanced-binary-tree-6-tc-3.png["Tree contraction, round 3",width="350pt",align="center"]
 ====
 
 
@@ -376,7 +376,7 @@ calculated based on the sizes of the left and the right subtrees.
 
 .In-Order Traversal 
 ====
-image:perfect-binary-tree-8-inorder-ranks.png["Compting ranks",width="500pt",align="center"]
+image:perfect-binary-tree-8-inorder-ranks.png["Compting ranks",width="350pt",align="center"]
 
 In the example tree above, each node is labeled with the size of its
 subtree computed in the first pass and each edge is labeled with the
