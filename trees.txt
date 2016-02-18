@@ -116,7 +116,7 @@ in-order traversal of a tree:
 for the input tree.
 
 
-.Contraction with Rakes
+.Contraction with Rake
 ====
 
 image:perfect-binary-tree-8.png["Computing ranks",width="400pt",align="center"]
@@ -138,7 +138,7 @@ image:perfect-binary-tree-8-rake-3.png["Computing ranks",width="400pt",align="ce
 
 ====
 
-.Expansion with Rakes
+.Expansion with Rake
 ====
 
 Having reached the base case by contractions, we then perform
@@ -251,43 +251,89 @@ image:chain-9-compress-3.png["Computing ranks",width="300pt",align="center"]
 .Expansion with Compress
 ====
 
+Having contracted the chain down to a single edge, we start the
+expansion phase, where we "re-insert" the deleted nodes to compute the
+result for the expanded tree.
+
 image:chain-9-compress-3.png["Computing ranks",width="300pt",align="center"]
 
+At each expansion step, to compute the result for the re-inserted
+nodes, we use the pre-computed result for the clusters adjacent to
+them.
 
 image:chain-9-compress-2-expand.png["Computing ranks",width="300pt",align="center"]
 
 
 image:chain-9-compress-1-expand.png["Computing ranks",width="300pt",align="center"]
 
+Expansion completes when we expand back the input tree. 
+
 image:chain-9-expand.png["Computing ranks",width="300pt",align="center"]
 
 ====
 
+Since the algorithm is randomized its analysis requires some care.
 
-Since the algorithm is randomized its analysis requires a bit care.
-The probability that such a node is compressed is latexmath:[$1/4$]
-because it has to flip heads and its child has to flip tails.  Thus
-the expected fraction of the nodes that are not compressed in this
-round is latexmath:[$3/4$.  Define latexmath:[$X_i$] as the size of
-the tree at the beginning of round latexmath:[$i$].  Since each round
-of contraction selects the nodes to compress independently, at round
-latexmath:[$i$], the expected number of nodes that remain in the tree
-is latexmath:[$E \lbrack X_i \rbrack = \frac{3^i}{4^i} \cdot n$].
+For the analysis, we shall make two assumptions:
 
-From this bound alone, we can bound the work as follows.
+. all rounds are independent: the source of randomness in each round
+is fully independent of the other rounds, and
+
+. coin flips are pairwise independent: the outcome of one coin flip
+does not affect that of any other coin flip.
+
+Let latexmath:[$F_i$] be a random variable denoting the fraction of
+internal nodes of the chain that are not compressed at round
+latexmath:[$i$].  We know that the probability that a node is
+compressed is latexmath:[$1/4$].  We thus know that latexmath:[$E
+\lbrack F_i \rbrack = m / (m - m/4) = 3/4$] for all latexmath:[$i$].
+
+
+Let latexmath:[$X_i$] be a random variable denoting the size of the
+tree at round latexmath:[$i$].  
+
+We have
+
+[latexmath]
++++++++++++
+$$
+X_i = n \cdot \Pi_{j=1}^i{F_i}.
+$$
++++++++++++
+
+Since all rounds are independent, latexmath:[$F_i$]'s are independent
+and thus we can write:
+
+[latexmath]
++++++++++++
+$$
+E \lbrack X_i \rbrack = n \cdot \Pi_{j=1}^i{E \lbrack F_i \rbrack} =
+\frac{3}{4}^i \cdot n.
+$$
++++++++++++
+
+
+
+Since we perform constant work per node in each round, we can bound
+the work as follows.
 
 [latexmath]
 +++++++++++
 $$
 \begin{array}{lll}
-W(n) & = & \sum_{i = 1}^{\infty}{X_i}
+W(n) & \le & \sum_{i = 1}^{\infty}{X_i}
 \\
-E \lbrack W(n) \rbrack & = & \sum_{i = 1}^{\infty}{\frac{3^i}{4^i} \cdot n}
+E \lbrack W(n) \rbrack & \le & \sum_{i = 1}^{\infty}{\frac{3^i}{4^i} \cdot n}
 \\
-E \lbrack W(n) \rbrack & = & O(n).
+E \lbrack W(n) \rbrack & \le & O(n).
 \end{array}
 $$
 +++++++++++
+
+Note that for this bound, we made the conservative assumption that the
+computation continues infinitely.  This still gives us a tight bound
+because we the size of the input decreases geometrically.  We thus
+conclude that the algorithm is work efficient.
 
 To bound the span, we need a high-probability bound.  Let's consider
 the probability that the number of nodes is non-trivial after
@@ -297,22 +343,117 @@ latexmath:[$i = 10 \lg{n}$] rounds.  By Markov's inequality we have
 [latexmath]
 +++++++++++
 $$
-P \lbrack X_i \ge 1 \rbrack \le E \lbrack X_i \rbrack / 1  = n^{-3.15}.
+\begin{array}{lll}
+P \lbrack X_i \ge 1 \rbrack 
+& \le & 
+E \lbrack X_i \rbrack / 1  =
+\\
+& \le & 
+\frac{3}{4}^{10\lg{n}}
+\\
+& \le & 
+n^{-3}.
+\end{array}
 $$
 +++++++++++
-				   
-This means that after latexmath:[$10\log{n}$] rounds, the probability that the
-tree constains more than a few nodes is tiny.  We can thus state with
-high probability that the algorithm terminates after latexmath:[$O(\log{n})$
-rounds. If it does not, we can just perform some linear work algorithm
-to solve the problem.  This leads directly to a span bound latexmath:[$E \lbrack
-S(n) \rbrack = O(\lg{n})$, assuming that each round can be implemented
-in constant span.
 
-The second pass of the algorithm, where we determine the pre-order
-traversal of the nodes, can be implemented by "undoing" the
-contraction step as we pass the edge weights to the "re-inserted"
-nodes.  This is straightforward and is left as an exercise.
+This means that after latexmath:[$10\log{n}$] rounds, the probability
+that the tree constains more than a few nodes is tiny.  We can thus
+state with high probability that the algorithm terminates after
+latexmath:[$O(\log{n})$ rounds. If it does not, we know that we can
+always solve the problem using a linear work algorithm.
+We can thus write our span bound as follows.
+
+
+ 
+[latexmath]
++++++++++++
+$$
+S(n) = 
+\left\{ 
+\begin{array}{ll}
+R & \mbox{if}~ R \le 10\lg{n}
+\\
+n & \mbox{otherwise} 
+\end{array}
+\right.
+
+$$
++++++++++++
+
+By conditioning on a random variable latexmath:[$R$] denoting the
+number of rounds we can bound span as follows.
+
+[latexmath]
++++++++++++
+$$
+\begin{array}{lll}
+E \lbrack S(n)] 
+& \le & 
+E \lbrack S(n) | R \le 10\lg{n} \rbrack  \cdot P  \lbrack  R \le 10\lg{n}  \rbrack  
++
+E \lbrack S(n) | R > 10\lg{n} \rbrack  \cdot P  \lbrack  R > 10\lg{n}  \rbrack  
+\\
+& \le & 
+10 \lg{n} \cdot (1-1/n^{3}) 
++ 
+n \cdot 1/n^3.
+\\
+& \le & 
+O(\lg{n}).
+\end{array}
+$$
++++++++++++
+
+
+//////////////////////////////////////////////////////////////////////
+
+// The method blow is a broken analysis.  It ought to use conditional
+// expectations by casing over X_i's.  It does not and ends up being
+// sloppy and dangerous.
+
+For instructive purposes we will discuss another method, which we
+don't recommend.
+
+Since we know that latexmath:[$F_i = 3/4$] for all latexmath:[$i$] and
+since latexmath:[$F_i$] and latexmath:[$X_i$] are independent, we
+have:
+
+[latexmath]
++++++++++++
+$$
+X_{i+1}=  F_i \cdot X_i,~\mbox{and thus}
+\\
+E \lbrack X_{i+1} \rbrack =  3/4 \cdot X_i \brack.
+$$
++++++++++++
+
+Above, we took expectations over only the random choices for a fixed
+input size latexmath:[$X_i$].  Since latexmath:[$X_i$] is a random
+variable latexmath:[$E[X_{i+1}]$] is itself a random variable, and
+thus we can take the expectation over that variable.  
+
+[latexmath]
++++++++++++
+$$
+E \lbrack E \lbrack X_{i+1} \rbrack  \rbrack  =  3/4 \cdot E \lbrack X_i \rbrack .
+\\
+E \lbrack X_{i+1} \rbrack  =  3/4 \cdot E \lbrack X_i \rbrack .
+$$
++++++++++++
+
+We used here the independence of latexmath:[$F_i$] from
+latexmath:[$X_i$] and did so very quietly.  This makes this approach
+dangerous.  A sloppy application of this method can lead to
+multiplying expectations of dependent random variables.
+
+This yields a recursive equation, which we can solve as latexmath:[$E
+\lbrack X_i \rbrack = \frac{3}{4}^i \cdot n $] and thus
+latexmath:[$E \lbrack W(n) \rbrack = O(n)$]
+
+//////////////////////////////////////////////////////////////////////
+
+
 
 === Tree Contraction
 
@@ -325,14 +466,11 @@ tree, a chain, by using a contraction algorithm that compresses nodes
 with single child's until the tree reduces to a single edge.
 
 We shall now see that we can in fact compute in-order ranks for any
-tree, balanced or unbalanced, by simultaneosly appliyng the same two
-operations to the tree.
+tree, balanced or unbalanced, by simultaneously applying the same two
+operations.
 
 .Algorithm: Tree Contraction
 ****
-Input: Binary tree `T`
-Output: The root of `T`
-
 [source, {cpp}]
 ----
 tree_contract (T)
@@ -340,12 +478,16 @@ if |T| < 1
   T
 else
     TT = rake leaves of T
-    TTT = compress out-degree 1 nodes of TT
+    TTT = compress and independent set of nodes with a single-child in TT
     tree_contract (TTT)
+    expand to TT
+    expand to T
 ----
 ****  
 
-
+Since expansion is symmetric to contraction and since we have already
+discussed expansion in some detail, in the rest of this chapter, we
+shall focus on contraction.
 
 .Tree Contraction 
 ====
@@ -361,58 +503,66 @@ image:unbalanced-binary-tree-6-tc-3.png["Tree contraction, round 3",width="350pt
 ====
 
 
-Let's consider separately these two cases, balanced and unbalanced. 
+As in our earlier examples, we can choose the rake and compress
+operations to collect information about the tree to compute the
+desired property.  For example, we use rake and compress to compute
+the in-order rank of the nodes as discussed.  It turns out that rake
+and compress are quite flexible and can be used to compute many
+different properties.  Another interesting example is expression
+trees, where we use a tree to represent a mathematical expression.  To
+compute the value of such an expression we can use tree contraction
+with rake and compress operations.  As we rake and compress nodes, we
+have to be careful about accumulating intermediate values of
+expressions so that we can compute in the end the result for the
+expression.  To this end, we may use (partially computed) expressions
+themselves as clusters.
 
 
-Consider a complete binary tree.  
-
-As a first-step in determining the
-in-order rank of each node, we can start by computing the size of each
-subtree in the tree. Once we have this information, we can compute the
-in-order ranks by traversing the tree from root to leaves as we
-propagate to each subtree in-order rank of its root, which can be
-calculated based on the sizes of the left and the right subtrees.
-
-
-.In-Order Traversal 
+.Tree Contraction for an expression tree 
 ====
-image:perfect-binary-tree-8-inorder-ranks.png["Compting ranks",width="350pt",align="center"]
+The expression tree shown below represents  the expression 
 
-In the example tree above, each node is labeled with the size of its
-subtree computed in the first pass and each edge is labeled with the
-rank information it is given in the second pass.
+[latexmath]
++++++++++++
+
+$$
+(1+2) \cdot (3 + 4) 
++ 
+\left(
+\left( 5 + ( 7 + ( (10 + 11) \cdot 9 ) right) 
+\cdot 
+6 
+\right)
+.
+$$
++++++++++++
+
+image:unbalanced-expression-tree.png["An expression tree",width="350pt",align="center"]
+
+To compute the value for the expression we first annotate the initial
+values for each cluster, which we associate with edges.  Initially all
+clusters are identity functions written as latexmath:[$x$].
+
+image:unbalanced-expression-tree-round-0.png["An expression tree",width="350pt",align="center"]
+
+In the first round, we perform a number of rakes and update the
+corresponding clusters.  Note that clusters are univariate functions.
+
+image:unbalanced-expression-tree-round-1.png["An expression tree",width="350pt",align="center"]
+
+In the second round, we perform a number of rakes and a compress and
+update the corresponding clusters. Note that clusters remain to be
+univariate functions. 
+
+image:unbalanced-expression-tree-round-2.png["An expression tree",width="350pt",align="center"]
+
 ====
 
 
 
 
 
- the number of nodes in the tree.  One way to do
-this would be to use divide-and-conquer.  We recursively parallel
-compute the size of the left subtree, right subtree, and add one for
-the root.  Since the left and the right subtrees are independent, the
-computtaions can be don in parallel. If the tree latexmath:[$T$] is balanced, then
-such an algorithm performs latexmath:[$Theta(n)$] work in latexmath:[$\Theta(\lg{n})$] span.
-If, howener, latexmath:[$T$] is unbalanced, then span can be as large as
-$\Omega(n)$.
-
-As our second mativating example, suppose that we are given a rooted
-tree latexmath:[$T$] that represents a mathemetical expression consisting of
-addition and multiplication operations over real numbers and we wish
-to compute the value of this expression.  In such a tree, each
-internal node is an operation (plus or multiply) and each leaf is a
-real number.  Again, we can solve this problem by using a
-divide-and-conquer algorithm, whic computes the values of the
-expressions on the left and the right subtrees and combines them
-acconding to the operation at the root.  If the tree latexmath:[$T$] is balanced,
-then such an algorithm performs latexmath:[$Theta(n)$] work in latexmath:[$\Theta(\lg{n})$
-span.  If, however, latexmath:[$T$] is unbalanced, then span can be as large as
-linear.
-
-
-In the rest of this chapter, we discuss two techniques for solving
-such problems on trees.  
-
+/////
 === Euler Tour Trees
 
 Recall the definiton of <<sec:graph-theory::euler-tours, Euler Tours>>.
@@ -473,7 +623,7 @@ suffice to be given a manoid, we actually need a
 https://en.wikipedia.org/wiki/Group_(mathematics)[group], which is
 algebraic structure that requires an invertibility. 
 
-
+/////
 
 
 
