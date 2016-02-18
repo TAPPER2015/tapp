@@ -131,7 +131,7 @@ We can rake the leaves again.
 
 image:perfect-binary-tree-8-rake-2.png["Computing ranks",width="550pt",align="center"]
 
-And again, until we reach a tree with a single node.  We can thet
+And again, until we reach a tree with a single node.  We can then
 compute the rank of the node as the size of its subtree.
 
 image:perfect-binary-tree-8-rake-3.png["Computing ranks",width="550pt",align="center"]
@@ -171,31 +171,60 @@ solves to latexmath:[$W(n) = O(n)$].  Since complete trees are
 balanced, for the span we have latexmath:[$S(n) = S(n/2) + \log{n}$].
 This solves to latexmath:[$S(n) = O(\lg^2{n})$].
 
-=== Compress Operation
 
-As with our divide-and-conquer algorithm, the contraction algorithm
-does very poorly on a chain, in fact even more poorly then the divide
-and conquer algorithm, performing latexmath:[$O(n^2)$] work in latexmath:[$O(n^2)$] span.
 
-Can we do better?  Let's consider the worst-case example of the chain
-and suppose that we can design a different contraction algorithm that
-works well just on chains.  Define *_compress_* as an operation that
-when applied to a node latexmath:[$u$] with a single child latexmath:[$v$] and parent latexmath:[$w$
-deletes latexmath:[$u$] and the edges incident on it and inserts an edge from the
-parent to the child, i.e., latexmath:[$(w,v)$.  To keep track of the size
-information, we can label this edge with a weight that is equal to the
-weight of the vertices and edges deleted, assuming that initially all
-edges have weight latexmath:[$0$.  
+==== Compress Operation
 
-We can design a contraction algorithm for chains by selecting in each
-round an independent set of nodes (nodes with no edges in between) and
-compressing them.  To maximize the amount of contraction, we want to
-select a maximal independent set and do so in parallel.  To do this,
-we can use randamization.  We can flip for each node a coin and select
-a vertex if it flipped heads and its child flipped tails.  This
-guarantees that no two adjacent nodes are selected.  To contract the
-chain, we can apply this contraction step recursively until we are
-left with a single edge.
+The contraction algorithm based rake operations performs well for
+complete binary trees but on unbalanced trees, the algorithm can do
+verp poorly. In fact, the contraction algorithm requires
+latexmath:[$O(n^2)$] work and latexmath:[$O(n^2)$] span on a chain,
+which is a degenerate tree.
+
+Let's consider the worst-case example of the chain and design a
+different contraction algorithm that works well just on chains.
+
+Define *_compress_* as an operation that when applied to a node
+latexmath:[$u$] with a single child latexmath:[$v$] and parent
+latexmath:[$w$ deletes latexmath:[$u$] and the edges incident on it
+and inserts an edge from the parent to the child, i.e.,
+latexmath:[$(w,v)$.  To incorporate into the computation the
+contribution of the compressed vertex, we can construct a *_cluster_*,
+which for example, can be attached to the newly inserted edge.  For
+the in-order traversal example, this cluster will simply be a weight
+corresponding to the size of the deleted nodes.  Initially all edges
+have weight latexmath:[$0$].
+
+
+Using compress operation, we wish to be able to contract a tree to a
+smaller tree in parallel. Since a compress operation updates the two
+neighbors of a compressed node, we need to be careful about how we
+apply these operations.  One way do this is to select in each round an
+independent set of nodes (nodes with no edges in between) and compress
+them.
+
+Based on this idea, we can give an algorithm for computing the
+in-order traversal of a chain:
+
+. *Base case:* The chain consists of a single edge, compute the
+result.
+
+. *Contraction step:* Compress an independent set of internal nodes to
+obtain a contracted chain.
+
+. *Recursive step:* Solve the problem for the contracted chain.
+
+. *Expansion step:* "Reinsert" the compressed nodes to compute the
+result for the input chain.
+
+
+To maximize the amount of contraction at each contraction step, we
+want to select a maximal independent set and do so in parallel.  There
+are many ways to do this, we can use a deterministic algorithm, or a
+randomized one.  Here, shall use randamization.  The idea is to flip
+for each node a coin and select a vertex if it flipped heads and its
+child flipped tails. This idea of using randomization to make parallel
+decisions is sometimes called *_symmetry breaking_*. 
 
 .Contraction with Compress
 ====
@@ -207,13 +236,33 @@ obtain the new chain below.
 
 image:chain-9-compress-1.png["Computing ranks",width="400pt",align="center"]
 
-We can then repeat this process until we are down to a single edge.
+We then repeat this process.
 
 image:chain-9-compress-2.png["Computing ranks",width="400pt",align="center"]
+
+And repeat it again until we are down to a single edge at which point
+we can solve the problem.
 
 image:chain-9-compress-3.png["Computing ranks",width="400pt",align="center"]
 
 ====
+
+
+.Expansion with Compress
+====
+
+image:chain-9-compress-3.png["Computing ranks",width="400pt",align="center"]
+
+
+image:chain-9-compress-2-expand.png["Computing ranks",width="400pt",align="center"]
+
+
+image:chain-9-compress-1-expand.png["Computing ranks",width="400pt",align="center"]
+
+image:chain-9-expand.png["Computing ranks",width="400pt",align="center"]
+
+====
+
 
 Since the algorithm is randomized its analysis requires a bit care.
 The probability that such a node is compressed is latexmath:[$1/4$] because it has
