@@ -1,7 +1,10 @@
 [[ch:graph-theory]]
-== Graph Theory Terminology
+== Graph Theory
 
-
+This chapter is a brief overview of some of the graph terminology
+used in this book. For the definitions, we assume undirected graphs
+but the definitions generalize straightforwardly for the case of
+directed graphs.
 
 [[sec:graph-theory::walks]]
 === Walk, Trails, Paths
@@ -17,8 +20,8 @@ can specify a walk as a sequence of vertices (which imply) the edges.
 
 A *_trail_* in a graph is a walk where all edges are distinct, that is
 no edge is traversed more than once.  Note that there can be repeated
-vertices in a trail.  A trail corresponds to the intuitive notion that
-it is a path with a purpose so it does not repeat the same edges.
+vertices in a trail.  A trail corresponds to the intuitive notion of
+the "trail" of a walk.
 
 A *_path_* is a graph is a walk where all edges and vertices are
 distinct.
@@ -36,15 +39,13 @@ same vertex.  We say that a graph is *_Eulerian_* if it has an Euler
 tour.
 
 It can be proven that a connected graph latexmath:[$G = (V,E)$] is
-Eulerian if and only if every vertex latexmath:[$v \in V$]has even
+Eulerian if and only if every vertex latexmath:[$v \in V$] has even
 degree.
 
-These definitions generalize naturally to digraphs.
 
 
 [[sec:graph-theory::trees]]
 === Trees
-
 
 A *_tree_* is an undirected graph in which any two of vertices are
 connected by exactly one path.
@@ -80,4 +81,14 @@ performing an post-order traversal of the right subtree.  An
 *_pre-order traversal_* traverses the binary tree by visiting the
 root, performing an pre-order traversal of the left subtree, and then
 performing an pre-order traversal of the right subtree.
+
+A *_full binary tree_* is a binary tree, where each non-leaf node has
+degree exatly two.
+
+A *_complete binary tree_* is a full binary tree, where all the levels
+except possibly the last are completely full.
+
+A *_perfect binary tree_* is a full binary tree where all the leaves
+are at the same level.
+
 

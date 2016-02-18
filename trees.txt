@@ -5,27 +5,31 @@ Trees are a basic structure for representing relations.  It is thus
  natural to ask whether we can perform tree operations in parallel.
 
 As our first motivating example, let's consider the following
-question: we are given a binary tree latexmath:[$T$] and asked to determine for
-*_in-order rank_* of each node in the tree, defined as the order of
-the node in an in-order traversal of the tree. 
-
+question: we are given a binary tree latexmath:[$T$] and asked to
+determine the *_in-order rank_* of each node in the tree, defined as
+the order of the node in an in-order traversal of the tree.
 
 As two important special cases of this problem, let's consider a
-perfect binary tree, where each internal node has exactly two children
-and a chain, where each internal node has exactly one child. A perfect
-binary tree is a balanced tree whereas a chain is an unbalanced tree.
+complete binary tree, where each internal node has exactly two
+children and a chain, where each internal node has exactly one
+child. A complete binary tree is a balanced tree whereas a chain is an
+unbalanced tree.
 
 .In-Order Traversal 
 ====
-image:perfect-binary-tree-8.png["An example perfect binary tree",width="500pt",align="center"]
+image:perfect-binary-tree-8.png["An example complete binary tree",width="500pt",align="center"]
 
-An in-order traversal of the perfect binary tree above traverses the
+An in-order traversal of the complete binary tree above traverses the
 nodes in the following order: *a,b,c,d,e,f,g,h,i,j,k,l,m,n,o*.  
 
 ====
 
-To compute in-order rank of each node, we can use a two-pass
- algorithm:
+Let's apply two algorithm design techniques to this problem: divide
+and conquer and contraction.
+
+=== Divide and Conquer
+
+For divide and conquer, we can use a two-pass algorithm:
 
 . First pass: compute the size of each subtree in the
 tree. 
@@ -35,19 +39,6 @@ root to leaves as we propagate to each subtree in-order rank of its
 root, which can be calculated based on the sizes of the left and the
 right subtrees.
 
-
-.Two-Pass Algorithm for Computing Ranks
-====
-
-image:perfect-binary-tree-8-inorder-ranks.png["Compting ranks",width="550pt",align="center"]
-
-In the example tree above, each node is labeled with the size of its
-subtree computed in the first pass and each edge is labeled with the
-rank information it is given in the second pass.
-====
-
-We can implement the two-pass algorithm using two different
-techniques: divide and conquer and contraction. 
 
 The first phase of the divide-and-conquer algorithm proceeds by
 computing the recursively the sizes of each subtree in parallel, and
@@ -60,10 +51,24 @@ the offset is the same as the offset of the root and for the right
 subtree, the offset is the calculated by adding the size of the left
 subtree plus one.   
 
+
+.Two-Pass Algorithm for Computing Ranks
+====
+
+image:perfect-binary-tree-8-inorder-ranks.png["Compting ranks",width="550pt",align="center"]
+
+In the example tree above, each node is labeled with the size of its
+subtree computed in the first pass and each edge is labeled with the
+offset computed in the second pass.  
+
+====
+
+
 If the tree is balanced, as for example in our example, we can show
-that this algorithm performs latexmath:[$O(n)$] work in latexmath:[$O(\lg{n})$] span.  If
-however, the tree is not balanced the algorithm can do poorly,
-requiring as much as latexmath:[$O(n)$] span.
+that this algorithm performs latexmath:[$O(n)$] work in
+latexmath:[$O(\lg{n})$] span.  If however, the tree is not balanced
+the algorithm can do poorly, requiring as much as latexmath:[$O(n)$]
+span.
 
 
 .Divide and Conquer on Chains
@@ -77,48 +82,94 @@ example.
 
 ====
 
-=== Rake Operation
+=== Contraction
 
-The contraction algorithm might be a bit less obvious.  To develop
-this algorithm, lets define a *_rake_* as an operation that when
-applied to a leaf node deletes the leaf node and stores its size in
-its parent. With some care, we can rake all the leaves in parallel: we
-just need to have a place for each leaf to store their size at their
-parent so that the rakes can be performed in parallel without
-interfence.  We can repeat this process of raking the leaves until we
-have a just the root left.
+Appling the idea behind the contraction technique, we want to
+"contract" the tree into a smaller tree, solve the problem for the
+smaller tree, and "expand" the solution for the smaller tree to
+compute the solution for the original tree.
+
+There are several ways to contract a tree.  One way is to "fold" or
+"rake" the leaves to generate a smaller tree.  Another way is to
+"compress" long branches of the tree removing some of the nodes on
+such longe branches. 
+
+==== Rake Operation
+
+Lets define a *_rake_* as an operation that when applied to a leaf
+deletes the leaf and stores its size in its parent. With some care, we
+can rake all the leaves in parallel: we just need to have a place for
+each leaf, sometimes called a *_cluster_*, to store their size at
+their parent so that the rakes can be performed in parallel without
+interfence.  
+
+Using the rake operation, we can give an algorithm for computing the
+in-order traversal of a tree:
+
+. *Base case:*  The tree has only one node, compute the resulty.
+
+. *Contraction step:*  Rake all the leaves to contract the tree.
+
+. *Recursive step:* Solve the problem for the contracted tree.
+
+. *Expansion step:* "Reinsert" the raked leaves to compute the result
+for the input tree.
 
 
 .Contraction with Rakes
 ====
 
+image:perfect-binary-tree-8.png["Computing ranks",width="550pt",align="center"]
+
+Given the example tree above, we rake all the leaves and store their
+size in clustered stored in the parents.  For the drawings we draw
+the clusters on the edges.
+
 image:perfect-binary-tree-8-rake-1.png["Computing ranks",width="550pt",align="center"]
 
-In the example tree above, we rake all the leaves and store their size
-in the parents.  We can rake the leaves again until only the roons
-remain.  This is illustrated by the drawings below.
+We can rake the leaves again.
 
 image:perfect-binary-tree-8-rake-2.png["Computing ranks",width="550pt",align="center"]
 
-image:perfect-binary-tree-8-rake-3.png["Computing ranks",width="550pt",align="center"]
+And again, until we reach a tree with a single node.  We can thet
+compute the rank of the node as the size of its subtree.
 
+image:perfect-binary-tree-8-rake-3.png["Computing ranks",width="550pt",align="center"]
 
 ====
 
-The second phase of the algorithm is essentially the same as in the
-divide-and-conquer phase.
+.Expansion with Rakes
+====
+
+Having reached the base case by contractions, we then perform
+expansion steps to compute the result for the original tree.
+
+image:perfect-binary-tree-8-rake-3.png["Computing ranks",width="550pt",align="center"]
+
+As we expand, we compute the in order traversal for the tree
+constructed by "expanding" the tree out.
+  
+image:perfect-binary-tree-8-rake-2-expand.png["Computing ranks",width="550pt",align="center"]
+
+Each expansion corresponds to the a contraction step.
+
+image:perfect-binary-tree-8-rake-1-expand.png["Computing ranks",width="550pt",align="center"]
+
+The expansion step completes when all the contractions are reversed.
+
+image:perfect-binary-tree-8-expand.png["Computing ranks",width="550pt",align="center"]
+
+====
 
 Let's calculate the work and span of this algorithm assuming that we
-have a perfect binary tree, which is a tree where all internal nodes
+have a complete binary tree, which is a tree where all internal nodes
 have exactly two children and all the leaves are collected at the last
-two levels of the tree.
-
-
-Since a perfect binary tree is a full binary tree, raking all the
-leaves removes half of the nodes.  Thus we can write the work
-recursion as latexmath:[$W(n) = W(n/2) + n$.  This solves to latexmath:[$W(n) = O(n)$.
-Since perfect trees are balanced, for the span we have latexmath:[$S(n) = S(n/2)
-+ \log{n}$.  This solves to latexmath:[$S(n) = O(\lg^2{n})$.
+two levels of the tree.  Since a complete binary tree is a full binary
+tree, raking all the leaves removes half of the nodes.  Thus we can
+write the work recursion as latexmath:[$W(n) = W(n/2) + n$].  This
+solves to latexmath:[$W(n) = O(n)$].  Since complete trees are
+balanced, for the span we have latexmath:[$S(n) = S(n/2) + \log{n}$].
+This solves to latexmath:[$S(n) = O(\lg^2{n})$].
 
 === Compress Operation
 
@@ -216,7 +267,7 @@ nodes.  This is straightforward and is left as an exercise.
 === Tree Contraction
 
 In this chapter thus far, we have seen that we can compute the
-in-order rank a perfect binary tree, which is a perfectly balanced
+in-order rank a complete binary tree, which is a perfectly balanced
 tree, by using a contraction algorithm that rakes the leaves of the
 tree until the tree reduces to a single vertex.  We have also seen
 that we can compute in-order ranks of nodes in a worst-case unbalanced
@@ -263,7 +314,7 @@ image:unbalanced-binary-tree-6-tc-3.png["Tree contraction, round 3",width="500pt
 Let's consider separately these two cases, balanced and unbalanced. 
 
 
-Consider a perfect binary tree.  
+Consider a complete binary tree.  
 
 As a first-step in determining the
 in-order rank of each node, we can start by computing the size of each
