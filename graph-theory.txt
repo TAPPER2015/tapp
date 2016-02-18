@@ -7,7 +7,7 @@ but the definitions generalize straightforwardly for the case of
 directed graphs.
 
 [[sec:graph-theory::walks]]
-=== Walk, Trails, Paths
+=== Walks, Trails, Paths
 
 A *_walk_* in a graph is a sequence of alternating vertex-edge pairs,
 latexmath:[$v_0, e_1, v_1, \ldots, v_{n-1}, e_n, v_n$], such that
