@@ -7,3 +7,5 @@ well? Can you prove something about it?
 
 . Tree contraction: when does it work?  What are the propertios of
 rakes and compresses?
+
+. Dynamic stability of graph contraction/connectivity.
