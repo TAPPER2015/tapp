@@ -593,8 +593,8 @@ factor of latexmath:[$3/4$].
 ****
 
 Consider a tree with latexmath:[$n$] nodes, one round of tree
-contraction yields a tree whose size in latexmath:[$3n/4$] in
-expectation.
+contraction yields a tree which has no more than latexmath:[$3n/4$]
+nodes in expectation.
 
 ****
 
@@ -629,9 +629,9 @@ can be written as
 
 [latexmath]
 +++++++++++
-
+$$
 V = R \cup V_0 \cup V_{10} \cup V_{11} \cup V_{12} \cup V_2.
-
+$$
 +++++++++++
 
 Let's not consider the nodes in the set latexmath:[$V_{11} \cup
@@ -663,6 +663,21 @@ latexmath:[$2/3$] remain live at the end of the round.  We thus
 conclude that in expectation latexmath:[$3/4$] of the nodes remain live.
 ****
 
+.Theorem[Work and Span of Tree Contraction]
+****
+
+Tree contraction performs latexmath:[$O(n)$] expected work in
+latexmath:[$O(\lg{n})$] expected span. 
+
+****
+
+.Proof
+****
+
+The proof of this theorem is the same as the proof for chains given
+above.  For brevity, we don't repeat the proof here.
+
+****
 
 
 
