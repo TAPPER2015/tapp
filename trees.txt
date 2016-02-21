@@ -529,7 +529,7 @@ $$
 (1+2) \cdot (3 + 4) 
 + 
 \left(
-\left( 5 + ( 7 + ( (10 + 11) \cdot 9 ) right) 
+\left( 5 + ( 7 + ( (10 + 11) \cdot 9 ) \right) 
 \cdot 
 6 
 \right)
@@ -541,7 +541,8 @@ image:unbalanced-expression-tree.png["An expression tree",width="350pt",align="c
 
 To compute the value for the expression we first annotate the initial
 values for each cluster, which we associate with edges.  Initially all
-clusters are identity functions written as latexmath:[$x$].
+clusters are identity functions written as latexmath:[$x$].  As before
+we use "dangling" edges to represent the values computed for leaves.
 
 image:unbalanced-expression-tree-round-0.png["An expression tree",width="350pt",align="center"]
 
@@ -550,11 +551,25 @@ corresponding clusters.  Note that clusters are univariate functions.
 
 image:unbalanced-expression-tree-round-1.png["An expression tree",width="350pt",align="center"]
 
-In the second round, we perform a number of rakes and a compress and
+In the second round, we perform a number of rakes and one compress and
 update the corresponding clusters. Note that clusters remain to be
 univariate functions. 
 
 image:unbalanced-expression-tree-round-2.png["An expression tree",width="350pt",align="center"]
+
+In the third round, we again perform a number of rakes and one
+compress and update the corresponding clusters. Note that clusters
+remain to be univariate functions.
+
+image:unbalanced-expression-tree-round-2.png["An expression tree",width="350pt",align="center"]
+
+
+It can be shows that the expressions on the edges will always have the
+form latexmath:[$ax+b$] where latexmath:[$a$] and latexmath:[$b$] are
+constants.  As a result, as tree contraction progresses, expressions
+do not grow into larger expressions, rather they can be simplified
+into a simple form. This is crucial is making sure that rake and
+compress operations require  constant work.
 
 ====
 

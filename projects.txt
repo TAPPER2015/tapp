@@ -5,7 +5,7 @@ processor is close.  Bias steals toward close processors.  Design the
 algorithm and implement in PASL (should be simple).  Does it work
 well? Can you prove something about it?
 
-. Tree contraction: when does it work?  What are the propertios of
+. Tree contraction: when does it work?  What are the properties of
 rakes and compresses?
 
 . Dynamic stability of graph contraction/connectivity.
