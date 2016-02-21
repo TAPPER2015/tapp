@@ -274,6 +274,7 @@ image:chain-9-expand.png["Computing ranks",width="300pt",align="center"]
 
 Since the algorithm is randomized its analysis requires some care.
 
+
 For the analysis, we shall make two assumptions:
 
 . all rounds are independent: the source of randomness in each round
@@ -467,7 +468,9 @@ with single child's until the tree reduces to a single edge.
 
 We shall now see that we can in fact compute in-order ranks for any
 tree, balanced or unbalanced, by simultaneously applying the same two
-operations.
+operations recursively in a number of rounds.  Each round of
+application, rakes the leaves, and selects an independent set of nodes
+to compress. 
 
 .Algorithm: Tree Contraction
 ****
@@ -485,13 +488,19 @@ else
 ----
 ****  
 
+To select the independent set of single-child nodes to compress, we
+use the same randomization technique as in chains: each node flips a
+coin and a single-child node is selected if it flips heads and its
+child flips tails.
+
 Since expansion is symmetric to contraction and since we have already
 discussed expansion in some detail, in the rest of this chapter, we
 shall focus on contraction.
 
 .Tree Contraction 
 ====
-An example tree contraction illustrated on the  input tree below. 
+An example tree contraction illustrated on the  input tree below.
+Random coin flips are not illustrated.
 
 image:unbalanced-binary-tree-6.png["Input tree",width="350pt",align="center"]
 
@@ -558,6 +567,86 @@ image:unbalanced-expression-tree-round-2.png["An expression tree",width="350pt",
 
 ====
 
+
+
+
+We start by establishing a key lemma that says that each round of tree
+contraction reduces the expected number of nodes in the tree by a
+factor of latexmath:[$3/4$].
+
+.Lemma [Contraction Ratio]
+****
+
+Consider a tree with latexmath:[$n$] nodes, one round of tree
+contraction yields a tree whose size in latexmath:[$3n/4$] in
+expectation.
+
+****
+
+.Proof
+****
+
+Partition the nodes in latexmath:[$T$] into four disjoint sets
+
+. latexmath:[$R$]: singleton set containing the root.
+
+. latexmath:[$V_0$]: set of nodes with latexmath:[$0$] children, i.e.,
+the leaves.
+
+. latexmath:[$V_1$]: set of nodes with latexmath:[$1$] child.
+
+. latexmath:[$V_2$]: set of nodes with latexmath:[$2$] children.
+
+Let's further partition latexmath:[$V_1$] into three disjoint sets:
+
+. latexmath:[$V_{10}$]: set of nodes with latexmath:[$1$] child, where
+the child has no other children.
+
+. latexmath:[$V_{11}$]: set of nodes with latexmath:[$1$] child, where
+the child has one child.
+
+. latexmath:[$V_{12}$]: set of nodes with latexmath:[$1$] child, where
+the child has two children.
+
+
+By construction, we know the set of nodes latexmath:[$V$] of the tree
+can be written as 
+
+[latexmath]
++++++++++++
+
+V = R \cup V_0 \cup V_{10} \cup V_{11} \cup V_{12} \cup V_2.
+
++++++++++++
+
+Let's not consider the nodes in the set latexmath:[$V_{11} \cup
+V_{12}$].  These are exactly the nodes an independent subset of which
+we compress.  What fraction of them are compressed, i.e., deleted?
+The probability that a particular node is selected as part of the
+independent set is latexmath:[$1/4$].  Thus latexmath:[$3/4$] fraction
+of these vertices remain live at the end of this round.
+
+Let's now consider the remaining nodes, i.e., 
+latexmath:[$R \cup V_0 \cup V_{10}  \cup V_2$].
+
+We have the following relationships between these sets.
+
+. latexmath:[$|V_{10}| \le |V_0|$], because the second set is a
+superset of the first.
+
+. latexmath:[$|V_{2}| +1 = |V_0|$], which can be proven by strong
+induction on the size of trees.
+
+Since latexmath:[$R$] is a singleton, we have latexmath:[$|R \cup V_0 \cup V_{10}  \cup V_2| \le 3|V_0|$].  
+
+Since all the leaves are raked, a fraction latexmath:[$2/3$] of these
+vertices remain live at the end of this round.
+
+We have thus partitioned the set of all nodes into two subsets and
+showed that a fraction of at most latexmath:[$3/4$] (expected) and
+latexmath:[$2/3$] remain live at the end of the round.  We thus
+conclude that in expectation latexmath:[$3/4$] of the nodes remain live.
+****
 
 
 
