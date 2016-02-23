@@ -63,8 +63,8 @@ incoming edges, and other times useful to store both.
 [[quicksort-speedup, Figure 11]]
 .A graph (top) and its compressed-array representation (bottom).
 *****
-image::dir-graph-1.png["An example di-graph.",width="200pt",align="center"]
-image::compressed-array.png["The compressed-array representation.",width="250pt",align="center"]
+image::jpgs-620H/dir-graph-1.jpg["An example di-graph.",width="200pt",align="center"]
+image::jpgs-620H/compressed-array.jpg["The compressed-array representation.",width="250pt",align="center"]
 ****
 
 The compressed-array representation supports efficiently several
@@ -169,7 +169,7 @@ tool.  You can easily generate such visualizations for your graphs by
 using online tools, such is Click
 http://sandbox.kidstrythisathome.com/erdos/[this one].
 
-image::sample-graph.png["Sample graph.",width="100pt",align="center"]
+image::jpgs-620H/sample-graph.jpg["Sample graph.",width="100pt",align="center"]
 
 ==========================
 
@@ -239,7 +239,7 @@ to latexmath:[$v$].
 
 // A graph and its levels.
 
-// image::directed-graph-levels.png["A graph and its levels.",width="300pt",align="center"]
+// image::jpgs-620H/directed-graph-levels.jpg["A graph and its levels.",width="300pt",align="center"]
 				   
 // ===========
 ////
@@ -513,7 +513,7 @@ std::cout << "reachable from 4: " << reachable_from_4 << std::endl;
 
 The following diagram shows the structure represented by `graph`. 
 
-image::sample-graph-2.png["Graph from the example.",width="120pt",align="center"]
+image::jpgs-620H/sample-graph-2.jpg["Graph from the example.",width="120pt",align="center"]
 
 Output:
 

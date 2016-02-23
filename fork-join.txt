@@ -392,7 +392,7 @@ the very end.
 
 .Dag for parallel increment on an array of latexmath:[$8$]: Each vertex corresponds a call to `map_inc_rec` excluding the `fork2`  or the continuation of `fork2`, which is empty, an is annotated with the interval of the input array that it operates on (its argument).
 [[fig:parallel-inc-dag]]
-image::inc-parallel-dag.png["Dag for parallel increment",width="500pt",align="center"]
+image::jpgs-620H/inc-parallel-dag.jpg["Dag for parallel increment",width="500pt",align="center"]
 
 <<fig:parallel-inc-dag, The Figure above>> illustrates the dag for an execution
 of `map_incr_rec`.  We partition each invocation of this function into
@@ -492,11 +492,11 @@ Draw the enabling tree for the schedule above.
 .Centralized scheduler illustrated: the state of the queue and the dag after step 4.  Completed vertices are drawn in grey (shaded).
 ====
 [[multithreading::centralized-scheduler, centralized scheduler illustrated]]
-image::centralized-scheduler.png["Centralized scheduler illustrated",width="500pt",align="center"]
+image::jpgs-620H/centralized-scheduler.jpg["Centralized scheduler illustrated",width="500pt",align="center"]
 ====
 
 .Distributed scheduler illustrated: the state of the queue and the dag after step 4.  Completed vertices are drawn in grey (shaded).
 ====
 [[multithreading::distributed-scheduler, distributed scheduler illustrated]]
-image::distributed-scheduler.png["Distributed scheduler illustrated",width="500pt",align="center"]
+image::jpgs-620H/distributed-scheduler.jpg["Distributed scheduler illustrated",width="500pt",align="center"]
 ====
