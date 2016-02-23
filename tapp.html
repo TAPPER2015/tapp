@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
 <head>
 <meta http-equiv="Content-Type" content="application/xhtml+xml; charset=UTF-8" />
-<meta name="generator" content="AsciiDoc 8.6.9" />
+<meta name="generator" content="AsciiDoc 8.6.8" />
 <title>Parallel Computing: Theory and Practice</title>
 <style type="text/css">
 /* Shared CSS for AsciiDoc xhtml11 and html5 backends */
@@ -94,9 +94,7 @@ ul > li > * { color: black; }
   padding: 0;
   margin: 0;
 }
-pre {
-  white-space: pre-wrap;
-}
+
 
 #author {
   color: #527bbd;
@@ -225,7 +223,7 @@ div.exampleblock > div.content {
 }
 
 div.imageblock div.content { padding-left: 0; }
-span.image img { border-style: none; vertical-align: text-bottom; }
+span.image img { border-style: none; }
 a.image:visited { color: white; }
 
 dl {
@@ -890,7 +888,7 @@ is parameterized by the identifier <code>T</code>.  The  definition of
 array defines a pointer to element sequences of type <code>T</code>, and the
 <code>sub</code> function returns an element of type <code>T</code> etc.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -914,7 +912,7 @@ especially in the context of the C++ language.</p></div>
 variables by using the <code>&lt; &gt;</code> syntax.  For examples, we can define
 different arrays such as the following.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -927,7 +925,7 @@ eliminate explicitly parametricity by specifying the argument type.</p></div>
 example, the following declarations defines a generic identity
 function.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -939,7 +937,7 @@ C++ does provide some type inference for calls to
 templated functions.  So generic functions can be specialized
 implicitly, as shown in the examples below.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -1087,8 +1085,7 @@ computation represents the partial ordering of the dependencies
 between the instructions in the computation.</p></div>
 <div class="imageblock" id="multithreading::general-threads" style="text-align:center;">
 <div class="content">
-<img alt="A multithreaded computation." width="500pt"
-src="data:image/png;base64,
+<img alt="A multithreaded computation." width="500pt" src="data:image/png;base64,
 iVBORw0KGgoAAAANSUhEUgAABk4AAAH2CAYAAAA28XDyAAAMGWlDQ1BJQ0MgUHJvZmlsZQAASImV
 lwdYU8kWx+eWFEJCC0RASuhNkF6l9yIgHWyEJEAoIQSCir0sKrAWVESxoqsgiq4FkLUgooiyCNjr
 gojKyrpYwILKmySAPt/b731vvm/u/eXMOef+Z+7MzQwA8rYsgSADVQAgk58rjPD3YsbFJzBJfwAK
@@ -3235,7 +3232,7 @@ terminates. Since the main thread does not wait for the children to
 terminate, it may terminate before the children does, depending on how
 threads are scheduled on the available processors.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -3349,8 +3346,7 @@ forks thread A, which then spaws thread B.  Thread B then joins thread
 A, which then joins Thread M.</p></div>
 <div class="imageblock" id="multithreading:general" style="text-align:center;">
 <div class="content">
-<img alt="A multithreaded, fork-join computation." width="500pt"
-src="data:image/png;base64,
+<img alt="A multithreaded, fork-join computation." width="500pt" src="data:image/png;base64,
 iVBORw0KGgoAAAANSUhEUgAABhAAAAH6CAYAAADm7gZyAAAMGWlDQ1BJQ0MgUHJvZmlsZQAASImV
 lwdYU8kWx+eWFEJCC0RASuhNkF6l9yIgHWyEJEAoIQSCir0sKrAWVESxoqsgiq4FkLUgooiyCNjr
 gojKyrpYwILKmySAPt/b731vvm/u/eXMOef+Z+7MzQwA8rYsgSADVQAgk58rjPD3YsbFJzBJfwAK
@@ -5138,7 +5134,7 @@ lambda expression.</p></div>
 cell <code>b1</code> and the second 2 into <code>b2</code>; at the join point, the sum of
 the contents of <code>b1</code> and <code>b2</code> is written into the cell <code>j</code>.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -5215,7 +5211,7 @@ point between at most two processors.</p></div>
 <div class="paragraph"><p>In the example below, both writes into <code>b1</code> and <code>b2</code> are guaranteed to
 be performed before the print statement.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -5265,7 +5261,7 @@ as follows. This function for computing the Fibonacci numbers is
 inefficient because the algorithm takes exponential time, whereas
 there exist dynamic programming solutions that take linear time.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -5288,7 +5284,7 @@ can therefore perform the recursive calls in parallel.  In general,
 any two independent functions can be run in parallel.  To indicate
 that two functions can be run in parallel, we use <code>fork2()</code>.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -5314,7 +5310,7 @@ http://www.gnu.org/software/src-highlite -->
 element by one.  We can write the code for a function <code>map_incr</code> that
 performs this computation serially.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -5327,7 +5323,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="content">
 <div class="paragraph"><p>The code below illustrates  an example use of <code>map_incr</code>.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -5348,7 +5344,7 @@ std<span style="color: #990000">::</span>cout <span style="color: #990000">&lt;&
 a parallel algorithm for incrementing an array. The code for such an
 algorithm is given below.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -5382,7 +5378,7 @@ written by replacing the call to <code>fork2()</code> with a statement that
 performs the two calls (arguments of <code>fork2()</code>) sequentially as
 follows.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -5431,7 +5427,7 @@ programs.  Let&#8217;s see more precisely how we can "map" a fork-join
 program to a multithreaded program. An our running example, let&#8217;s use the
 <code>map_incr_rec</code>, whose code is reproduced below.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -5471,8 +5467,7 @@ the very end.</p></div>
 </div></div>
 <div class="imageblock" id="fig:parallel-inc-dag" style="text-align:center;">
 <div class="content">
-<img alt="Dag for parallel increment" width="500pt"
-src="data:image/jpeg;base64,
+<img alt="Dag for parallel increment" width="500pt" src="data:image/jpg;base64,
 /9j/4AAQSkZJRgABAQEASABIAAD/4QCMRXhpZgAATU0AKgAAAAgABgEGAAMAAAABAAIAAAESAAMA
 AAABAAEAAAEaAAUAAAABAAAAVgEbAAUAAAABAAAAXgEoAAMAAAABAAIAAIdpAAQAAAABAAAAZgAA
 AAAAAACQAAAAAQAAAJAAAAABAAKgAgAEAAAAAQAAAmygAwAEAAAAAQAAASgAAAAA/+0AOFBob3Rv
@@ -6320,8 +6315,7 @@ cellspacing="0" cellpadding="4">
 <div class="content">
 <div class="imageblock" id="multithreading::centralized-scheduler" style="text-align:center;">
 <div class="content">
-<img alt="Centralized scheduler illustrated" width="500pt"
-src="data:image/jpeg;base64,
+<img alt="Centralized scheduler illustrated" width="500pt" src="data:image/jpg;base64,
 /9j/4AAQSkZJRgABAQEASABIAAD/4QCMRXhpZgAATU0AKgAAAAgABgEGAAMAAAABAAIAAAESAAMA
 AAABAAEAAAEaAAUAAAABAAAAVgEbAAUAAAABAAAAXgEoAAMAAAABAAIAAIdpAAQAAAABAAAAZgAA
 AAAAAACQAAAAAQAAAJAAAAABAAKgAgAEAAAAAQAAAmygAwAEAAAAAQAAAfkAAAAA/+0AOFBob3Rv
@@ -7190,8 +7184,7 @@ FABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFAH/2Q==" />
 <div class="content">
 <div class="imageblock" id="multithreading::distributed-scheduler" style="text-align:center;">
 <div class="content">
-<img alt="Distributed scheduler illustrated" width="500pt"
-src="data:image/jpeg;base64,
+<img alt="Distributed scheduler illustrated" width="500pt" src="data:image/jpg;base64,
 /9j/4AAQSkZJRgABAQEASABIAAD/4QCMRXhpZgAATU0AKgAAAAgABgEGAAMAAAABAAIAAAESAAMA
 AAABAAEAAAEaAAUAAAABAAAAVgEbAAUAAAABAAAAXgEoAAMAAAABAAIAAIdpAAQAAAABAAAAZgAA
 AAAAAACQAAAAAQAAAJAAAAABAAKgAgAEAAAAAQAAAmygAwAEAAAAAQAAAfkAAAAA/+0AOFBob3Rv
@@ -8133,7 +8126,7 @@ conditions.
 <div class="paragraph"><p>In the code below, both branches of <code>fork2</code> are writing into <code>b</code>.
 What should then the output of this program be?</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -8167,7 +8160,7 @@ write, we can see both possibilities:</p></div>
 function.  By "inlining" the plus operation in both branches, the
 programmer got rid of the addition operation after the <code>fork2</code>.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -8192,7 +8185,7 @@ update consists of an addition operation, which reads the value and
 then writes to i. The race condition might be easier to see if we
 expand out the applications of the <code>+=</code> operator.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -8313,7 +8306,7 @@ operation.</p></div>
 <div class="paragraph"><p>Access to the contents of any given cell is achieved by the <code>load()</code>
 and <code>store()</code> methods.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -8361,7 +8354,7 @@ Otherwise, returns <code>false</code>.
 <div class="title">Example 12. Reading and writing atomic objects</div>
 <div class="content">
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -8394,7 +8387,7 @@ locations, or by using an atomic class and using a
 <div class="paragraph"><p>The following implementation of Fibonacci is not safe because the
 variable <code>result</code> is shared and updated by multiple threads.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -8414,7 +8407,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="paragraph"><p>We can solve this problem by declaring <code>result</code> to be an atomic type
 and using a standard busy-waiting protocol based on compare-and-swap.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -9031,8 +9024,7 @@ Produced file plots.pdf.</code></pre>
 </div></div>
 <div class="imageblock" id="speedup-plot-fib" style="text-align:center;">
 <div class="content">
-<img alt="Speedup curve for the computation of the 39th Fibonacci number." width="500pt"
-src="data:image/png;base64,
+<img alt="Speedup curve for the computation of the 39th Fibonacci number." width="500pt" src="data:image/png;base64,
 iVBORw0KGgoAAAANSUhEUgAAAkMAAAIDCAYAAAAHYRr3AAABF2lDQ1BJQ0MgUHJvZmlsZQAAKJFj
 YGBSSCwoyGESYGDIzSspCnJ3UoiIjFJgv8fAzcDPwMwgw2CYmFxc4BgQ4MOAE3y7xsAIoi/rgszC
 rQ4r4EpJLU4G0n+AODu5oKiEgYExA8hWLi8pALF7gGyRpGwwewGIXQR0IJC9BcROh7BPgNVA2HfA
@@ -9527,8 +9519,7 @@ at the calculation of the $45^{th}$ Fibonacci number, the
 speedup curve is close to being linear.</p></div>
 <div class="imageblock" id="fib-weak-scaling" style="text-align:center;">
 <div class="content">
-<img alt="Speedup plot showing speedup curves at different problem sizes." width="500pt"
-src="data:image/png;base64,
+<img alt="Speedup plot showing speedup curves at different problem sizes." width="500pt" src="data:image/png;base64,
 iVBORw0KGgoAAAANSUhEUgAAAjoAAAINCAYAAAA3N9XVAAABF2lDQ1BJQ0MgUHJvZmlsZQAAKJFj
 YGBSSCwoyGESYGDIzSspCnJ3UoiIjFJgv8fAzcDPwMzAwCCWmFxc4BgQ4MOAE3y7xsAIoi/rgszC
 rQ4r4EpJLU4G0n+AODu5oKiEgYExA8hWLi8pALF7gGyRpGwwewGIXQR0IJC9BcROh7BPgNVA2HfA
@@ -10655,8 +10646,7 @@ is not enough parallelism in the early and late stages of our
 Fibonacci computation.</p></div>
 <div class="imageblock" id="fib-39-utilization" style="text-align:center;">
 <div class="content">
-<img alt="Utilization plot for computation of 39th Fibonacci number." width="500pt"
-src="data:image/png;base64,
+<img alt="Utilization plot for computation of 39th Fibonacci number." width="500pt" src="data:image/png;base64,
 iVBORw0KGgoAAAANSUhEUgAAAyIAAAM6CAYAAAB9yPeoAAAKvGlDQ1BJQ0MgUHJvZmlsZQAASImV
 lwdQk9kWx+/3pYeEFghFSugd6VV6DUWQDqISkhBCCSEFFRsqiyu4FkREQF3QpSq4KnUtiAULImCv
 C7IoqOtiQVBU3gc8wntv3s6bd2bufL+cOd8/59zcO/MPAKQRBp+fBssCkM4TCcL8PGkxsXE03DNA
@@ -11220,8 +11210,7 @@ and finally to 1% for the $45^{th}$. At just 1% idle time,
 the utilization is excellent.</p></div>
 <div class="imageblock" id="fib-utilization-by-n" style="text-align:center;">
 <div class="content">
-<img alt="How processor utilization of Fibonacci computation varies with input size." width="500pt"
-src="data:image/png;base64,
+<img alt="How processor utilization of Fibonacci computation varies with input size." width="500pt" src="data:image/png;base64,
 iVBORw0KGgoAAAANSUhEUgAAAkEAAAILCAYAAADvx0inAAABF2lDQ1BJQ0MgUHJvZmlsZQAAKJFj
 YGBSSCwoyGESYGDIzSspCnJ3UoiIjFJgv8fAzcDPwMwgxsCfmFxc4BgQ4MOAE3y7xsAIoi/rgszC
 rQ4r4EpJLU4G0n+AODu5oKiEgYExA8hWLi8pALF7gGyRpGwwewGIXQR0IJC9BcROh7BPgNVA2HfA
@@ -11614,8 +11603,7 @@ much less prominent overall and the idle regions at the beginning and
 end are barely noticeable.</p></div>
 <div class="imageblock" id="fib-45-utilization" style="text-align:center;">
 <div class="content">
-<img alt="Utilization plot for computation of 45th Fibonacci number." width="500pt"
-src="data:image/png;base64,
+<img alt="Utilization plot for computation of 45th Fibonacci number." width="500pt" src="data:image/png;base64,
 iVBORw0KGgoAAAANSUhEUgAAAyAAAAM2CAYAAAAO/+fuAAAKvGlDQ1BJQ0MgUHJvZmlsZQAASImV
 lwdQk9kWx+/3pYeEFghFSugd6VV6DUWQDqISkhBCCSEFFRsqiyu4FkREQF3QpSq4KnUtiAULImCv
 C7IoqOtiQVBU3gc8wntv3s6bd2bufL+cOd8/59zcO/MPAKQRBp+fBssCkM4TCcL8PGkxsXE03DNA
@@ -12308,7 +12296,7 @@ document, we use the term "tuning."</p></div>
 sequential algorithm when the input falls below an established
 threshold.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -12425,7 +12413,7 @@ $[lo, hi)$ of an array has work cost $cn = c
 lambda expression is one valid complexity function for our parallel
 <code>map_incr_rec</code> program.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -12438,7 +12426,7 @@ associated computation.  The following lambda expression is another
 valid complexity function for function <code>map_incr_rec</code>.  The complexity
 function above is preferable, however, because it is simpler.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -12490,7 +12478,7 @@ semantics.</p></div>
 run time, the threshold size for our parallel array-increment
 function.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -12570,7 +12558,7 @@ the "sequential elision."</p></div>
 <div class="title">Example 25. Array-increment function with automatic granularity control and sequential body</div>
 <div class="content">
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -12645,7 +12633,7 @@ is much more compact and readable. Moreover, this code takes advantage
 of our automatic granularity control, also by replacing the
 parallel-for with a serial-for.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -12677,7 +12665,7 @@ complexity function takes as argument the range <code>[lo, hi)</code>. In this
 case, the complexity is linear in the number of iterations. The
 function simply returns the number of iterations as the complexity.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -12698,7 +12686,7 @@ rows of the matrix. The complexity function in this case gives to each
 of these row-wise iterations a cost in proportion to the number of
 scalars in each column.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -12730,8 +12718,7 @@ sample run of this code.  Observe that the speedup is rather good,
 achieving nearly excellent utilization.</p></div>
 <div class="imageblock" id="mm-speedup" style="text-align:center;">
 <div class="content">
-<img alt="Speedup plot for matrix multiplication for latexmath:[$25000 	imes 25000$] matrices." width="500pt"
-src="data:image/png;base64,
+<img alt="Speedup plot for matrix multiplication for latexmath:[$25000 	imes 25000$] matrices." width="500pt" src="data:image/png;base64,
 iVBORw0KGgoAAAANSUhEUgAAAlIAAAIUCAYAAADR3sICAAABF2lDQ1BJQ0MgUHJvZmlsZQAAKJFj
 YGBSSCwoyGESYGDIzSspCnJ3UoiIjFJgv8fAzSDCwMegxiCVmFxc4BgQ4MOAE3y7xsAIoi/rgszC
 rQ4r4EpJLU4G0n+AODu5oKiEgYExA8hWLi8pALF7gGyRpGwwewGIXQR0IJC9BcROh7BPgNVA2HfA
@@ -13309,7 +13296,7 @@ in particular, they are monomorphic and fixed to values of type
 be achieved by use of C++ templates.  We stick to
 monomorphic arrays here to simplify the presentation.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -13413,7 +13400,7 @@ item at the second position in the array. The third line extracts the
 size of the array. The fourth line assigns to the second cell the
 value 5. The fifth prints the contents of the cell.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -13438,7 +13425,7 @@ xs[2] = 5</code></pre>
 <div class="title">Example 30. Allocation and deallocation</div>
 <div class="content">
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -13480,7 +13467,7 @@ deallocation scheme below.</p></div>
 frame of <code>foo</code> is deallocated just before <code>foo</code> returns, because the
  variable <code>xs</code>  containing it goes out of scope.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -13495,7 +13482,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="paragraph"><p>Care must be taken when managing arrays, because nothing prevents the
 programmer from returning a dangling pointer.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -13521,7 +13508,7 @@ the contents of the array are used strictly when the array is in scope.</p></div
 <div class="exampleblock">
 <div class="content">
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -13564,7 +13551,7 @@ The program will be rejected by the compiler.  The code below does
 <strong>not</strong> compile, because we have disabled the copy constructor of our
 <code>sparray</code> class.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -13583,7 +13570,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="paragraph"><p>The following code does compile, because in this case we pass
 the array <code>xs</code> to <code>foo</code> by reference.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -13610,7 +13597,7 @@ achieved by the "move-assignment operator" of <code>sparray</code> class.</p></d
 <div class="title">Example 35. Create and initialize an array (sequentially)</div>
 <div class="content">
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -13639,7 +13626,7 @@ Consider the following program.</p></div>
 <div class="title">Example 36. Move constructor</div>
 <div class="content">
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -13671,7 +13658,7 @@ and arrays. To this end, the exercise is to implement two
 functions. The first, namely <code>duplicate</code>, is to return a new array in
 which each item appearing in the given array <code>xs</code> appears twice.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -13680,7 +13667,7 @@ http://www.gnu.org/software/src-highlite -->
 <span style="color: #FF0000">}</span></tt></pre></div></div>
 <div class="paragraph"><p>For example:</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -13695,7 +13682,7 @@ std<span style="color: #990000">::</span>cout <span style="color: #990000">&lt;&
 returned by <code>ktimes</code> should be an array in which each item <code>x</code> that is
 in the given array <code>xs</code> is replaced by <code>k</code> duplicate items.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -13704,7 +13691,7 @@ http://www.gnu.org/software/src-highlite -->
 <span style="color: #FF0000">}</span></tt></pre></div></div>
 <div class="paragraph"><p>For example:</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -13747,7 +13734,7 @@ given size and initializes the contents according to a given
 length <code>n</code> and assigns to each valid index in the array <code>i</code> the value
 returned by <code>g(i)</code>.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -13759,7 +13746,7 @@ formula.</p></div>
 <div class="title">Example 37. Sequences of even numbers</div>
 <div class="content">
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -13776,7 +13763,7 @@ std<span style="color: #990000">::</span>cout <span style="color: #990000">&lt;&
 <div class="title">Example 38. Parallel array copy function using tabulation</div>
 <div class="content">
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -13795,7 +13782,7 @@ homework, this time using tabulations.</p></div>
 <div class="title">Example 39. Solution to <code>duplicate</code> and <code>ktimes</code> exercises</div>
 <div class="content">
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -13811,7 +13798,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="paragraph"><p>The implementation of tabulate is a straightforward application of the
 parallel-for loop.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -13877,7 +13864,7 @@ above to the one below, which relies on C++ template programming to
 effectively key accesses to the granularity controller object by the
 type of the generator function.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -14009,7 +13996,7 @@ of this operator in our framework is specified below. The first
 parameter corresponds to $\oplus$, the second to the
 identity element, and the third to the sequence to be processed.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -14021,7 +14008,7 @@ $\oplus$ and 0 as $\mathbf{I}$.</p></div>
 <div class="title">Example 43. Summing elements of array</div>
 <div class="content">
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -14049,7 +14036,7 @@ case? Why?</p></div>
 <div class="paragraph"><p>Let us start by solving a special case: the one where the input
 sequence is nonempty.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -14069,7 +14056,7 @@ provisional maximum value to be the item at the first position of the
 input sequence. Now let us handle the general case by seeding with the
 smallest possible value of type <code>long</code>.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -14091,7 +14078,7 @@ sequence $ [ x_0, x_1, x_2, \ldots, x_{n-1} ] $ to
 $ [ x_0, x_0 \oplus x_1, x_0 \oplus x_1 \oplus x_2,
 \ldots, x_0 \oplus x_1 \oplus \ldots \oplus x_{n-1} ] $.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -14101,7 +14088,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="title">Example 45. Inclusive scan</div>
 <div class="content">
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -14118,7 +14105,7 @@ x_2, \ldots, x_{n-1} ] $ to $ [ \mathbf{I}, x_0, x_0
 the exclusive form with the total $ x_0 \oplus \ldots
 \oplus x_{n-1} $.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -14136,7 +14123,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="paragraph"><p>The example below represents the logical behavior of <code>scan</code>, but
 actually says nothing about the way scan is implemented.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -14161,7 +14148,7 @@ list.</p></div>
 <div class="paragraph"><p>The expansions shown above suggest the following sequential
 algorithm.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -14179,7 +14166,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="paragraph"><p>If we just blindly follow the specification above, we might be tempted
 to try the solution below.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -14227,7 +14214,7 @@ scan.</p></div>
 the array of results. It is straightforward to implement as a kind of
 tabulation, as we have at our disposal efficient indexing.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -14241,7 +14228,7 @@ lecture is simple to express via <code>map</code>.</p></div>
 <div class="title">Example 47. Incrementing via <code>map</code></div>
 <div class="content">
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -14268,7 +14255,7 @@ because internally the <code>fill</code> operation can take advantage of special
 hardware optimizations, such as SIMD instructions, that increase
 parallelism.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -14277,7 +14264,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="title">Example 48. Creating an array of all 3s</div>
 <div class="content">
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -14297,7 +14284,7 @@ hardware optimizations that accellerate memory traffic. For the same
 reason, the <code>copy</code> operation is a good choice when a full copy is
 needed.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -14306,7 +14293,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="title">Example 49. Copying an array</div>
 <div class="content">
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -14328,7 +14315,7 @@ ys = { 3, 2, 1 }</code></pre>
 <code>slice</code> operation we can copy out a range of positions from a given
 array rather than the entire array.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -14340,7 +14327,7 @@ range.</p></div>
 <div class="title">Example 50. Slicing an array</div>
 <div class="content">
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -14360,7 +14347,7 @@ std<span style="color: #990000">::</span>cout <span style="color: #990000">&lt;&
 <div class="paragraph"><p>In contrast to <code>slice</code>, the <code>concat</code> operation lets us "copy in" to a
 fresh array.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -14369,7 +14356,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="title">Example 51. Concatenating two arrays</div>
 <div class="content">
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -14389,7 +14376,7 @@ std<span style="color: #990000">::</span>cout <span style="color: #990000">&lt;&
 defined two solutions for two variants of the problem: one for the
 exclusive prefix sums and one for the inclusive case.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -14399,7 +14386,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="title">Example 52. Inclusive and exclusive prefix sums</div>
 <div class="content">
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -14422,7 +14409,7 @@ excl.partials = { 0, 2, 3, 11 }; excl.total = 147</code></pre>
 the operation that copies out items from a given array based on
 a given predicate function.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -14437,7 +14424,7 @@ value of type <code>long</code> (i.e., <code>value_type</code>) and returns a va
 <div class="paragraph"><p>The following function copies out the even numbers it receives in the
 array of its argument.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -14469,7 +14456,7 @@ to the items, to determine which items are to be written to the output
 array. Furthermore, we need to track how many items are to be written
 so that we know how much space to allocate for the output array.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -14510,7 +14497,7 @@ two passes. What is the assumption?</p></div>
 <h4 id="_parallel_filter_problem">11.8.8. Parallel-filter problem</h4>
 <div class="paragraph"><p>The starting point for our solution is the following code.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -14526,7 +14513,7 @@ that contains (in the same relative order as the items from the input)
 the values selected by the flags. Your solution should take linear
 work and logarithmic span in the size of the input.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -14535,7 +14522,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="title">Example 55. The allocation problem</div>
 <div class="content">
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -14581,7 +14568,7 @@ write polymorphic containers.</td>
 <div class="sect3">
 <h4 id="_tabulate">11.9.1. Tabulate</h4>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -14605,7 +14592,7 @@ $$</div></div>
 <div class="sect3">
 <h4 id="_reduce">11.9.2. Reduce</h4>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -14614,7 +14601,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="paragraph"><p>The call <code>reduce(b, id, xs)</code> is logically equal to <code>id</code> if <code>xs.size()
 == 0</code>, <code>xs[0]</code> if <code>xs.size() == 1</code>, and</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -14630,7 +14617,7 @@ implementation of <code>reduce</code>.</p></div>
 <div class="sect3">
 <h4 id="_scan_2">11.9.3. Scan</h4>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -14640,13 +14627,13 @@ http://www.gnu.org/software/src-highlite -->
 return result of the call <code>scan_incl(b, id, xs)</code> is logically
 equivalent to</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
 <pre><tt><span style="font-weight: bold"><span style="color: #000000">tabulate</span></span><span style="color: #990000">([&amp;]</span> <span style="color: #990000">(</span><span style="color: #009900">long</span> i<span style="color: #990000">)</span> <span style="color: #FF0000">{</span> <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> <span style="font-weight: bold"><span style="color: #000000">reduce</span></span><span style="color: #990000">(</span>b<span style="color: #990000">,</span> id<span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #000000">slice</span></span><span style="color: #990000">(</span>xs<span style="color: #990000">,</span> <span style="color: #993399">0</span><span style="color: #990000">,</span> i<span style="color: #990000">+</span><span style="color: #993399">1</span><span style="color: #990000">));</span> <span style="color: #FF0000">}</span><span style="color: #990000">,</span> xs<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">size</span></span><span style="color: #990000">())</span></tt></pre></div></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -14662,14 +14649,14 @@ http://www.gnu.org/software/src-highlite -->
 call <code>scan_excl(b, id, xs)</code> returns the object <code>res</code>, such that
 <code>res.partials</code> is logically equivalent to</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
 <pre><tt><span style="font-weight: bold"><span style="color: #000000">tabulate</span></span><span style="color: #990000">([&amp;]</span> <span style="color: #990000">(</span><span style="color: #009900">long</span> i<span style="color: #990000">)</span> <span style="color: #FF0000">{</span> <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> <span style="font-weight: bold"><span style="color: #000000">reduce</span></span><span style="color: #990000">(</span>b<span style="color: #990000">,</span> id<span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #000000">slice</span></span><span style="color: #990000">(</span>xs<span style="color: #990000">,</span> <span style="color: #993399">0</span><span style="color: #990000">,</span> i<span style="color: #990000">));</span> <span style="color: #FF0000">}</span><span style="color: #990000">,</span> xs<span style="color: #990000">.</span><span style="font-weight: bold"><span style="color: #000000">size</span></span><span style="color: #990000">())</span></tt></pre></div></div>
 <div class="paragraph"><p>and <code>res.total</code> is logically equivalent to</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -14683,7 +14670,7 @@ implementation of <code>scan_incl</code> and <code>scan_excl</code>.</p></div>
 <div class="sect3">
 <h4 id="_map_2">11.9.4. Map</h4>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -14707,7 +14694,7 @@ $$</div></div>
 <div class="sect3">
 <h4 id="_fill_2">11.9.5. Fill</h4>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -14718,7 +14705,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="sect3">
 <h4 id="_copy_2">11.9.6. Copy</h4>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -14729,7 +14716,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="sect3">
 <h4 id="_slice_2">11.9.7. Slice</h4>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -14741,7 +14728,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="sect3">
 <h4 id="_concat_2">11.9.8. Concat</h4>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -14752,7 +14739,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="sect3">
 <h4 id="_prefix_sums_2">11.9.9. Prefix sums</h4>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -14760,13 +14747,13 @@ http://www.gnu.org/software/src-highlite -->
 <div class="paragraph"><p>The result of the call <code>prefix_sums_incl(xs)</code> is logically equivalent
 to the result of the call</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
 <pre><tt><span style="font-weight: bold"><span style="color: #000000">scan_incl</span></span><span style="color: #990000">([&amp;]</span> <span style="color: #990000">(</span><span style="color: #008080">value_type</span> x<span style="color: #990000">,</span> <span style="color: #008080">value_type</span> y<span style="color: #990000">)</span> <span style="color: #FF0000">{</span> <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> x<span style="color: #990000">+</span>y<span style="color: #990000">;</span> <span style="color: #FF0000">}</span><span style="color: #990000">,</span> <span style="color: #993399">0</span><span style="color: #990000">,</span> xs<span style="color: #990000">)</span></tt></pre></div></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -14774,7 +14761,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="paragraph"><p>The result of the call <code>prefix_sums_excl(xs)</code> is logically equivalent
 to the result of the call</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -14784,7 +14771,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="sect3">
 <h4 id="_filter_2">11.9.10. Filter</h4>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -14939,8 +14926,7 @@ quicksort function and is labeled with the key at that call. Note that
 the tree is a binary search tree.</p></div>
 <div class="imageblock" id="ch:qsort-bst-example" style="text-align:center;">
 <div class="content">
-<img alt="Quicksort call tree" width="500pt"
-src="data:image/png;base64,
+<img alt="Quicksort call tree" width="500pt" src="data:image/png;base64,
 iVBORw0KGgoAAAANSUhEUgAAA5oAAAKoCAYAAAAWMICZAAAMFmlDQ1BJQ0MgUHJvZmlsZQAASImV
 lwdUk8kWx+crKYSEFoiAlNCbIL1K7x3pYCMkAUIJIRBU7GVRgbWgIoKioisiKq4FkMWGXVkE7PUF
 FZWVdbFgQ+VNEkCf+/a88+ac+fLLnXvv/Gcy82UGAEV7lkCQjSoBkMMvEEYH+jATk5KZJDFAABEo
@@ -16082,8 +16068,7 @@ $T_i$ and $T_j$ are compared, i.e.,
 $P(A_{ij} = 1)$, and working out the sum.</p></div>
 <div class="imageblock" id="ch:sorting::qsort-cases" style="text-align:center;">
 <div class="content">
-<img alt="Relationship between the pivot and other keys.}" width="500pt"
-src="data:image/png;base64,
+<img alt="Relationship between the pivot and other keys.}" width="500pt" src="data:image/png;base64,
 iVBORw0KGgoAAAANSUhEUgAAAxgAAAFACAYAAAA/P9rXAAAMFmlDQ1BJQ0MgUHJvZmlsZQAASImV
 lwdUk8kWx+crKYSEFoiAlNCbIL1K7x3pYCMkAUIJIRBU7GVRgbWgIoKioisiKq4FkMWGXVkE7PUF
 FZWVdbFgQ+VNEkCf+/a88+ac+fLLnXvv/Gcy82UGAEV7lkCQjSoBkMMvEEYH+jATk5KZJDFAABEo
@@ -16547,8 +16532,7 @@ likely to be selected as a pivot this probability is $\frac{3n/4 -
 n/4}{n} = 1/2$.  The figure below illustrates this.</p></div>
 <div class="imageblock" id="qsort-span-intuition" style="text-align:center;">
 <div class="content">
-<img alt="Quicksort span intuition." width="500pt"
-src="data:image/png;base64,
+<img alt="Quicksort span intuition." width="500pt" src="data:image/png;base64,
 iVBORw0KGgoAAAANSUhEUgAAA0wAAADcCAYAAABDEyFpAAAMFmlDQ1BJQ0MgUHJvZmlsZQAASImV
 lwdUk8kWx+crKYSEFoiAlNCbIL1K7x3pYCMkAUIJIRBU7GVRgbWgIoKioisiKq4FkMWGXVkE7PUF
 FZWVdbFgQ+VNEkCf+/a88+ac+fLLnXvv/Gcy82UGAEV7lkCQjSoBkMMvEEYH+jATk5KZJDFAABEo
@@ -17025,7 +17009,7 @@ input, we use our parallel <code>filter</code> function from the previous lectur
 to parallelize the partitioning phase. Similarly, we use our parallel
 concatenation function to constructed the sorted output.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -17123,8 +17107,7 @@ exectime 4.761</code></pre>
 </div></div>
 <div class="imageblock" id="sorting::quicksort-speedup" style="text-align:center;">
 <div class="content">
-<img alt="Speedup plot for quicksort with latexmath:[$100000000$] elements." width="500pt"
-src="data:image/png;base64,
+<img alt="Speedup plot for quicksort with latexmath:[$100000000$] elements." width="500pt" src="data:image/png;base64,
 iVBORw0KGgoAAAANSUhEUgAAAmEAAAIWCAYAAAAf0loyAAABF2lDQ1BJQ0MgUHJvZmlsZQAAKJFj
 YGBSSCwoyGESYGDIzSspCnJ3UoiIjFJgv8fAzSDEIMigxCCXmFxc4BgQ4MOAE3y7xsAIoi/rgszC
 rQ4r4EpJLU4G0n+AODu5oKiEgYExA8hWLi8pALF7gGyRpGwwewGIXQR0IJC9BcROh7BPgNVA2HfA
@@ -17588,7 +17571,7 @@ code is mostly in place because the algorithm copies out the input
 array in the beginning, but otherwise sorts in place on the result
 array. The code for this algorithm appears just below.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -17602,7 +17585,7 @@ http://www.gnu.org/software/src-highlite -->
   <span style="font-weight: bold"><span style="color: #0000FF">return</span></span> result<span style="color: #990000">;</span>
 <span style="color: #FF0000">}</span></tt></pre></div></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -17723,8 +17706,7 @@ is, and another that is the opposite. The question now is whether we
 can find a happy middle ground.</p></div>
 <div class="imageblock" id="sorting::quicksort-speedup-compare" style="text-align:center;">
 <div class="content">
-<img alt="Speedup plot for quicksort with latexmath:[$100000000$] elements." width="500pt"
-src="data:image/png;base64,
+<img alt="Speedup plot for quicksort with latexmath:[$100000000$] elements." width="500pt" src="data:image/png;base64,
 iVBORw0KGgoAAAANSUhEUgAAAjsAAAIJCAYAAABDZPz9AAABFmlDQ1BJQ0MgUHJvZmlsZQAAKJFj
 YGBSSCwoyGESYGDIzSspCnJ3UoiIjFJgv8/AwiDKABRlME9MLi5wDAjwYcAJvl1jYATRl3VBZuFW
 hxVwpaQWJwPpP0CcnVxQVMLAwJgBZCuXlxSA2D1AtkhSNpi9AMQuAjoQyN4CYqdD2CfAaiDsO2A1
@@ -18414,7 +18396,7 @@ scratch space by the merge operation. The function writes the result
 from the temporary array back into the original range of the source
 array: <code>[lo, hi)</code>.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -18423,7 +18405,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="title">Example 56. Use of merge function</div>
 <div class="content">
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -18461,7 +18443,7 @@ already.</p></div>
 has changed between this parallel code and the serial code: just erase
 the parallel annotations and we have a textbook sequential mergesort!</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -18594,8 +18576,7 @@ little faster than the one we presented here. That&#8217;s pretty good,
 considering the simplicity of the code that we had to write.</p></div>
 <div class="imageblock" id="mergesort-speedups" style="text-align:center;">
 <div class="content">
-<img alt="Speedup plot for three different implementations of mergesort using 100 million 32-bit items." width="500pt"
-src="data:image/png;base64,
+<img alt="Speedup plot for three different implementations of mergesort using 100 million 32-bit items." width="500pt" src="data:image/png;base64,
 iVBORw0KGgoAAAANSUhEUgAAAksAAAIHCAYAAACPJxgVAAABFWlDQ1BJQ0MgUHJvZmlsZQAAKJFj
 YGBSSCwoyGESYGDIzSspCnJ3UoiIjFJgv8fAzSAEhNYMionJxQWOAQE+DDjBt2sMjCD6si7ILNzq
 sAKulNTiZCD9B4izkwuKShgYGDOAbOXykgIQuwfIFknKBrMXgNhFQAcC2VtA7HQI+wRYDYR9B6wm
@@ -19359,8 +19340,7 @@ that with 32-bit items is a greater amount of computation relative to
 the number of memory transfers.</p></div>
 <div class="imageblock" id="better-speedups" style="text-align:center;">
 <div class="content">
-<img alt="Speedup plot for three different implementations of mergesort using 250 million 32-bit items." width="500pt"
-src="data:image/png;base64,
+<img alt="Speedup plot for three different implementations of mergesort using 250 million 32-bit items." width="500pt" src="data:image/png;base64,
 iVBORw0KGgoAAAANSUhEUgAAAjUAAAIFCAYAAAAqbww1AAABF2lDQ1BJQ0MgUHJvZmlsZQAAKJFj
 YGBSSCwoyGESYGDIzSspCnJ3UoiIjFJgv8fAzSDCIM7AxCCcmFxc4BgQ4MOAE3y7xsAIoi/rgszC
 rQ4r4EpJLU4G0n+AODu5oKiEgYExA8hWLi8pALF7gGyRpGwwewGIXQR0IJC9BcROh7BPgNVA2HfA
@@ -20209,12 +20189,15 @@ are at the same level.</p></div>
 <h2 id="ch:trees">14. Chapter: Tree Computations</h2>
 <div class="sectionbody">
 <div class="paragraph"><p>Trees are a basic structure for representing relations.  It is thus
- natural to ask whether we can compute various propertios of trees in
+ natural to ask whether we can compute various properties of trees in
  parallel.</p></div>
+<div class="sect2">
+<h3 id="_computing_in_order_traversals_with_divide_and_conquer_and_contraction">14.1. Computing In-Order Traversals with Divide-and-Conquer and Contraction</h3>
 <div class="paragraph"><p>As our first motivating example, let&#8217;s consider the following
 question: we are given a binary tree $T$ and asked to
 determine the <strong><em>in-order rank</em></strong> of each node in the tree, defined as
-the order of the node in an in-order traversal of the tree.</p></div>
+the order of the node in an in-order traversal of the tree.  We shall
+use this example to develop several key ideas.</p></div>
 <div class="paragraph"><p>As two important special cases of this problem, let&#8217;s consider a
 complete binary tree, where each internal node has exactly two
 children and a chain, where each internal node has exactly one
@@ -20224,8 +20207,7 @@ unbalanced tree.</p></div>
 <div class="title">Example 57. In-Order Traversal</div>
 <div class="content">
 <div class="paragraph"><p><span class="image">
-<img alt="An example complete binary tree" width="350pt"
-src="data:image/jpeg;base64,
+<img alt="An example complete binary tree" width="350pt" src="data:image/jpg;base64,
 /9j/4AAQSkZJRgABAQEASABIAAD/4QCMRXhpZgAATU0AKgAAAAgABgEGAAMAAAABAAIAAAESAAMA
 AAABAAEAAAEaAAUAAAABAAAAVgEbAAUAAAABAAAAXgEoAAMAAAABAAIAAIdpAAQAAAABAAAAZgAA
 AAAAAACQAAAAAQAAAJAAAAABAAKgAgAEAAAAAQAAAmygAwAEAAAAAQAAAKkAAAAA/+0AOFBob3Rv
@@ -20633,8 +20615,6 @@ nodes in the following order: <strong>a,b,c,d,e,f,g,h,i,j,k,l,m,n,o</strong>.</p
 </div></div>
 <div class="paragraph"><p>Let&#8217;s apply two algorithm design techniques to this problem: divide
 and conquer and contraction.</p></div>
-<div class="sect2">
-<h3 id="_divide_and_conquer">14.1. Divide and Conquer</h3>
 <div class="paragraph"><p>For divide and conquer, we can use a two-pass algorithm:</p></div>
 <div class="olist arabic"><ol class="arabic">
 <li>
@@ -20666,8 +20646,7 @@ subtree plus one.</p></div>
 <div class="title">Example 58. Two-Pass Algorithm for Computing Ranks</div>
 <div class="content">
 <div class="paragraph"><p><span class="image">
-<img alt="Compting ranks" width="400pt"
-src="data:image/jpeg;base64,
+<img alt="Compting ranks" width="400pt" src="data:image/jpg;base64,
 /9j/4AAQSkZJRgABAQEASABIAAD/4QCMRXhpZgAATU0AKgAAAAgABgEGAAMAAAABAAIAAAESAAMA
 AAABAAEAAAEaAAUAAAABAAAAVgEbAAUAAAABAAAAXgEoAAMAAAABAAIAAIdpAAQAAAABAAAAZgAA
 AAAAAACQAAAAAQAAAJAAAAABAAKgAgAEAAAAAQAAAmygAwAEAAAAAQAAAKUAAAAA/+0AOFBob3Rv
@@ -21150,8 +21129,7 @@ span.</p></div>
 <div class="title">Example 59. Divide and Conquer on Chains</div>
 <div class="content">
 <div class="paragraph"><p><span class="image">
-<img alt="An example chain" width="300pt"
-src="data:image/jpeg;base64,
+<img alt="An example chain" width="300pt" src="data:image/jpg;base64,
 /9j/4AAQSkZJRgABAQEASABIAAD/4QCMRXhpZgAATU0AKgAAAAgABgEGAAMAAAABAAIAAAESAAMA
 AAABAAEAAAEaAAUAAAABAAAAVgEbAAUAAAABAAAAXgEoAAMAAAABAAIAAIdpAAQAAAABAAAAZgAA
 AAAAAACQAAAAAQAAAJAAAAABAAKgAgAEAAAAAQAAAmygAwAEAAAAAQAAADoAAAAA/+0AOFBob3Rv
@@ -21430,10 +21408,8 @@ assuming that the left child of each node is "empty." The
 divide-and-conquer algorithm would require linear span on this
 example.</p></div>
 </div></div>
-</div>
-<div class="sect2">
-<h3 id="_contraction">14.2. Contraction</h3>
-<div class="paragraph"><p>Appling the idea behind the contraction technique, we want to
+<div class="paragraph"><p>Another technique we have seen for parallel algorithm design is
+contraction. Appling the idea behind this technique, we want to
 "contract" the tree into a smaller tree, solve the problem for the
 smaller tree, and "expand" the solution for the smaller tree to
 compute the solution for the original tree.</p></div>
@@ -21442,7 +21418,7 @@ compute the solution for the original tree.</p></div>
 "compress" long branches of the tree removing some of the nodes on
 such longe branches.</p></div>
 <div class="sect3">
-<h4 id="_rake_operation">14.2.1. Rake Operation</h4>
+<h4 id="_rake_operation">14.1.1. Rake Operation</h4>
 <div class="paragraph"><p>Lets define a <strong><em>rake</em></strong> as an operation that when applied to a leaf
 deletes the leaf and stores its size in its parent. With some care, we
 can rake all the leaves in parallel: we just need to have a place for
@@ -21454,7 +21430,7 @@ in-order traversal of a tree:</p></div>
 <div class="olist arabic"><ol class="arabic">
 <li>
 <p>
-<strong>Base case:</strong>  The tree has only one node, compute the resulty.
+<strong>Base case:</strong>  The tree has only one node, compute the result.
 </p>
 </li>
 <li>
@@ -21478,8 +21454,7 @@ for the input tree.
 <div class="title">Example 60. Contraction with Rake</div>
 <div class="content">
 <div class="paragraph"><p><span class="image">
-<img alt="Computing ranks" width="400pt"
-src="data:image/jpeg;base64,
+<img alt="Computing ranks" width="400pt" src="data:image/jpg;base64,
 /9j/4AAQSkZJRgABAQEASABIAAD/4QCMRXhpZgAATU0AKgAAAAgABgEGAAMAAAABAAIAAAESAAMA
 AAABAAEAAAEaAAUAAAABAAAAVgEbAAUAAAABAAAAXgEoAAMAAAABAAIAAIdpAAQAAAABAAAAZgAA
 AAAAAACQAAAAAQAAAJAAAAABAAKgAgAEAAAAAQAAAmygAwAEAAAAAQAAAKkAAAAA/+0AOFBob3Rv
@@ -21881,13 +21856,12 @@ ACiiigAooooA5vxR4N8I+N9OOj+M9EsdesCc/Z7+2juos+uyVWGffFcJ4T/Z9+BPgTURq/gv4eeH
 iWaJx6MjgqR9RXkOmfszfs6aLqo1zSfhh4Zs9QDbhPFpFosgbrkER8H3Fe30UANREjRY41CqoAAA
 wAB0Ap1FFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABR
 RRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFAH/2Q==" />
-</span>
-Given the example tree above, we rake all the leaves and store their
+</span></p></div>
+<div class="paragraph"><p>Given the example tree above, we rake all the leaves and store their
 size in clustered stored in the parents.  For the drawings we draw
 the clusters on the edges.</p></div>
 <div class="paragraph"><p><span class="image">
-<img alt="Computing ranks" width="400pt"
-src="data:image/jpeg;base64,
+<img alt="Computing ranks" width="400pt" src="data:image/jpg;base64,
 /9j/4AAQSkZJRgABAQEASABIAAD/4QCMRXhpZgAATU0AKgAAAAgABgEGAAMAAAABAAIAAAESAAMA
 AAABAAEAAAEaAAUAAAABAAAAVgEbAAUAAAABAAAAXgEoAAMAAAABAAIAAIdpAAQAAAABAAAAZgAA
 AAAAAACQAAAAAQAAAJAAAAABAAKgAgAEAAAAAQAAAmygAwAEAAAAAQAAAKkAAAAA/+0AOFBob3Rv
@@ -22244,8 +22218,7 @@ gAooooAKKKKACiiigD//2Q==" />
 </span></p></div>
 <div class="paragraph"><p>We can rake the leaves again.</p></div>
 <div class="paragraph"><p><span class="image">
-<img alt="Computing ranks" width="400pt"
-src="data:image/jpeg;base64,
+<img alt="Computing ranks" width="400pt" src="data:image/jpg;base64,
 /9j/4AAQSkZJRgABAQEASABIAAD/4QCMRXhpZgAATU0AKgAAAAgABgEGAAMAAAABAAIAAAESAAMA
 AAABAAEAAAEaAAUAAAABAAAAVgEbAAUAAAABAAAAXgEoAAMAAAABAAIAAIdpAAQAAAABAAAAZgAA
 AAAAAACQAAAAAQAAAJAAAAABAAKgAgAEAAAAAQAAAmygAwAEAAAAAQAAAKkAAAAA/+0AOFBob3Rv
@@ -22576,8 +22549,7 @@ ooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAP//Z" />
 <div class="paragraph"><p>And again, until we reach a tree with a single node.  We can then
 compute the rank of the node as the size of its subtree.</p></div>
 <div class="paragraph"><p><span class="image">
-<img alt="Computing ranks" width="400pt"
-src="data:image/jpeg;base64,
+<img alt="Computing ranks" width="400pt" src="data:image/jpg;base64,
 /9j/4AAQSkZJRgABAQEASABIAAD/4QCMRXhpZgAATU0AKgAAAAgABgEGAAMAAAABAAIAAAESAAMA
 AAABAAEAAAEaAAUAAAABAAAAVgEbAAUAAAABAAAAXgEoAAMAAAABAAIAAIdpAAQAAAABAAAAZgAA
 AAAAAACQAAAAAQAAAJAAAAABAAKgAgAEAAAAAQAAAmygAwAEAAAAAQAAALoAAAAA/+0AOFBob3Rv
@@ -22884,8 +22856,7 @@ ACiiigBpVSckDNOoooAKKKKAP//Z" />
 <div class="paragraph"><p>Having reached the base case by contractions, we then perform
 expansion steps to compute the result for the original tree.</p></div>
 <div class="paragraph"><p><span class="image">
-<img alt="Computing ranks" width="400pt"
-src="data:image/jpeg;base64,
+<img alt="Computing ranks" width="400pt" src="data:image/jpg;base64,
 /9j/4AAQSkZJRgABAQEASABIAAD/4QCMRXhpZgAATU0AKgAAAAgABgEGAAMAAAABAAIAAAESAAMA
 AAABAAEAAAEaAAUAAAABAAAAVgEbAAUAAAABAAAAXgEoAAMAAAABAAIAAIdpAAQAAAABAAAAZgAA
 AAAAAACQAAAAAQAAAJAAAAABAAKgAgAEAAAAAQAAAmygAwAEAAAAAQAAALoAAAAA/+0AOFBob3Rv
@@ -23188,8 +23159,7 @@ ACiiigBpVSckDNOoooAKKKKAP//Z" />
 <div class="paragraph"><p>As we expand, we compute the in order traversal for the tree
 constructed by "expanding" the tree out.</p></div>
 <div class="paragraph"><p><span class="image">
-<img alt="Computing ranks" width="400pt"
-src="data:image/jpeg;base64,
+<img alt="Computing ranks" width="400pt" src="data:image/jpg;base64,
 /9j/4AAQSkZJRgABAQEASABIAAD/4QCMRXhpZgAATU0AKgAAAAgABgEGAAMAAAABAAIAAAESAAMA
 AAABAAEAAAEaAAUAAAABAAAAVgEbAAUAAAABAAAAXgEoAAMAAAABAAIAAIdpAAQAAAABAAAAZgAA
 AAAAAACQAAAAAQAAAJAAAAABAAKgAgAEAAAAAQAAAmygAwAEAAAAAQAAALoAAAAA/+0AOFBob3Rv
@@ -23522,8 +23492,7 @@ UAf/2Q==" />
 </span></p></div>
 <div class="paragraph"><p>Each expansion corresponds to the a contraction step.</p></div>
 <div class="paragraph"><p><span class="image">
-<img alt="Computing ranks" width="400pt"
-src="data:image/jpeg;base64,
+<img alt="Computing ranks" width="400pt" src="data:image/jpg;base64,
 /9j/4AAQSkZJRgABAQEASABIAAD/4QCMRXhpZgAATU0AKgAAAAgABgEGAAMAAAABAAIAAAESAAMA
 AAABAAEAAAEaAAUAAAABAAAAVgEbAAUAAAABAAAAXgEoAAMAAAABAAIAAIdpAAQAAAABAAAAZgAA
 AAAAAACQAAAAAQAAAJAAAAABAAKgAgAEAAAAAQAAAmygAwAEAAAAAQAAALoAAAAA/+0AOFBob3Rv
@@ -23896,8 +23865,7 @@ DSqk5IGadRRQAUUUUAf/2Q==" />
 </span></p></div>
 <div class="paragraph"><p>The expansion step completes when all the contractions are reversed.</p></div>
 <div class="paragraph"><p><span class="image">
-<img alt="Computing ranks" width="400pt"
-src="data:image/jpeg;base64,
+<img alt="Computing ranks" width="400pt" src="data:image/jpg;base64,
 /9j/4AAQSkZJRgABAQEASABIAAD/4QCMRXhpZgAATU0AKgAAAAgABgEGAAMAAAABAAIAAAESAAMA
 AAABAAEAAAEaAAUAAAABAAAAVgEbAAUAAAABAAAAXgEoAAMAAAABAAIAAIdpAAQAAAABAAAAZgAA
 AAAAAACQAAAAAQAAAJAAAAABAAKgAgAEAAAAAQAAAmygAwAEAAAAAQAAAMsAAAAA/+0AOFBob3Rv
@@ -24361,7 +24329,7 @@ balanced, for the span we have $S(n) = S(n/2) + \log{n}$.
 This solves to $S(n) = O(\lg^2{n})$.</p></div>
 </div>
 <div class="sect3">
-<h4 id="_compress_operation">14.2.2. Compress Operation</h4>
+<h4 id="_compress_operation">14.1.2. Compress Operation</h4>
 <div class="paragraph"><p>The contraction algorithm based rake operations performs well for
 complete binary trees but on unbalanced trees, the algorithm can do
 verp poorly. In fact, the contraction algorithm requires
@@ -24423,8 +24391,7 @@ decisions is sometimes called <strong><em>symmetry breaking</em></strong>.</p></
 <div class="title">Example 62. Contraction with Compress</div>
 <div class="content">
 <div class="paragraph"><p><span class="image">
-<img alt="Computing ranks" width="300pt"
-src="data:image/jpeg;base64,
+<img alt="Computing ranks" width="300pt" src="data:image/jpg;base64,
 /9j/4AAQSkZJRgABAQEASABIAAD/4QCMRXhpZgAATU0AKgAAAAgABgEGAAMAAAABAAIAAAESAAMA
 AAABAAEAAAEaAAUAAAABAAAAVgEbAAUAAAABAAAAXgEoAAMAAAABAAIAAIdpAAQAAAABAAAAZgAA
 AAAAAACQAAAAAQAAAJAAAAABAAKgAgAEAAAAAQAAAmygAwAEAAAAAQAAADoAAAAA/+0AOFBob3Rv
@@ -24701,8 +24668,7 @@ KKKBBHCixqOgUAD8hUlFFABRRRQB/9k=" />
 <div class="paragraph"><p>In the example chain above, we compress every other internal node to
 obtain the new chain below.</p></div>
 <div class="paragraph"><p><span class="image">
-<img alt="Computing ranks" width="300pt"
-src="data:image/jpeg;base64,
+<img alt="Computing ranks" width="300pt" src="data:image/jpg;base64,
 /9j/4AAQSkZJRgABAQEASABIAAD/4QCMRXhpZgAATU0AKgAAAAgABgEGAAMAAAABAAIAAAESAAMA
 AAABAAEAAAEaAAUAAAABAAAAVgEbAAUAAAABAAAAXgEoAAMAAAABAAIAAIdpAAQAAAABAAAAZgAA
 AAAAAACQAAAAAQAAAJAAAAABAAKgAgAEAAAAAQAAAmygAwAEAAAAAQAAAFQAAAAA/+0AOFBob3Rv
@@ -24969,8 +24935,7 @@ AKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAP/2Q==" />
 </span></p></div>
 <div class="paragraph"><p>We then repeat this process.</p></div>
 <div class="paragraph"><p><span class="image">
-<img alt="Computing ranks" width="300pt"
-src="data:image/jpeg;base64,
+<img alt="Computing ranks" width="300pt" src="data:image/jpg;base64,
 /9j/4AAQSkZJRgABAQEASABIAAD/4QCMRXhpZgAATU0AKgAAAAgABgEGAAMAAAABAAIAAAESAAMA
 AAABAAEAAAEaAAUAAAABAAAAVgEbAAUAAAABAAAAXgEoAAMAAAABAAIAAIdpAAQAAAABAAAAZgAA
 AAAAAACQAAAAAQAAAJAAAAABAAKgAgAEAAAAAQAAAmygAwAEAAAAAQAAAFoAAAAA/+0AOFBob3Rv
@@ -25209,8 +25174,7 @@ AKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooA//Z" />
 <div class="paragraph"><p>And repeat it again until we are down to a single edge at which point
 we can solve the problem.</p></div>
 <div class="paragraph"><p><span class="image">
-<img alt="Computing ranks" width="300pt"
-src="data:image/jpeg;base64,
+<img alt="Computing ranks" width="300pt" src="data:image/jpg;base64,
 /9j/4AAQSkZJRgABAQEASABIAAD/4QCMRXhpZgAATU0AKgAAAAgABgEGAAMAAAABAAIAAAESAAMA
 AAABAAEAAAEaAAUAAAABAAAAVgEbAAUAAAABAAAAXgEoAAMAAAABAAIAAIdpAAQAAAABAAAAZgAA
 AAAAAACQAAAAAQAAAJAAAAABAAKgAgAEAAAAAQAAAmygAwAEAAAAAQAAAFYAAAAA/+0AOFBob3Rv
@@ -25464,8 +25428,7 @@ iigAooooAKKKKACiiigAooooAKKKKACiiigD/9k=" />
 expansion phase, where we "re-insert" the deleted nodes to compute the
 result for the expanded tree.</p></div>
 <div class="paragraph"><p><span class="image">
-<img alt="Computing ranks" width="300pt"
-src="data:image/jpeg;base64,
+<img alt="Computing ranks" width="300pt" src="data:image/jpg;base64,
 /9j/4AAQSkZJRgABAQEASABIAAD/4QCMRXhpZgAATU0AKgAAAAgABgEGAAMAAAABAAIAAAESAAMA
 AAABAAEAAAEaAAUAAAABAAAAVgEbAAUAAAABAAAAXgEoAAMAAAABAAIAAIdpAAQAAAABAAAAZgAA
 AAAAAACQAAAAAQAAAJAAAAABAAKgAgAEAAAAAQAAAmygAwAEAAAAAQAAAFYAAAAA/+0AOFBob3Rv
@@ -25715,8 +25678,7 @@ iigAooooAKKKKACiiigAooooAKKKKACiiigD/9k=" />
 nodes, we use the pre-computed result for the clusters adjacent to
 them.</p></div>
 <div class="paragraph"><p><span class="image">
-<img alt="Computing ranks" width="300pt"
-src="data:image/jpeg;base64,
+<img alt="Computing ranks" width="300pt" src="data:image/jpg;base64,
 /9j/4AAQSkZJRgABAQEASABIAAD/4QCMRXhpZgAATU0AKgAAAAgABgEGAAMAAAABAAIAAAESAAMA
 AAABAAEAAAEaAAUAAAABAAAAVgEbAAUAAAABAAAAXgEoAAMAAAABAAIAAIdpAAQAAAABAAAAZgAA
 AAAAAACQAAAAAQAAAJAAAAABAAKgAgAEAAAAAQAAAmygAwAEAAAAAQAAAFMAAAAA/+0AOFBob3Rv
@@ -25969,8 +25931,7 @@ KACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAoooo
 AKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAP/2Q==" />
 </span></p></div>
 <div class="paragraph"><p><span class="image">
-<img alt="Computing ranks" width="300pt"
-src="data:image/jpeg;base64,
+<img alt="Computing ranks" width="300pt" src="data:image/jpg;base64,
 /9j/4AAQSkZJRgABAQEASABIAAD/4QCMRXhpZgAATU0AKgAAAAgABgEGAAMAAAABAAIAAAESAAMA
 AAABAAEAAAEaAAUAAAABAAAAVgEbAAUAAAABAAAAXgEoAAMAAAABAAIAAIdpAAQAAAABAAAAZgAA
 AAAAAACQAAAAAQAAAJAAAAABAAKgAgAEAAAAAQAAAmygAwAEAAAAAQAAAFQAAAAA/+0AOFBob3Rv
@@ -26263,8 +26224,7 @@ ooooA//Z" />
 </span></p></div>
 <div class="paragraph"><p>Expansion completes when we expand back the input tree.</p></div>
 <div class="paragraph"><p><span class="image">
-<img alt="Computing ranks" width="300pt"
-src="data:image/jpeg;base64,
+<img alt="Computing ranks" width="300pt" src="data:image/jpg;base64,
 /9j/4AAQSkZJRgABAQEASABIAAD/4QCMRXhpZgAATU0AKgAAAAgABgEGAAMAAAABAAIAAAESAAMA
 AAABAAEAAAEaAAUAAAABAAAAVgEbAAUAAAABAAAAXgEoAAMAAAABAAIAAIdpAAQAAAABAAAAZgAA
 AAAAAACQAAAAAQAAAJAAAAABAAKgAgAEAAAAAQAAAmygAwAEAAAAAQAAAFQAAAAA/+0AOFBob3Rv
@@ -26715,7 +26675,7 @@ $$</div></div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_tree_contraction">14.3. Tree Contraction</h3>
+<h3 id="_tree_contraction">14.2. Tree Contraction</h3>
 <div class="paragraph"><p>In this chapter thus far, we have seen that we can compute the
 in-order rank a complete binary tree, which is a perfectly balanced
 tree, by using a contraction algorithm that rakes the leaves of the
@@ -26723,7 +26683,7 @@ tree until the tree reduces to a single vertex.  We have also seen
 that we can compute in-order ranks of nodes in a worst-case unbalanced
 tree, a chain, by using a contraction algorithm that compresses nodes
 with single child&#8217;s until the tree reduces to a single edge.</p></div>
-<div class="paragraph"><p>We shall now see that we can in fact compute in-order ranks for any
+<div class="paragraph"><p>We will now see that we can in fact compute in-order ranks for any
 tree, balanced or unbalanced, by simultaneously applying the same two
 operations recursively in a number of rounds.  Each round of
 application, rakes the leaves, and selects an independent set of nodes
@@ -26732,7 +26692,7 @@ to compress.</p></div>
 <div class="content">
 <div class="title">Algorithm: Tree Contraction</div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -26741,7 +26701,7 @@ http://www.gnu.org/software/src-highlite -->
   T
 <span style="font-weight: bold"><span style="color: #0000FF">else</span></span>
     TT <span style="color: #990000">=</span> rake leaves of T
-    TTT <span style="color: #990000">=</span> compress and independent set of nodes with <span style="color: #008080">a</span> single<span style="color: #990000">-</span>child in TT
+    TTT <span style="color: #990000">=</span> compress and independent set of nodes with a single child in TT
     <span style="font-weight: bold"><span style="color: #000000">tree_contract</span></span> <span style="color: #990000">(</span>TTT<span style="color: #990000">)</span>
     expand to TT
     expand to T</tt></pre></div></div>
@@ -26759,8 +26719,7 @@ shall focus on contraction.</p></div>
 <div class="paragraph"><p>An example tree contraction illustrated on the  input tree below.
 Random coin flips are not illustrated.</p></div>
 <div class="paragraph"><p><span class="image">
-<img alt="Input tree" width="350pt"
-src="data:image/jpeg;base64,
+<img alt="Input tree" width="350pt" src="data:image/jpg;base64,
 /9j/4AAQSkZJRgABAQEASABIAAD/4QCMRXhpZgAATU0AKgAAAAgABgEGAAMAAAABAAIAAAESAAMA
 AAABAAEAAAEaAAUAAAABAAAAVgEbAAUAAAABAAAAXgEoAAMAAAABAAIAAIdpAAQAAAABAAAAZgAA
 AAAAAACQAAAAAQAAAJAAAAABAAKgAgAEAAAAAQAAAmygAwAEAAAAAQAAAZcAAAAA/+0AOFBob3Rv
@@ -27238,8 +27197,7 @@ KACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAoooo
 AKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAP/2Q==" />
 </span></p></div>
 <div class="paragraph"><p><span class="image">
-<img alt="Tree contraction, round 1" width="350pt"
-src="data:image/jpeg;base64,
+<img alt="Tree contraction, round 1" width="350pt" src="data:image/jpg;base64,
 /9j/4AAQSkZJRgABAQEASABIAAD/4QCMRXhpZgAATU0AKgAAAAgABgEGAAMAAAABAAIAAAESAAMA
 AAABAAEAAAEaAAUAAAABAAAAVgEbAAUAAAABAAAAXgEoAAMAAAABAAIAAIdpAAQAAAABAAAAZgAA
 AAAAAACQAAAAAQAAAJAAAAABAAKgAgAEAAAAAQAAAmygAwAEAAAAAQAAAZcAAAAA/+0AOFBob3Rv
@@ -27656,8 +27614,7 @@ KACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAoooo
 AKKKKACiiigAooooAKKKKACiiigD/9k=" />
 </span></p></div>
 <div class="paragraph"><p><span class="image">
-<img alt="Tree contraction, round 2" width="350pt"
-src="data:image/jpeg;base64,
+<img alt="Tree contraction, round 2" width="350pt" src="data:image/jpg;base64,
 /9j/4AAQSkZJRgABAQEASABIAAD/4QCMRXhpZgAATU0AKgAAAAgABgEGAAMAAAABAAIAAAESAAMA
 AAABAAEAAAEaAAUAAAABAAAAVgEbAAUAAAABAAAAXgEoAAMAAAABAAIAAIdpAAQAAAABAAAAZgAA
 AAAAAACQAAAAAQAAAJAAAAABAAKgAgAEAAAAAQAAAmygAwAEAAAAAQAAAZcAAAAA/+0AOFBob3Rv
@@ -28059,8 +28016,7 @@ AKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigA
 ooooAKKKKACiiigAooooA//Z" />
 </span></p></div>
 <div class="paragraph"><p><span class="image">
-<img alt="Tree contraction, round 3" width="350pt"
-src="data:image/jpeg;base64,
+<img alt="Tree contraction, round 3" width="350pt" src="data:image/jpg;base64,
 /9j/4AAQSkZJRgABAQEASABIAAD/4QCMRXhpZgAATU0AKgAAAAgABgEGAAMAAAABAAIAAAESAAMA
 AAABAAEAAAEaAAUAAAABAAAAVgEbAAUAAAABAAAAXgEoAAMAAAABAAIAAIdpAAQAAAABAAAAZgAA
 AAAAAACQAAAAAQAAAJAAAAABAAKgAgAEAAAAAQAAAmygAwAEAAAAAQAAAZcAAAAA/+0AOFBob3Rv
@@ -28449,8 +28405,7 @@ themselves as clusters.</p></div>
 .
 $$</div></div>
 <div class="paragraph"><p><span class="image">
-<img alt="An expression tree" width="350pt"
-src="data:image/jpeg;base64,
+<img alt="An expression tree" width="350pt" src="data:image/jpg;base64,
 /9j/4AAQSkZJRgABAQEASABIAAD/4QB0RXhpZgAATU0AKgAAAAgABAEaAAUAAAABAAAAPgEbAAUA
 AAABAAAARgEoAAMAAAABAAIAAIdpAAQAAAABAAAATgAAAAAAAAPoAAAAAQAAA+gAAAABAAKgAgAE
 AAAAAQAAAmygAwAEAAAAAQAAAZIAAAAA/+0AOFBob3Rvc2hvcCAzLjAAOEJJTQQEAAAAAAAAOEJJ
@@ -29073,8 +29028,7 @@ values for each cluster, which we associate with edges.  Initially all
 clusters are identity functions written as $x$.  As before
 we use "dangling" edges to represent the values computed for leaves.</p></div>
 <div class="paragraph"><p><span class="image">
-<img alt="An expression tree" width="350pt"
-src="data:image/jpeg;base64,
+<img alt="An expression tree" width="350pt" src="data:image/jpg;base64,
 /9j/4AAQSkZJRgABAQEASABIAAD/4QB0RXhpZgAATU0AKgAAAAgABAEaAAUAAAABAAAAPgEbAAUA
 AAABAAAARgEoAAMAAAABAAIAAIdpAAQAAAABAAAATgAAAAAAAAPoAAAAAQAAA+gAAAABAAKgAgAE
 AAAAAQAAAmygAwAEAAAAAQAAAZIAAAAA/+0AOFBob3Rvc2hvcCAzLjAAOEJJTQQEAAAAAAAAOEJJ
@@ -29750,8 +29704,7 @@ Nydihc/XFWKKACiiigD/2Q==" />
 <div class="paragraph"><p>In the first round, we perform a number of rakes and update the
 corresponding clusters.  Note that clusters are univariate functions.</p></div>
 <div class="paragraph"><p><span class="image">
-<img alt="An expression tree" width="350pt"
-src="data:image/jpeg;base64,
+<img alt="An expression tree" width="350pt" src="data:image/jpg;base64,
 /9j/4AAQSkZJRgABAQEASABIAAD/4QB0RXhpZgAATU0AKgAAAAgABAEaAAUAAAABAAAAPgEbAAUA
 AAABAAAARgEoAAMAAAABAAIAAIdpAAQAAAABAAAATgAAAAAAAAPoAAAAAQAAA+gAAAABAAKgAgAE
 AAAAAQAAAmygAwAEAAAAAQAAAZIAAAAA/+0AOFBob3Rvc2hvcCAzLjAAOEJJTQQEAAAAAAAAOEJJ
@@ -30404,8 +30357,7 @@ ooooAKMAdKKKACiiigD/2Q==" />
 update the corresponding clusters. Note that clusters remain to be
 univariate functions.</p></div>
 <div class="paragraph"><p><span class="image">
-<img alt="An expression tree" width="350pt"
-src="data:image/jpeg;base64,
+<img alt="An expression tree" width="350pt" src="data:image/jpg;base64,
 /9j/4AAQSkZJRgABAQEASABIAAD/4QB0RXhpZgAATU0AKgAAAAgABAEaAAUAAAABAAAAPgEbAAUA
 AAABAAAARgEoAAMAAAABAAIAAIdpAAQAAAABAAAATgAAAAAAAAPoAAAAAQAAA+gAAAABAAKgAgAE
 AAAAAQAAAmygAwAEAAAAAQAAAZIAAAAA/+0AOFBob3Rvc2hvcCAzLjAAOEJJTQQEAAAAAAAAOEJJ
@@ -30969,8 +30921,7 @@ ooooAKKKKACjAHSiigAooooA/9k=" />
 compress and update the corresponding clusters. Note that clusters
 remain to be univariate functions.</p></div>
 <div class="paragraph"><p><span class="image">
-<img alt="An expression tree" width="350pt"
-src="data:image/jpeg;base64,
+<img alt="An expression tree" width="350pt" src="data:image/jpg;base64,
 /9j/4AAQSkZJRgABAQEASABIAAD/4QB0RXhpZgAATU0AKgAAAAgABAEaAAUAAAABAAAAPgEbAAUA
 AAABAAAARgEoAAMAAAABAAIAAIdpAAQAAAABAAAATgAAAAAAAAPoAAAAAQAAA+gAAAABAAKgAgAE
 AAAAAQAAAmygAwAEAAAAAQAAAZIAAAAA/+0AOFBob3Rvc2hvcCAzLjAAOEJJTQQEAAAAAAAAOEJJ
@@ -31645,6 +31596,1196 @@ $O(\lg{n})$ expected span.</p></div>
 above.  For brevity, we don&#8217;t repeat the proof here.</p></div>
 </div></div>
 </div>
+<div class="sect2">
+<h3 id="_other_tree_computations">14.3. Other Tree Computations</h3>
+<div class="paragraph"><p>We have thus far seen several example tree computations, such as
+in-order traversals and expressions trees.  In this section, we cover
+a broader class of tree computations, which can broadly be called
+<strong><em>treefix computations</em></strong>.  Such computations generalize the "prefix
+sum" or the "scan" example for sequences to rooted trees by separately
+considering the two possible directions:</p></div>
+<div class="olist arabic"><ol class="arabic">
+<li>
+<p>
+from root to leaf, which are called rootfix computations, and
+</p>
+</li>
+<li>
+<p>
+from leaf to root, which are called leaffix computations.
+</p>
+</li>
+</ol></div>
+<div class="paragraph"><p>For the rest of this section, we shall assume binary trees.</p></div>
+<div class="sect3">
+<h4 id="_rootfix_computations">14.3.1. Rootfix computations</h4>
+<div class="paragraph"><p>Let $\oplus$ be an associative binary operation.  A
+<strong><em>rootfix computation</em></strong> on a binary tree $T$ computes the
+$\oplus$-sum for all the (simple) paths from the root of
+$T$ to all the leaves of $T$.</p></div>
+<div class="exampleblock">
+<div class="title">Example 66. Maximum on root-to-leaf path</div>
+<div class="content">
+<div class="paragraph"><p>Suppose that we are given a tree where each node is labeled with an
+integer number.  We wish to compute for each leaf in the tree the
+maximum node from the leaf to the root.  An example tree and the
+result to be computed are shown below.  This computation is a rootfix
+computation with "max" operation on integers.</p></div>
+<div class="paragraph"><p><span class="image">
+<img alt="Maximum node on root-to-leaf paths" width="350pt" src="data:image/jpg;base64,
+/9j/4AAQSkZJRgABAQEASABIAAD/4QCMRXhpZgAATU0AKgAAAAgABgEGAAMAAAABAAIAAAESAAMA
+AAABAAEAAAEaAAUAAAABAAAAVgEbAAUAAAABAAAAXgEoAAMAAAABAAIAAIdpAAQAAAABAAAAZgAA
+AAAAAACQAAAAAQAAAJAAAAABAAKgAgAEAAAAAQAAAmygAwAEAAAAAQAAAa0AAAAA/+0AOFBob3Rv
+c2hvcCAzLjAAOEJJTQQEAAAAAAAAOEJJTQQlAAAAAAAQ1B2M2Y8AsgTpgAmY7PhCfv/iD0RJQ0Nf
+UFJPRklMRQABAQAADzRhcHBsAhAAAG1udHJSR0IgWFlaIAfgAAEABgARACMAC2Fjc3BBUFBMAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD21gABAAAAANMtYXBwbAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEWRlc2MAAAFQAAAAYmRzY20AAAG0AAAEGmNwcnQA
+AAXQAAAAI3d0cHQAAAX0AAAAFHJYWVoAAAYIAAAAFGdYWVoAAAYcAAAAFGJYWVoAAAYwAAAAFHJU
+UkMAAAZEAAAIDGFhcmcAAA5QAAAAIHZjZ3QAAA5wAAAAMG5kaW4AAA6gAAAAPmNoYWQAAA7gAAAA
+LG1tb2QAAA8MAAAAKGJUUkMAAAZEAAAIDGdUUkMAAAZEAAAIDGFhYmcAAA5QAAAAIGFhZ2cAAA5Q
+AAAAIGRlc2MAAAAAAAAACERpc3BsYXkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABtbHVjAAAAAAAA
+ACIAAAAMaHJIUgAAABQAAAGoa29LUgAAAAwAAAG8bmJOTwAAABIAAAHIaWQAAAAAABIAAAHaaHVI
+VQAAABQAAAHsY3NDWgAAABYAAAIAZGFESwAAABwAAAIWdWtVQQAAABwAAAIyYXIAAAAAABQAAAJO
+aXRJVAAAABQAAAJicm9STwAAABIAAAJ2ZXNFUwAAABIAAAJ2aGVJTAAAABYAAAKIbmxOTAAAABYA
+AAKeZmlGSQAAABAAAAK0emhUVwAAAAwAAALEdmlWTgAAAA4AAALQc2tTSwAAABYAAALeemhDTgAA
+AAwAAALEcnVSVQAAACQAAAL0ZnJGUgAAABYAAAMYbXMAAAAAABIAAAMuY2FFUwAAABgAAANAdGhU
+SAAAAAwAAANYZXNYTAAAABIAAAJ2ZGVERQAAABAAAANkZW5VUwAAABIAAAN0cHRCUgAAABgAAAOG
+cGxQTAAAABIAAAOeZWxHUgAAACIAAAOwc3ZTRQAAABAAAAPSdHJUUgAAABQAAAPiamFKUAAAAA4A
+AAP2cHRQVAAAABYAAAQEAEwAQwBEACAAdQAgAGIAbwBqAGnO7LfsACAATABDAEQARgBhAHIAZwBl
+AC0ATABDAEQATABDAEQAIABXAGEAcgBuAGEAUwB6AO0AbgBlAHMAIABMAEMARABCAGEAcgBlAHYA
+bgD9ACAATABDAEQATABDAEQALQBmAGEAcgB2AGUAcwBrAOYAcgBtBBoEPgQ7BEwEPgRABD4EMgQ4
+BDkAIABMAEMARCAPAEwAQwBEACAGRQZEBkgGRgYpAEwAQwBEACAAYwBvAGwAbwByAGkATABDAEQA
+IABjAG8AbABvAHIgDwBMAEMARAAgBeYF0QXiBdUF4AXZAEsAbABlAHUAcgBlAG4ALQBMAEMARABW
+AOQAcgBpAC0ATABDAERfaYJyACAATABDAEQATABDAEQAIABNAOAAdQBGAGEAcgBlAGIAbgDpACAA
+TABDAEQEJgQyBDUEQgQ9BD4EOQAgBBYEGgAtBDQEOARBBD8EOwQ1BDkATABDAEQAIABjAG8AdQBs
+AGUAdQByAFcAYQByAG4AYQAgAEwAQwBEAEwAQwBEACAAZQBuACAAYwBvAGwAbwByAEwAQwBEACAO
+Kg41AEYAYQByAGIALQBMAEMARABDAG8AbABvAHIAIABMAEMARABMAEMARAAgAEMAbwBsAG8AcgBp
+AGQAbwBLAG8AbABvAHIAIABMAEMARAOIA7MDxwPBA8kDvAO3ACADvwO4A8wDvQO3ACAATABDAEQA
+RgDkAHIAZwAtAEwAQwBEAFIAZQBuAGsAbABpACAATABDAEQwqzDpMPwAIABMAEMARABMAEMARAAg
+AGEAIABDAG8AcgBlAHMAAHRleHQAAAAAQ29weXJpZ2h0IEFwcGxlIEluYy4sIDIwMTYAAFhZWiAA
+AAAAAADzFgABAAAAARbKWFlaIAAAAAAAAHHAAAA5igAAAWdYWVogAAAAAAAAYSMAALnmAAAT9lhZ
+WiAAAAAAAAAj8gAADJAAAL3QY3VydgAAAAAAAAQAAAAABQAKAA8AFAAZAB4AIwAoAC0AMgA2ADsA
+QABFAEoATwBUAFkAXgBjAGgAbQByAHcAfACBAIYAiwCQAJUAmgCfAKMAqACtALIAtwC8AMEAxgDL
+ANAA1QDbAOAA5QDrAPAA9gD7AQEBBwENARMBGQEfASUBKwEyATgBPgFFAUwBUgFZAWABZwFuAXUB
+fAGDAYsBkgGaAaEBqQGxAbkBwQHJAdEB2QHhAekB8gH6AgMCDAIUAh0CJgIvAjgCQQJLAlQCXQJn
+AnECegKEAo4CmAKiAqwCtgLBAssC1QLgAusC9QMAAwsDFgMhAy0DOANDA08DWgNmA3IDfgOKA5YD
+ogOuA7oDxwPTA+AD7AP5BAYEEwQgBC0EOwRIBFUEYwRxBH4EjASaBKgEtgTEBNME4QTwBP4FDQUc
+BSsFOgVJBVgFZwV3BYYFlgWmBbUFxQXVBeUF9gYGBhYGJwY3BkgGWQZqBnsGjAadBq8GwAbRBuMG
+9QcHBxkHKwc9B08HYQd0B4YHmQesB78H0gflB/gICwgfCDIIRghaCG4IggiWCKoIvgjSCOcI+wkQ
+CSUJOglPCWQJeQmPCaQJugnPCeUJ+woRCicKPQpUCmoKgQqYCq4KxQrcCvMLCwsiCzkLUQtpC4AL
+mAuwC8gL4Qv5DBIMKgxDDFwMdQyODKcMwAzZDPMNDQ0mDUANWg10DY4NqQ3DDd4N+A4TDi4OSQ5k
+Dn8Omw62DtIO7g8JDyUPQQ9eD3oPlg+zD88P7BAJECYQQxBhEH4QmxC5ENcQ9RETETERTxFtEYwR
+qhHJEegSBxImEkUSZBKEEqMSwxLjEwMTIxNDE2MTgxOkE8UT5RQGFCcUSRRqFIsUrRTOFPAVEhU0
+FVYVeBWbFb0V4BYDFiYWSRZsFo8WshbWFvoXHRdBF2UXiReuF9IX9xgbGEAYZRiKGK8Y1Rj6GSAZ
+RRlrGZEZtxndGgQaKhpRGncanhrFGuwbFBs7G2MbihuyG9ocAhwqHFIcexyjHMwc9R0eHUcdcB2Z
+HcMd7B4WHkAeah6UHr4e6R8THz4faR+UH78f6iAVIEEgbCCYIMQg8CEcIUghdSGhIc4h+yInIlUi
+giKvIt0jCiM4I2YjlCPCI/AkHyRNJHwkqyTaJQklOCVoJZclxyX3JicmVyaHJrcm6CcYJ0kneier
+J9woDSg/KHEooijUKQYpOClrKZ0p0CoCKjUqaCqbKs8rAis2K2krnSvRLAUsOSxuLKIs1y0MLUEt
+di2rLeEuFi5MLoIuty7uLyQvWi+RL8cv/jA1MGwwpDDbMRIxSjGCMbox8jIqMmMymzLUMw0zRjN/
+M7gz8TQrNGU0njTYNRM1TTWHNcI1/TY3NnI2rjbpNyQ3YDecN9c4FDhQOIw4yDkFOUI5fzm8Ofk6
+Njp0OrI67zstO2s7qjvoPCc8ZTykPOM9Ij1hPaE94D4gPmA+oD7gPyE/YT+iP+JAI0BkQKZA50Ep
+QWpBrEHuQjBCckK1QvdDOkN9Q8BEA0RHRIpEzkUSRVVFmkXeRiJGZ0arRvBHNUd7R8BIBUhLSJFI
+10kdSWNJqUnwSjdKfUrESwxLU0uaS+JMKkxyTLpNAk1KTZNN3E4lTm5Ot08AT0lPk0/dUCdQcVC7
+UQZRUFGbUeZSMVJ8UsdTE1NfU6pT9lRCVI9U21UoVXVVwlYPVlxWqVb3V0RXklfgWC9YfVjLWRpZ
+aVm4WgdaVlqmWvVbRVuVW+VcNVyGXNZdJ114XcleGl5sXr1fD19hX7NgBWBXYKpg/GFPYaJh9WJJ
+Ypxi8GNDY5dj62RAZJRk6WU9ZZJl52Y9ZpJm6Gc9Z5Nn6Wg/aJZo7GlDaZpp8WpIap9q92tPa6dr
+/2xXbK9tCG1gbbluEm5rbsRvHm94b9FwK3CGcOBxOnGVcfByS3KmcwFzXXO4dBR0cHTMdSh1hXXh
+dj52m3b4d1Z3s3gReG54zHkqeYl553pGeqV7BHtje8J8IXyBfOF9QX2hfgF+Yn7CfyN/hH/lgEeA
+qIEKgWuBzYIwgpKC9INXg7qEHYSAhOOFR4Wrhg6GcobXhzuHn4gEiGmIzokziZmJ/opkisqLMIuW
+i/yMY4zKjTGNmI3/jmaOzo82j56QBpBukNaRP5GokhGSepLjk02TtpQglIqU9JVflcmWNJaflwqX
+dZfgmEyYuJkkmZCZ/JpomtWbQpuvnByciZz3nWSd0p5Anq6fHZ+Ln/qgaaDYoUehtqImopajBqN2
+o+akVqTHpTilqaYapoum/adup+CoUqjEqTepqaocqo+rAqt1q+msXKzQrUStuK4trqGvFq+LsACw
+dbDqsWCx1rJLssKzOLOutCW0nLUTtYq2AbZ5tvC3aLfguFm40blKucK6O7q1uy67p7whvJu9Fb2P
+vgq+hL7/v3q/9cBwwOzBZ8Hjwl/C28NYw9TEUcTOxUvFyMZGxsPHQce/yD3IvMk6ybnKOMq3yzbL
+tsw1zLXNNc21zjbOts83z7jQOdC60TzRvtI/0sHTRNPG1EnUy9VO1dHWVdbY11zX4Nhk2OjZbNnx
+2nba+9uA3AXcit0Q3ZbeHN6i3ynfr+A24L3hROHM4lPi2+Nj4+vkc+T85YTmDeaW5x/nqegy6Lzp
+RunQ6lvq5etw6/vshu0R7ZzuKO6070DvzPBY8OXxcvH/8ozzGfOn9DT0wvVQ9d72bfb794r4Gfio
++Tj5x/pX+uf7d/wH/Jj9Kf26/kv+3P9t//9wYXJhAAAAAAADAAAAAmZmAADypwAADVkAABPQAAAK
+DnZjZ3QAAAAAAAAAAQABAAAAAAAAAAEAAAABAAAAAAAAAAEAAAABAAAAAAAAAAEAAG5kaW4AAAAA
+AAAANgAAp0AAAFWAAABMwAAAnsAAACWAAAAMwAAAUAAAAFRAAAIzMwACMzMAAjMzAAAAAAAAAABz
+ZjMyAAAAAAABDHIAAAX4///zHQAAB7oAAP1y///7nf///aQAAAPZAADAcW1tb2QAAAAAAAAGEAAA
+oA8AAAAAyc6MgAAAAAAAAAAAAAAAAAAAAAD/wAARCAGtAmwDASIAAhEBAxEB/8QAHwAAAQUBAQEB
+AQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1Fh
+ByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZ
+WmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXG
+x8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAEC
+AwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHB
+CSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0
+dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX
+2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9sAQwACAgICAgIDAgIDBQMDAwUGBQUFBQYIBgYGBgYICggI
+CAgICAoKCgoKCgoKDAwMDAwMDg4ODg4PDw8PDw8PDw8P/9sAQwECAgIEBAQHBAQHEAsJCxAQEBAQ
+EBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQ/90ABAAn/9oADAMB
+AAIRAxEAPwD9/KKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAoooo
+AKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigApCQOSa4T4m/Enwj8I/A+rfELxzfLYaPo
+8RlmkPLMeiRoo5aR2IVFHLMQBXxromhftPftRWa+KvFGvXXwW8D3oLWGkadGh1+5t2+5LeXEoZbf
+eORGi7gMZagD9BN6dNw/OnV8JH9g/wAMwKLvS/il8QbTVOouT4hll+b1MUiGM/TGKw9X8f8Ax8/Z
+IuLe9+Ll8fib8KXkEU2vw24i1jRg7YWW/ij/AHc0A6NKgUr3HTIB+hNFU9O1Cy1awt9T02dLq0u4
+1liljYMkkbjcrKw4IIOQauUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFF
+ABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFAH//0P38ooooAKKKKACiiigAooooAKKKKACiiigAoooo
+AKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKY8iRqWdgo
+HUk4FeEfEj9p34EfCbMfjnxlp9jc4ytsswmuXPosMe5yfYCgDwz4u6HH8bP2uPAfws1RxP4Y+Hmm
+yeL9Ss25jur+Wb7Ppiyr0ZI2SSTB4yBkV9ra5q1toGi3+tXRCw2EEs7knA2xIXOT9BX5t/Br46eE
+vH37b+p+JdJsdU03S/Hfg+Cz0q41WylsVvZtFupJZhbiYKzAR3AboOhNffXxV0+71X4beKdNsNI/
+t65utMvIo9P88232t3hdRD5wBMfmZ27wPlzmpltoOO58U/s0/tafHf4/al4Z1WX4Y6dpfg/XleeS
+/j162nuoLcBwsjWfE3LqFwVHBz0r9CNU0vT9a0260jVbdLuyvYnhnhkUMkkcg2srA9QQcGvwc+Cf
+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
+KZ7aZD1DLIg6diRXz1+wv+zZ4i+D+q/EP4l+LNDh8K3nju5tha6PDMbg2VlZqyoJJWJLSOzMzHPe
+von9q74jwfCr9n3xp4rY5vDp81nYQjl7i+vFMFvCg6lmkccDtk9qp9CTq/gF47l+J/wT8DfEK4GJ
+vEOj2V5J/wBdJYlL/wDj2a9dryD9n7wLN8Mvgh4E+H1yczeH9GsrOT/rpFEof/x7Nev0gCiiigAo
+oooAKKKKAP/U/fyiiigBCAetJtX0p1FACAAdKWiigAooooAKKKKACiiigAooooAbsXpigKB0p1FF
+gCiiigAooooAKKKKACiiigAooooAaVBOTTqKKACiiigAooooAKKKKACiiigAoIz1oooAbtX0p1FF
+ABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQB8bfHf
+4N+ONO8c2n7R3wCWH/hPtMtRZajp0zbLbXNNU7vs8hH3ZkPMT9unSn+GP22PhHJAtl8Uzc/DfxBE
+ALmw1uF4fLbvtmAMbrnoQea+xq4zxt4T8L+JtDvYvEWkWmposEhAuYUlwQp6bgaAPAdc/bX/AGc9
+Pt2OieKE8T3zcRWekRyXk8r9kVUXGT7mvM/BPgD4p/tIfEXRvjD8dNLbwx4Q8Kz/AGrw54WlIaaS
+6xhL+/xxvUE+XH/Ceam/4Jv+FPDFr+x98M9dt9JtI9Su7GdprlYUE0jC7mALPjcTgAda+96ADpRR
+RQAUUUUAFFFFABRRRQB//9X9/KKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKK
+KACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAoooo
+AKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKzNa/5A1/8A9e8v/oBrTr4M/wCC
+iPxD+NXwk+AU/wAS/gxeJbzaLdRjVEkgE4axucxF+emyQrk+jH0oA2/+Cc3/ACZT8K/+wfcf+lk9
+fbFfip/wR48e/GXxv4G1fRvEV7H/AMIB4JhTTNLgWAK7XU0jXEpMnVvLVun+37V+1dABRRRQAUUU
+UAFFFFABRRRQB//W/fyiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAoooo
+AKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigA
+ooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACvmf8AaC+J/wCz/D4J8RfDX4s+LNN0638Q
+WNxY3FvLMplCTxlSdi7mBG7IOOorzL40fEfx78Vfiof2YfgbqjaFeafBFe+KtfjUM2m2c3+rtoM8
+fapxyP7qc969V8AfsnfAr4ebbyx8M2+qau2Gn1LUl+2Xlw/d5JJd2STzwMUAfMH7AfjD9nn4TfA7
+w98JNI8e6RfeIQ89zfbZvLM11cSs3y+YF3YXao+lfparK6h0IZWGQRyCDXiXjb9nH4G/EO0az8Ve
+C9MuRjCulukMiHsUeMKQR2NfLdlqfjv9jf4g6P4e8WazP4i+Cviu6j06wvr1/MuvD99LxBBNIeXt
+pCNiseVOM0AfonRSAg8jmloAKKKKACiiigAooooA/9f9/KKKKACiiigAooooAKKKKACiiigAoooo
+AKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigA
+ooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooA+G/2Aoo
+PEHwZ1L4w3Sb9Z+JPiHWtXvJn5lIW9ltoIix52RRwhUXoo6V7h+0Nc/F+y+HGpXvwZu9NsdXtoJ5
+ZZtSR5FSGOF2LRBCB5gYDG7I9q8D/Y51W2+HOufEH9lfWP8ARdV8F6zfanpUTDb9p0HVpzc280ef
+vCN5GjfHRhX2h4q0iTX/AA1q2hxSCJ9RtJ7ZXIyFM0ZQEj2zUVL8rsVB66nx/wD8E7fF/ijx3+yV
+4K8U+MtUuNY1a9+2ma6uXMkr7buVV3MeTgAAe1e5/tHeAtO+JvwK8b+CtTRTHqGk3ex2AJimjiZ4
+pVJ6NHIqspHIIzXMfsm/BDU/2d/gT4d+EmrajFqlzon2jdcQoUR/PneUYDEngNjrWV+2T8SJfh78
+Cdcs9EzP4q8WxnQdBs4+ZrnUdRUwxhF7hAxkY9AF69K1m1fQzgnbU7T9mLxjqHxB/Z4+HPjbVmLX
+us6FYXE7HktI0K7iT7nmvda85+EHgWD4Y/Czwn8PLY5j8OaXaWIPqYIlQn8SDXo1SUFFFFABRRRQ
+AUUUUAf/0P38ooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigA
+ooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACi
+iigAooooAKKKKACiiigAooooAKKKKACiiigD5h+P/wAAr/4i3elfEb4a6uPCnxM8LBv7M1UJvSWF
++Xs7tP8AlpbyHqp6HkV5tb/tW/EH4bWIsP2hvhbrFjf2y/vdR8OwnVdNnI6vGFImQHrtZTj1r7nr
+L1xVbRr8MAf3EvX/AHDQB8R6T+3To3xI0uO5+BPw88TeNJrsEW0z2YsbBm5AZrmVsbARglQ2PTNb
+fwl+AfxA8QfEOD4/ftK38Go+LrJXj0TR7MltM0KGUfMYt3MlwwyGlPOOBUf/AATlVR+xV8LCAATp
+8+f/AAMnr7ZoAKKKKACiiigAooooAKKKKAP/0f38ooooAKKKKACiiigAooooAKKKKACiiigAoooo
+AKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigA
+ooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigArM1r/kD3/wD1
+wl/9ANadfnt/wUu0b4mv+zVqfjj4U67f6Jq3g+ZL+4+wTvCZ7BgY7lXCEbggIk56BWoA7H/gnN/y
+ZT8K/wDsHz/+lk9fbFfiB/wRn0T4j6l4N8S+NfFGuX9x4X08ro2iafLO5tIyrefcyRxE7PvMqggc
+Hd61+39ABRRRQAUUUUAFFFFABRRRQB//0v38ooooAKKKKACiiigAooooAKKKKACiiigAooooAKKK
+KACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAoooo
+AKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigBkkiRI0kjBEUEkk4A
+A6kn0r4l+KP7Yn7PNwmt/C6Fr7x/c3kE9jfWXh+wk1MbJkMbo7piLJBIIDHHeuT+JN1r37WHxo1b
+9n/RLy50r4aeAmhbxXfWjtHJqeoSAOmlRyL92NEIacg5zheK+0vC3gXwH8NtDh0jwrpNnoemWKAK
+sMaRIiqMZLcfiSaAPzk/Zg/aJ+AP7Nvwn8NfBrxFY+IfBsenCXde69o81lDPPPK0jO8i+Yq5LYy2
+AABk1+n+j61pHiHTLbWtCvYdQsLxFlhuIHWSKRGGQyspIIPtVa707w94osGjvbe21SyuVKkOqTRu
+vQjnIIr8+PGnhi6/Yh8bwfFzwJNKPg94hvYrXxNoeWeHSJLlwkep2g58uNXIEyD5cHI9gD9I6Kjh
+liniSaFg8bgMrDkEEZBB9CKkoAKKKKACiiigAooooA//0/38ooooAKKKKACiiigAooooAKKKKACi
+iigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKK
+KACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigD4f8A
++Ce2zVP2c4vHdwoGqeNNd17WL8/xG5l1GeI7vcJGo9sVs/tofDSz+JXgLSIPFfjweBfBGjalFf8A
+iB97QtfWUQ/49llV0KFucYyScYGRXH/swaynwg+KnxA/ZV8Rg2jx6neeJfC7P8qXmj6nL50scR6F
+rWdnVl64Oelei/tafstWf7VfhbRfCOqeJrzw/YaVeNeyJaqjLcSBdsfmBweE5I+tJjR82f8ABOC3
+1YXPxT1LwouqRfB681WFvCA1VpGleJUIuJYvNJfyXbaVJ/nmvu346+FdL8b/AAY8b+E9ax9i1TRr
++GXPQBoH559Dg59q4H9n/wCBfi34Lrqdt4g+IureOLO7jgitbfUtnl2Sw7s+SqAAbgwBH+yK4/8A
+bU+It1oPwon+F3g1xdeP/iZu0HQ7OM/vS90PLnuSB92O3iLOzHgEAVUiUegfsl+ItS8W/sy/C/xJ
+rDF72/8AD2nySserN5Kgn8cV9DVxnw68HWHw88BeHvAmljFp4fsLaxix/dt4wmfxxmuzpDCiiigA
+ooooAKKKKAP/1P38ooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACi
+iigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKK
+KACiiigAooooAKKKKACiiigAooooAKKKKACoLq6tbG2lvb2ZLe3gRpJJJGCIiIMszMcAAAZJPAFT
+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
+ajZyFX8uZFljYjlThgQfas/xn4L8LfEPwxqHgzxppsOr6LqsTQ3NtOu5HRv5EdQRgg4IOa+K9F+F
+f7VX7PEraP8ABrWbD4keA4gRZ6N4knkt9R0+PPywQX6LJ5kSjhRKuQMAHjkA9x8A/sx/DT4cfGDx
+X8aPDcDxav4st7W2lg2QrbWy2qlAbdUjVkLj7/zEGuw+Nnxf8K/A34car8QvFc+2GyXZbwL8013d
+ycQW0KDlpJXwoA+pwATXhlz8VP2xNSiWy0P4N6Xp12/ytcahrwa2j/2tsMJdwPTiq/w6/Zk8Xa34
+4svjD+0/4ji8a+KtLYyaTplrGYdD0Zzn57aBiTJNjH76TLA9OQDTuB2n7IXw68S/D74N21z47i8n
+xd4vvbvxHrUZ6xXuqymdoe/+pUrH/wABr6hoopAf/9D9/KKKKACiiigAooooAKKKKACiiigAoooo
+AKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigA
+ooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAK8A+LH7Snw1+DutWvhvxI19
+favc273htNNtWu5YrZM5mlCkBU4POe2cYr3+vzX/AGir5vh7+0PN458M+MdE0bWtX8MNZ3dlr0Uw
+i+yRO7Ca3lVdjyZyPK3bmIxg54+y4FyXD4/GuhiU2uWTSV1drZNqMmlu726W0ueXm+LnRpc8O6+7
+71c+/vBnjTw38QfDOn+MPCV2L/SdTj82CZQRuXOCCDyCCCCCOCK6qvjX9gvTNS0z9mTw0moo8f2i
+a9nhDgqfIkuHKHB6AjkV9lV5XFGV08FmWJwdGXNGnOUU+6TaR05fiJVaEKs1ZtJ/egooorwjrCii
+igAooooAKKKKACsHxP4n0LwZoF94n8TXa2OmabE01xO+dqIvU8ck9gByScDmt6vCv2lvDui+LPgb
+4v0DxDqbaPp9zZbpbtYnn8nypEkVzGgLMoZRuwM7cnjrXoZRhqdbF0aNZtQlKKbSu0m0m0urtsup
+hiako05Sjuk7fcZvwr/ae+F/xe15vDHhx76y1Nrb7ZBDqNq1q11bZwZoNxIdAccg/h1r6GByM1+P
+vwb1Xxh43/ag+E0k+t6P4gt/C/h66RptCEnlR2AgeGP7UXAKyySMh8sgbcdAa/YJegr6/wAROGsP
+leLpUsNe04KTTd3F80o2u4xeqinqluebkmPniKUpVOjtfa+ifd9xaKKK+APZP//R/fyiiigAoooo
+AKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigA
+ooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACu
+L8V/DvwP45a3fxhodnrBtDmI3UCSlOc/KWBIB7joa7SitqGIqUpKdKTi11Ts/wACZwUlaSuiraWV
+tY28dpZxrBBCoRI0UKqqvAAAwAAO1WqKKxbKCiiigAooooAKKKKACiiigAqC4toLuGS3uUWWKVSj
+owBVlbggg8EEVPRQgOL8LfDrwN4Ie5l8IaFZ6O94czG1gSIv6AlQOB2HQV2YGBilorWvXqVZOdWT
+bfVu7JhBRVoqyCiiisij/9k=" />
+</span></p></div>
+</div></div>
+<div class="paragraph"><p>We can use tree contraction to perform a rootfix computation.  To this
+end, we can associate with each adge a <strong><em>binary cluster</em></strong>, which is
+initially $-\infty$ but more generally represents the
+maximum node that corresponds to the path represented by that edge
+(initially each edge represents an empty path).  We then define the
+rake and compress  operations as follows.</p></div>
+<div class="olist arabic"><ol class="arabic">
+<li>
+<p>
+Compress operation: take the maximum of the deleted edges and the
+deleted node and assign that value to the new edge created.
+</p>
+</li>
+<li>
+<p>
+Rake operation:  do not change the weights on edges.
+</p>
+</li>
+</ol></div>
+<div class="paragraph"><p>At the expansion steps, we compute the correct values for raked and
+compressed operations by considering parent of the deleted vertex and
+the weight of the incoming edge and taking the maximum.</p></div>
+<div class="sidebarblock">
+<div class="content">
+<div class="title">Exercise</div>
+<div class="paragraph"><p>Complete the example given above to compute the maximums for the root
+to leaf paths using tree contraction.</p></div>
+</div></div>
+</div>
+<div class="sect3">
+<h4 id="_leaffix_computations">14.3.2. Leaffix computations</h4>
+<div class="paragraph"><p>Let $\oplus$ be an associative binary operation.  A <strong><em>leaf
+computation</em></strong> on a binary tree $T$ computes for each node
+in $T$, the $\oplus$-sum of the in-order
+traversal of the subtree rooted at that node.</p></div>
+<div class="exampleblock">
+<div class="title">Example 67. Maximum on root-to-leaf path</div>
+<div class="content">
+<div class="paragraph"><p>Suppose that we are given a tree where each node is labeled with an
+integer number.  We wish to compute for each leaf in the tree the
+maximum node from the leaf to the root.  An example tree and the
+result to be computed are shown below.  This computation is a rootfix
+computation with "max" operation on integers.</p></div>
+<div class="paragraph"><p><span class="image">
+<img alt="Maximum node on root-to-leaf paths" width="350pt" src="data:image/jpg;base64,
+/9j/4AAQSkZJRgABAQEASABIAAD/4QCMRXhpZgAATU0AKgAAAAgABgEGAAMAAAABAAIAAAESAAMA
+AAABAAEAAAEaAAUAAAABAAAAVgEbAAUAAAABAAAAXgEoAAMAAAABAAIAAIdpAAQAAAABAAAAZgAA
+AAAAAACQAAAAAQAAAJAAAAABAAKgAgAEAAAAAQAAAmygAwAEAAAAAQAAAcUAAAAA/+0AOFBob3Rv
+c2hvcCAzLjAAOEJJTQQEAAAAAAAAOEJJTQQlAAAAAAAQ1B2M2Y8AsgTpgAmY7PhCfv/iD0RJQ0Nf
+UFJPRklMRQABAQAADzRhcHBsAhAAAG1udHJSR0IgWFlaIAfgAAEABgARACMAC2Fjc3BBUFBMAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD21gABAAAAANMtYXBwbAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEWRlc2MAAAFQAAAAYmRzY20AAAG0AAAEGmNwcnQA
+AAXQAAAAI3d0cHQAAAX0AAAAFHJYWVoAAAYIAAAAFGdYWVoAAAYcAAAAFGJYWVoAAAYwAAAAFHJU
+UkMAAAZEAAAIDGFhcmcAAA5QAAAAIHZjZ3QAAA5wAAAAMG5kaW4AAA6gAAAAPmNoYWQAAA7gAAAA
+LG1tb2QAAA8MAAAAKGJUUkMAAAZEAAAIDGdUUkMAAAZEAAAIDGFhYmcAAA5QAAAAIGFhZ2cAAA5Q
+AAAAIGRlc2MAAAAAAAAACERpc3BsYXkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABtbHVjAAAAAAAA
+ACIAAAAMaHJIUgAAABQAAAGoa29LUgAAAAwAAAG8bmJOTwAAABIAAAHIaWQAAAAAABIAAAHaaHVI
+VQAAABQAAAHsY3NDWgAAABYAAAIAZGFESwAAABwAAAIWdWtVQQAAABwAAAIyYXIAAAAAABQAAAJO
+aXRJVAAAABQAAAJicm9STwAAABIAAAJ2ZXNFUwAAABIAAAJ2aGVJTAAAABYAAAKIbmxOTAAAABYA
+AAKeZmlGSQAAABAAAAK0emhUVwAAAAwAAALEdmlWTgAAAA4AAALQc2tTSwAAABYAAALeemhDTgAA
+AAwAAALEcnVSVQAAACQAAAL0ZnJGUgAAABYAAAMYbXMAAAAAABIAAAMuY2FFUwAAABgAAANAdGhU
+SAAAAAwAAANYZXNYTAAAABIAAAJ2ZGVERQAAABAAAANkZW5VUwAAABIAAAN0cHRCUgAAABgAAAOG
+cGxQTAAAABIAAAOeZWxHUgAAACIAAAOwc3ZTRQAAABAAAAPSdHJUUgAAABQAAAPiamFKUAAAAA4A
+AAP2cHRQVAAAABYAAAQEAEwAQwBEACAAdQAgAGIAbwBqAGnO7LfsACAATABDAEQARgBhAHIAZwBl
+AC0ATABDAEQATABDAEQAIABXAGEAcgBuAGEAUwB6AO0AbgBlAHMAIABMAEMARABCAGEAcgBlAHYA
+bgD9ACAATABDAEQATABDAEQALQBmAGEAcgB2AGUAcwBrAOYAcgBtBBoEPgQ7BEwEPgRABD4EMgQ4
+BDkAIABMAEMARCAPAEwAQwBEACAGRQZEBkgGRgYpAEwAQwBEACAAYwBvAGwAbwByAGkATABDAEQA
+IABjAG8AbABvAHIgDwBMAEMARAAgBeYF0QXiBdUF4AXZAEsAbABlAHUAcgBlAG4ALQBMAEMARABW
+AOQAcgBpAC0ATABDAERfaYJyACAATABDAEQATABDAEQAIABNAOAAdQBGAGEAcgBlAGIAbgDpACAA
+TABDAEQEJgQyBDUEQgQ9BD4EOQAgBBYEGgAtBDQEOARBBD8EOwQ1BDkATABDAEQAIABjAG8AdQBs
+AGUAdQByAFcAYQByAG4AYQAgAEwAQwBEAEwAQwBEACAAZQBuACAAYwBvAGwAbwByAEwAQwBEACAO
+Kg41AEYAYQByAGIALQBMAEMARABDAG8AbABvAHIAIABMAEMARABMAEMARAAgAEMAbwBsAG8AcgBp
+AGQAbwBLAG8AbABvAHIAIABMAEMARAOIA7MDxwPBA8kDvAO3ACADvwO4A8wDvQO3ACAATABDAEQA
+RgDkAHIAZwAtAEwAQwBEAFIAZQBuAGsAbABpACAATABDAEQwqzDpMPwAIABMAEMARABMAEMARAAg
+AGEAIABDAG8AcgBlAHMAAHRleHQAAAAAQ29weXJpZ2h0IEFwcGxlIEluYy4sIDIwMTYAAFhZWiAA
+AAAAAADzFgABAAAAARbKWFlaIAAAAAAAAHHAAAA5igAAAWdYWVogAAAAAAAAYSMAALnmAAAT9lhZ
+WiAAAAAAAAAj8gAADJAAAL3QY3VydgAAAAAAAAQAAAAABQAKAA8AFAAZAB4AIwAoAC0AMgA2ADsA
+QABFAEoATwBUAFkAXgBjAGgAbQByAHcAfACBAIYAiwCQAJUAmgCfAKMAqACtALIAtwC8AMEAxgDL
+ANAA1QDbAOAA5QDrAPAA9gD7AQEBBwENARMBGQEfASUBKwEyATgBPgFFAUwBUgFZAWABZwFuAXUB
+fAGDAYsBkgGaAaEBqQGxAbkBwQHJAdEB2QHhAekB8gH6AgMCDAIUAh0CJgIvAjgCQQJLAlQCXQJn
+AnECegKEAo4CmAKiAqwCtgLBAssC1QLgAusC9QMAAwsDFgMhAy0DOANDA08DWgNmA3IDfgOKA5YD
+ogOuA7oDxwPTA+AD7AP5BAYEEwQgBC0EOwRIBFUEYwRxBH4EjASaBKgEtgTEBNME4QTwBP4FDQUc
+BSsFOgVJBVgFZwV3BYYFlgWmBbUFxQXVBeUF9gYGBhYGJwY3BkgGWQZqBnsGjAadBq8GwAbRBuMG
+9QcHBxkHKwc9B08HYQd0B4YHmQesB78H0gflB/gICwgfCDIIRghaCG4IggiWCKoIvgjSCOcI+wkQ
+CSUJOglPCWQJeQmPCaQJugnPCeUJ+woRCicKPQpUCmoKgQqYCq4KxQrcCvMLCwsiCzkLUQtpC4AL
+mAuwC8gL4Qv5DBIMKgxDDFwMdQyODKcMwAzZDPMNDQ0mDUANWg10DY4NqQ3DDd4N+A4TDi4OSQ5k
+Dn8Omw62DtIO7g8JDyUPQQ9eD3oPlg+zD88P7BAJECYQQxBhEH4QmxC5ENcQ9RETETERTxFtEYwR
+qhHJEegSBxImEkUSZBKEEqMSwxLjEwMTIxNDE2MTgxOkE8UT5RQGFCcUSRRqFIsUrRTOFPAVEhU0
+FVYVeBWbFb0V4BYDFiYWSRZsFo8WshbWFvoXHRdBF2UXiReuF9IX9xgbGEAYZRiKGK8Y1Rj6GSAZ
+RRlrGZEZtxndGgQaKhpRGncanhrFGuwbFBs7G2MbihuyG9ocAhwqHFIcexyjHMwc9R0eHUcdcB2Z
+HcMd7B4WHkAeah6UHr4e6R8THz4faR+UH78f6iAVIEEgbCCYIMQg8CEcIUghdSGhIc4h+yInIlUi
+giKvIt0jCiM4I2YjlCPCI/AkHyRNJHwkqyTaJQklOCVoJZclxyX3JicmVyaHJrcm6CcYJ0kneier
+J9woDSg/KHEooijUKQYpOClrKZ0p0CoCKjUqaCqbKs8rAis2K2krnSvRLAUsOSxuLKIs1y0MLUEt
+di2rLeEuFi5MLoIuty7uLyQvWi+RL8cv/jA1MGwwpDDbMRIxSjGCMbox8jIqMmMymzLUMw0zRjN/
+M7gz8TQrNGU0njTYNRM1TTWHNcI1/TY3NnI2rjbpNyQ3YDecN9c4FDhQOIw4yDkFOUI5fzm8Ofk6
+Njp0OrI67zstO2s7qjvoPCc8ZTykPOM9Ij1hPaE94D4gPmA+oD7gPyE/YT+iP+JAI0BkQKZA50Ep
+QWpBrEHuQjBCckK1QvdDOkN9Q8BEA0RHRIpEzkUSRVVFmkXeRiJGZ0arRvBHNUd7R8BIBUhLSJFI
+10kdSWNJqUnwSjdKfUrESwxLU0uaS+JMKkxyTLpNAk1KTZNN3E4lTm5Ot08AT0lPk0/dUCdQcVC7
+UQZRUFGbUeZSMVJ8UsdTE1NfU6pT9lRCVI9U21UoVXVVwlYPVlxWqVb3V0RXklfgWC9YfVjLWRpZ
+aVm4WgdaVlqmWvVbRVuVW+VcNVyGXNZdJ114XcleGl5sXr1fD19hX7NgBWBXYKpg/GFPYaJh9WJJ
+Ypxi8GNDY5dj62RAZJRk6WU9ZZJl52Y9ZpJm6Gc9Z5Nn6Wg/aJZo7GlDaZpp8WpIap9q92tPa6dr
+/2xXbK9tCG1gbbluEm5rbsRvHm94b9FwK3CGcOBxOnGVcfByS3KmcwFzXXO4dBR0cHTMdSh1hXXh
+dj52m3b4d1Z3s3gReG54zHkqeYl553pGeqV7BHtje8J8IXyBfOF9QX2hfgF+Yn7CfyN/hH/lgEeA
+qIEKgWuBzYIwgpKC9INXg7qEHYSAhOOFR4Wrhg6GcobXhzuHn4gEiGmIzokziZmJ/opkisqLMIuW
+i/yMY4zKjTGNmI3/jmaOzo82j56QBpBukNaRP5GokhGSepLjk02TtpQglIqU9JVflcmWNJaflwqX
+dZfgmEyYuJkkmZCZ/JpomtWbQpuvnByciZz3nWSd0p5Anq6fHZ+Ln/qgaaDYoUehtqImopajBqN2
+o+akVqTHpTilqaYapoum/adup+CoUqjEqTepqaocqo+rAqt1q+msXKzQrUStuK4trqGvFq+LsACw
+dbDqsWCx1rJLssKzOLOutCW0nLUTtYq2AbZ5tvC3aLfguFm40blKucK6O7q1uy67p7whvJu9Fb2P
+vgq+hL7/v3q/9cBwwOzBZ8Hjwl/C28NYw9TEUcTOxUvFyMZGxsPHQce/yD3IvMk6ybnKOMq3yzbL
+tsw1zLXNNc21zjbOts83z7jQOdC60TzRvtI/0sHTRNPG1EnUy9VO1dHWVdbY11zX4Nhk2OjZbNnx
+2nba+9uA3AXcit0Q3ZbeHN6i3ynfr+A24L3hROHM4lPi2+Nj4+vkc+T85YTmDeaW5x/nqegy6Lzp
+RunQ6lvq5etw6/vshu0R7ZzuKO6070DvzPBY8OXxcvH/8ozzGfOn9DT0wvVQ9d72bfb794r4Gfio
++Tj5x/pX+uf7d/wH/Jj9Kf26/kv+3P9t//9wYXJhAAAAAAADAAAAAmZmAADypwAADVkAABPQAAAK
+DnZjZ3QAAAAAAAAAAQABAAAAAAAAAAEAAAABAAAAAAAAAAEAAAABAAAAAAAAAAEAAG5kaW4AAAAA
+AAAANgAAp0AAAFWAAABMwAAAnsAAACWAAAAMwAAAUAAAAFRAAAIzMwACMzMAAjMzAAAAAAAAAABz
+ZjMyAAAAAAABDHIAAAX4///zHQAAB7oAAP1y///7nf///aQAAAPZAADAcW1tb2QAAAAAAAAGEAAA
+oA8AAAAAyc6MgAAAAAAAAAAAAAAAAAAAAAD/wAARCAHFAmwDASIAAhEBAxEB/8QAHwAAAQUBAQEB
+AQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1Fh
+ByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZ
+WmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXG
+x8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAEC
+AwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHB
+CSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0
+dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX
+2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9sAQwACAgICAgIDAgIDBQMDAwUGBQUFBQYIBgYGBgYICggI
+CAgICAoKCgoKCgoKDAwMDAwMDg4ODg4PDw8PDw8PDw8P/9sAQwECAgIEBAQHBAQHEAsJCxAQEBAQ
+EBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQ/90ABAAn/9oADAMB
+AAIRAxEAPwD9+9q+go2r6ClooATavoKNq+gpaKAE2r6CjavoKWigBNq+go2r6ClooATavoKNq+gp
+aKAE2r6CjavoKWigBNq+go2r6ClooATavoKNq+gpaKAE2r6CjavoKWigBNq+go2r6ClooATavoKN
+q+gpaKAE2r6CjavoKWigBNq+go2r6ClooATavoKNq+gpaKAE2r6CjavoKWigBNq+go2r6ClooATa
+voKNq+gpaKAE2r6CjavoKWigBNq+go2r6ClooATavoKNq+gpaKAE2r6CjavoKWo5ZYoY2lmYIiAs
+zMcAAckknsKEA7avoKXavoK+afBv7WnwR8deN4vAvh7WpJbu9kkhsp5LeSK0vZYfvpbzsArng46b
+sfLnjP0tkGvTzTJcZgZqnjaMqcmrpSTTa76pGGHxVKsnKlJSXlqG1fQUbV9BS0V5huJtX0FG1fQU
+tFACbV9BRtX0FLRQAm1fQUbV9BS0UAJtX0FG1fQUtFACbV9BRtX0FLRQAm1fQUbV9BS0UAJtX0FG
+1fQUtFACbV9BRtX0FLRQAm1fQUbV9BS0UAJtX0FG1fQUtFACbV9BRtX0FLRQAm1fQUbV9BS0UAJt
+X0FG1fQUtFACbV9BRtX0FLRQAm1fQUbV9BS0UAJtX0FG1fQUtFAH/9D9/KKKKACiiigAooooAKKK
+KACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAoooo
+AKKKKACiiigArmvGGkWuu+F9X0a+me3t760uIZJEGWRJI2VmA7kA5FdLR7GtKVRwmpx3TuKUbppn
+4VaXJ4surX4IfC/w34n8OeJdL0XxMTo8+jNN/aUirIzyTXUUir5CRgnPcnkkhd1fukoI/WuA0T4T
+/DTw14juPF/h/wAL6bp2t3W4y3kFrHHO2/73zqAfm746969Br9C8Q+NaOc1KLoU3FQ5m72u5Tk5S
+fu6bvyu7uyvZeLkuVywylzyve3ySVluLRRRX5ye2FFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFF
+ABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFAH//0f38ooooAKKKKACiiigAoooo
+AKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigA
+ooooAKKKKAPO/it8UvB3wZ8Cap8RPHV4LPStLQM2BulmkY4jhhQcySyNhUQckn0ya+O9F+H/AO0n
++0+sXjD4s+JtT+EHgm7Iey8KaC6watLbnlX1PUCC6O4+9BEoCjjIYEnf+J2iwfGX9sjwL8PtUcTe
+H/hfpMni27tG5jn1O6m+zac0inhhD5csi56MB719n+IdZt/Duhajrt2wWHTraa4cscDbChc5P0FK
+UkldjSu7I+NV/wCCe/wDtnN9pN94q0zVeSNQg8S6n9pD/wB7LzOhP1Qj2rkNT8Q/tBfscMmtePNZ
+u/jD8Hw6x3WozQr/AMJHoEROBPcGIbb23UcyPhZF64AGDgfst/tg/Hz9obXvDc9x4P8ACdj4a1eN
+7m6Nr4jiuNXtbUBwsjaf/rRlwowwHDZr9KbyztdQtJ7C9iWe3uUaOWNwGR0cYZWB4IIOCKtxa3Jv
+rYg0jVtM17S7TW9Fuo76wv4knt54WDxyxSAMjow4KsCCCK0K+GP2KoLr4fTfFD9m65uWurb4W6/5
+elF2LOmjavEL2yiYn/nnukUdgoAHAr7nqRhRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUU
+AFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQB/9L9/KKKKACiiigAooooAKKKKACiiigA
+ooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAoorifGvxJ+H3
+w30uTWfH/iTTvDtlGMmXULqK2X6DzGGSewHJ7UAdtRXw1L+3j8PPE91JpPwI8K+JPizfpxu0XTZI
+tPVvSS+uxDEgJ6NyD2pZdQ/bx+Jqj+ztK8M/BzT5VIL3kz+IdUUMP+ecQgtlYdvncUAfcTMqKXch
+VHJJ4Ar5l8fftkfs2fDm7XSdc8cWV7q8jbI9N0tjqd88n/PMQ2glYMfRsV5lB+xFaeMQs/7RHxL8
+UfFB3BEtjNeHStIcHnBsbExqQO25zX0t8O/gh8IfhLALf4a+D9L8OYXYz2dpHHM69cPNjzH/AOBM
+aAPhn4S/Gmw8UftvXPiO98La/wCENP8AiL4RisNJbxBZCwe9uNDuJJ5RFEXaQfurjcAwBIUnGK+/
+Pihpd/rfw68TaRpelQa5eXum3cMNhczPbQ3byQsqwyTR/PGsmdpdeVByOleY/tJfAuT41eFNPm8N
+6l/wj/jnwleJqvhvVgu77HfxY+WRf4oJlHlyr3U9DjB81+Gf7Y3hw6vF8Lv2jLaP4V/Eq3xHJZal
+J5en6h2Fxp162IZY5CPlQsHB+XBINKSurDTs7n58/CT4Lax4i+O/wO1P4ZfALUPghc/D64vJ/Fl/
+NuFpcQE4W2iuXkeS83/ModskK+M7FGP3bJxXM3njXwbp+ntq1/r1hbWKruM8l1EkQUdy5YLj3zXx
+F46/ab13473V78Hf2OP+J7qM+bbVfGIRv7E0KF/ld4piAt3c7c+UkRK5w24gHFc2liba3PH/AIZ/
+Gbxxpf7QXx4+Mfgj4Yax4/8ABPiHWbDR/wC0dGmtTIknhy0FtK0dtNJG0yFpGw0bHJBGMivpLSf2
++f2dnvItJ8dX2p/DrVJmKraeKdMudLckdcSOhix778V9DfB/4U+Ffgn8OdE+Gfg2Jo9M0WHyw7nM
+k0rEvLPKe8ksjM7nuSa7PXfD2g+J9Ok0jxHp1tqljNjfBdQpPE+P7ySKyn8RSGZ3hXxx4M8c2R1L
+wXrthr1mMfvrC6iuo+enzRMwH411NfH/AIk/YR/Zk1y/k1vRfCp8G6y4IW/8NXU+jXEe7rt+yukY
+55+5XK/8M2/tI+Bp0f4RfH/UriyiwFsPFthDrUeAOAblTBcc9zuPrQB91UV8Pf8ACyP23fh9Bt8X
+/CnRfiJBGebrwxq/2K4Zc8sbTUEAyB/CsxzTIv2/Pg9od4NK+L+jeJPhdf8A3SviHR7iK3Zx/wA8
+7mBZo3X0cEKfWgD7korzzwN8W/hd8TLFdR+H3i3SvEUDd7C8huCp9GCMWUjuGAI7ivQ80AFFFFAB
+RRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFAH/9P9/KKKKACi
+iigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAorzrx58X
+fhd8L7JtR+IvivTPDlunBa+uooCT6AMwJPoAK+Xr39ufwt4maSx+APgXxP8AFa8VzGJtM097TTVY
+d5L68EcYU9mRXH86APuaoZ7m3tYmnuZVhjT7zOwVR9SeK+G4F/b6+KG43Mvhf4LaYzDCxhvEerhc
+/MCSY7NTjoRnnqKtN+wz4O8YSG7+PPjXxN8Up3Kl4NS1F7PTjjsLKw8iIr6Bgx96AO5+IX7aP7Nv
+w6uJNKv/ABnbaxrSNsXTNFV9WvmkPRPJtA5QnsXKj3rzqP8AaL/aY+JgeP4I/A270m0YDy9V8c3K
+6PDz0P2KHzblgRzkfmK+p/AHwi+F3wrsF034ceFdN8OQKoT/AEK2jhdlHQM6je3/AAImvRAqgkgc
+nrQB8N3PwD/ah+JYZvi58a5fDtpMuG03wTZJp6gZzta8uvPnb03LsNdh4I/Yf/Zt8GX667deFh4t
+17GH1XxJM+s3shByCz3Rdcg9NqivrWigCtaWVpp9vHaWMKW8EKhEjjUIiKOgVVwAB7CrNFFABRRR
+QAVx/jT4feBfiNpR0Lx9oFj4i08kkQX9vHcIrHjcokB2n3GDXYUUAfIVl+wP+x1p+qDWLb4U6P8A
+aQ24b0kkjB/65O7R/htr6m0PQND8MaZBonhvT7fStOtV2w21rEkEMa+iRxgKo+grXooAKKKKACii
+igAqtdWdrfQSWt7Es8Eq7XjkAdGX0KnIP4irNFAHy543/Ys/Zh8e3I1LVPAGn6fqaEtHfaUp0y6j
+c/xrJaGI7vc5rziD9kT4keBlZvgz8ePFekIjAx2WvNB4gsuP4WFwiz7fYSjjivuqigD4gl179vnw
+ExbUPDPhD4p6fCvXTLqfQdRlOf8Anndma2HH/TQc1QT9uzQPCrRwfHT4beMPhk24rJdXulSX+nAj
+rtu7LzNwHqExX3dTPLQqUKjac5HY59qAPHPAX7RPwK+KAx4B8eaPrUveGG8j89TjOGhYiRT7FQa9
+kV0cBlIIIyCO4r5/+Iv7Kf7OnxWDP45+H2kX9yx3faUtxbXIbs3nweXJkeu6vIov2LE8HMJ/gl8V
+fF/gMoAEtv7Q/tew45wbfUlnwvsrLQB9v0V8L3Fj/wAFAPh1Fv0/VvCHxbskJyl5BL4f1FlzwFaJ
+pLYtjqW2j0FJF+2R4r8HPJF8ePgl4u8FxxZMl9YQp4g0xAvUm4sfnHqMRHigD7por5v8B/te/s1f
+Em4isPCvxB0t9QlxiyupvsV5z2NvciOQH/gNfRNvc293CtxayLNE/wB10IZT9CODQBPRRRQAUUUU
+AFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFAH/1P38ooooAKKKKACiiigAooooAKKKKACiiigA
+ooooAKKKKACikJxXxv45/bI0b4eNqc3iT4feKYNP0udoHvTZxi2ciTy1ZHaUZDn7nrkV7WScO4zM
+qjpYKnzy00uk9drXav8AI5cVjaVBc1V2R9kk4GTXxV8SP2ivHnirx1f/AAT/AGVtGtPEnirSGCa5
+reos66FoRPHlzPF88913EEeSvV+hFdf+0n8bdT+HX7M2t/FDwvaSxa5qFna2+k28y7ZUv9VeO3tg
+45AZHlDEHjK4ruf2efg1oXwK+FOi+A9IXzbqOMXGp3jD99fajP8APdXMzdWeSQk8ngYUcAV5FSDj
+Jxlujpi01dHgq/sr/HHxLDHqHxC/aQ8WLqrDc6+HYrLR7JGPO1IfJmYqOmWbJ6nGcVnap4U/bN+B
+O3XfBPiyP44+G7VQ91omtwRWOuGNfvmzvrdVjlkwMhJUAPQAk8dV+1z+2l4I/ZMs9Cj1nS7nxFrG
+vyOYrG0ZUeO2jKq9xK7ZCoHdEGfvE8dDX2Wj70DeoB/OoW1ymrHlHwY+NHgr46eDY/GPgySWMRyP
+bXtjdp5N9p95EcS211CcmOVD1B4IwQSCDXeeJ/FPhzwVoN74p8W6lb6RpGnRmW4urqRYoYkHdnYg
+D0HqeBzXwt8S0k/Z3/az8L/EfwlZtLpPxrjn0HWdPiZYo5tds4TNplzlsKskyq0DNwMfM2cV+dX7
+X3wA/wCCmP7UPiB5vEnhi2svCdtIXsND07V7RreIdnlzIpnmx1dxwfuBRxQI/fLRfG/hPxD4QsvH
+ulapBJ4e1G2jvIL5nEcD28qh0k3vgBSpzk187+Kf23f2bfDl+2h6Z4qXxdrYYoNO8Nwya1dlh22W
+ayBfqxA96+Ov2Ov2FrTVvhDpVt+1poWt6h4h8PXE9nbaTquryz6VFZR4MBt7S3l8ny9jbSr7vmDc
+AYFfqF4N+G3w/wDh3p8eleA/Dmn+HrOEYSKwtYrdQPpGooA+Spvjx+1Z8SNsXwY+CT+G7R2wNU8d
+Xi2CKM4Df2famS4YHqMsvuKbD+zd+0V8R4vM+O/xxv7e1dstpPgy1TRrUL/FG924kuZVP/AD7192
+UUAfLfw7/Yu/Zq+Gd6ms6F4Ktb7WVbedS1Uvqd8WPUme7aRhnrxgelfUMcUcUaxRIERAAqqMAAdA
+AKfRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAF
+FFFAHmHj74K/CT4p2xtPiL4P0vxDGef9NtIpWz6hyNwP0NfND/sC/Cvw/NJffBrxL4n+Fl5Ic50D
+V5lt+O32W586Hb6qFFfc1FAHwnN4D/bx+H0rN4N+I/hv4l6fGp2W3ibTH027Cj+EXWnna7/7Tqo9
+qng/ag+OXgsRW3xo/Z/8QWuCQ994Xng8Q2gUD/WMkZjnQH+7sYj1NfctFAHyX4b/AG4/2YfEN0NL
+vPGkHhnVMhTY+IIpdGugx7eXerEfyyK+oNH1zRfENjHqegX9vqVnKMpNbSpNEwPcOhKn8DWF4s+H
+ngPx5Zyad428Pafr1tNw8d9axXCkYx0kU9q+X9T/AGCP2fVvH1bwBb6t8N9TYELc+FtUudN2ZOcr
+ArNb9fWI0AfX+paxpOjRRT6tew2Uc80dvG00ixq80zBI41LEAu7EBVHJPA5rSr+fL/got8Lf2nfC
+Hgvwr8MdJ+IHiT4taXrt+92li+jJLfWn9nhfLllvrNSz5aUYDheRuHQ49l/YW+Nf7eugRad4G+N3
+wv1zxT4TysMGs3Ajt9RsU6DzfPdDcxr7/vFHQsMKAD9K/jv8f9B+COm6bappt14p8XeI5TbaJ4f0
+4Br7UJwMsQDxHDGOZZm+VB6kgHwrT/hD+2B8WYX1b4u/Fb/hWkFxhotD8FwRGW2B/hm1K6WVpHA4
+bYu3OSpxxUf7K+jR/Fr4n/EL9rLxCTdT6hqV54a8MB8MlnoWlS+SzRejXVwju568YzivoL42fFbx
+x8LrfSZ/Bfw11f4jNqDzLMmkvAjWgjClWk890yH3ELjP3TntSuB4Rcfs3ftI+B7VtR+E37QWs6tf
+xHcLLxjbW2qWVxj/AJZvJDFFNED/AH03Eeldx8Ff2kdS8T+Lpvgr8a/D/wDwgvxRsYWnFlvMlhq1
+sn3rvS52/wBbGOrRn54/4sgE1T/Zn/avk/aM8QeM/Dx8Cap4Rm8ETx2d499JBNGbxiwe3V4GZfMj
+CguMnGRmm/tqfDm78U/CG4+IXhAfZvHnw0Y+ItAvI1/fJPZDzJYM947iING6n5TkEjgU7Bc+waK8
+Mk+PngrTfgXp/wAe9ZmaLQb7TLXUF8tS7ubpFKRIvdmdgq+9Yvwo/aQ0D4neKZ/A194f1Xwj4gjs
+k1KGy1aFY3ubKTAE0TRs6kAkAgkEenBx7WF4cx1fCTx1Kk3Shu/S1/N2ur2va6va5y1MbSjUVKUv
+efT+vwPo2iiivFOoKKKKACiiigD/1f38ooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAGv
+0r4V+Igm+L/7XHhb4UXo3+GvAFgPEt7bnGy5vmbZbbwchljLIQCOpb2x9w399ZaZZzahqU8dta26
+GSSWV1SNEUZLMzEAADqScV8S+IP2zdE8S6zceE/2XvCd18YPEcb+TNeWGLbQrNsgH7Tqki+UQuQ2
+2LeSPu173D2drL6tSvGF5uEoxd7crkrcy0eqTdtrNp30OPG4X20YxvZXTfmlrb77Fn/goAZbL9nK
+48TiFprXwtrvh/WLtVGf9FsdSgkmOB2VASfYV9pWN5BqFnBf2riSC5jWWNgchkcZUgjsQa+D7n9l
+r4r/AB5tjN+1n48e60a5G5vB/hgvp+kIey3Nzk3F3t4PzbE3AEKOlYnwk+LWqfsp6jZ/s4ftI3n2
+TQLQ/ZvB/jC5+Sw1GxU/ubK8mPyQXcCYX52CyKuQcjJ8E7D4o/b7+DP7SNhZ/FT4m6rYaR4g0XxX
+qej2lhNBJczapY6ZZS7re2it0i2KjysZJzuJJ57Cv3B8EyeLpfCmlSePILS28QNAn22Owd5LVZv4
+hE8gVivoSM10VvPaX9vHdWzpcQTKHR0IdWUjIIIyCD2Iryn4vfHb4V/AvQTr/wAStdg0xXBFvbBh
+Je3cnRYra2XMkrscABVwM8kDmmnaPKEtXc+dP2upDrvxU/Zx8Aachl1S48dQ64FXlls9FtZZLlzj
+ooEi+1fdKnKgkYyOlfmf4d/Zn1b9rDXNS/aA/aMtdV8IahexxW/g/TLK8lsdS8OWELFhcPJERi7u
+WO91ZSEXCkZ6d7Lbftn/AABjA02a2+P3hSDpFcGPSfEsEYPQS8212QvdhG5xk5JpAfelFfMvwq/a
+3+DPxW1b/hErfUZfDPjGMhZvD2vRNpmqxuf4Vgn2+b6gxlsjmvpqgAooooAKKKKACiiigAooooAK
+KKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAoo
+ooATAznvQFC9BilooA+Hv+Ce4TSf2dk+H07Z1TwLr+v6LqC4wwuYdRmlOQefmSVSD3Br0r9sH4k+
+IfhN+zh468a+ELea61+3sfs+nrbxtJItzeOtvHKqoCT5RfzP+A14p8TdL8T/ALK/xk1j9o/wlpt3
+4g+HfjYQp4z0qxjMtzp91AoSPWbeJcmRRGAlxGozj5+ecfYvw/8AiX8PPi14eh8U/DvXrLxHpNwA
+VmtJVlAJGdrr95HHdHVWHcVMo3ViouzueU/sj/CSw+DH7PXg3wbAhN69lHfajK+TJNf3o8+4eQnk
+tvfbk84Aruvjx4u0vwF8F/HHi/WSPsWlaNfTyA45CwNheepY4AHcmvQ9b1zRfDWlXGt+Ib630zTr
+NDJNcXMqQwxIOrO7lVUD1Jr88PEviO7/AG8PFdp8PvBFtMvwK0C+iu9e151aOPxFcWb749OsQ20v
+bCQK00w4O3avvpOV22RFWVjSb4d2Wn/8E7vDHgr4gNf2g0fw1pUs8mnQfabm3mthHKsghyu5Y2AL
+jIO0GvLP2crvxN8Uv2qtJ8d/8JhH470/wv4be2udTtbB7G1iM25YbXDffl+YyOT3yAMCv1hSGFIh
+CiKsYG0KAAoA4xj0xUNpYWOnxmKwt47ZCSxWNAgJPU4AHNfoPD/HbwGU18u9nzSmppNuNoqooxlZ
+ODldqK2mk9Lp2PGxmUe1xEK3NZK11rrZtrrbr2LdFFFfnh7QUUUUAFFFFAH/1v38ooooAKKKKACi
+iigAooprMqAsxAA5JNADqK+XPHn7an7L/wAN9Tn0TxL4+sn1K2bZNa6ek2pzxN6PHZRzMp9iBU/w
++/bK/Zk+J2pQaL4T8fWJ1O5JWGzvll025kI7JDeJC7H6A0AfTlFFY3iHxFoXhLQ77xN4nv4dL0nT
+Imnubq4cRwwxIMs7u2AAKANmiuK8S/EjwB4N8LDxv4s8RWGkaAYlmW+urhIbdo3AZWV2IDbgQRjO
+e1fHp/al+Kvxvnl0j9knwJJqGmFjG3jDxMkunaImDgtawkfabwjkjaqqCBn5TmgD7g1zX9D8MaVc
+a54j1G30vTrRS81zdSpDDGo6l3chQPqa+Jr79sPxB8Urq58O/sheCbj4h3ETmKTxDfb9O8M2z46/
+aZAJLnaeqQLkjkEjmtLw/wDsZWHinULfxX+1H4pvPi9r0DCWK2ux9k0K0cEsBb6ZCREcE8NLvbFf
+aGnaZp2j2UOmaTaxWVnbKEiggRY4o0HRURQFUD0AoA+ILP8AZC8RfFSaHXP2uPHF348kDCQeHdOL
+aZ4agPUKbaM+bc7T0aaQ8jO0ZxX2l4d8NeHvCGj2/h7wrplto+l2g2w2tnCkEEa+ixxgKPwFbdFA
+BXOeLPB/hXx3oVz4Y8aaRa65pN4MTWt5Ck8L+mUcEZHUHqDyCDXR0UAfD0//AAT++CNo3leCdY8W
+eB7HJP2HQPEV9Z2g3HJAi3uFBPYYr0f4Z/sg/AT4Wa+njHRvD7at4oTGNZ1q4l1TUV29Ck10zlCO
+eUCnk819NUUAFFFFAHkHxZ+Avwj+OGmrpvxO8NWmsmEf6Pcunl3dswJIaC5j2yxkE5G1gM9Qa+a5
+PhF+1R8CQk3wK8bL8SPDVvj/AIp3xlIWvVjGcpaatGFfOPuidWGeC2K+86KAPjfwP+2p8OtS8Swf
+Dv4u6bf/AAk8by7VXTPEaCGC4c/8+l+uba4UnhSHBY9Aa+xY5I5UWSJg6MMgg5BHqDXIeOfh54F+
+JugzeF/iDoVn4h0qf71vewrMmcY3LuHytg8MuCPWvj64/ZY+KXwem/tP9kv4gzaJp8R3Hwp4jaTV
+NDkA/wCWcMrlrq0B6fu3ZR2WgD7zor4X0v8AbP8A+ED1eDwj+1d4PvPhTqcreXFqzH7d4bu2A6xa
+jEMRZ5O2ZV2jAZsnFfZdt4n8N3mg/wDCU2mqWs+jCE3H2yOZHt/JVdxk8wHbtC8k5xigDdoqtZXt
+nqNpBqGnzpc2tyiyxSxsHSRHGVZWHBBByCOtWCQBk8CgBaK+YviB+2Z+zH8MdSn0TxX4+sf7Ttm2
+zWdis2pXMTHs8NkkzqfqBUPgL9tP9l/4k6nBonhnx/ZJqV02yG11BJtMuJW9I4r2OF3PsoNAH1HR
+SKysAynIPcUtABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFF
+ABRRRQAUUUUAFFFFAARkYNfHfxD/AGKP2f8AxFd6l4z0jSLvwZ4gnjeSa/8ADN9Po00zKCwMgtWW
+NjnkkpkkknNfYlZmtf8AIGv/APr3l/8AQDQB+Vf7GP7K/wAK/jX+z14A+L3xsfV/iFrurQSXUkev
+6veX9mk0dxLEpS2kk8v7qjhgwr9WdM0zTdF0+30jR7WKxsbNFigggjWKKKNRhUREAVVA4AAAFfGv
+/BOb/kyn4V/9g+4/9LJ6+2KACiiigAooooAKKKKACiiigD//1/38ooooAKKKKACkLAHFLXyD+0To
+/wATtT8RWWoR+Pm+G/w00fT57jU9StJkivXvTkQph1OYxxwCNxJA5wR7GQ5SsbiVh5VVC99Xd7bJ
+KKbcm9Ekrts5cZifZQc1G/8AXnokfXm70Ffnn4nuPFH7ZPxR8QfDHQdYvfDvwb8A3RsNevdOma3u
+vEOqrzLp8M6ENHa23Scocux29sjqvgt8XviPqn7IGt/FLxfI9zrWi6drNxaXcsXlveQ2MMklvOy4
+AO4rjIHzbc98nuP2IfC9t4V/ZT+G9vAfMm1TSYdVuZTy81zqebuWR26sxaTknnis88yipgMbWwNZ
+pypycW1qm07aFYTExrUo1YrSSuez/D34TfDH4U6RDoXw48L6f4etIVChbK2jiZscZd1G52PcsST6
+1W+I/wAGfhV8XtJm0T4k+FdO8QW8ylc3Vujypn+KOXG9GHUMrAivmP8Aa+8D+L/Fmo+GtX1z4of8
+Kx+D/h+O5ufEtxaXrWGo3M20/Z445djKU3AfKTk5O1S23GR/wTh8Z/EXxv8AAm+1LxvqWoa7pVvr
+d/b+HNU1VSt5f6NGwEE0pYAtzuUE9hjoK8uKumzolpYp+Ddd8a/sh/FHR/g/8Q9duvEvwo8aSSQ+
+GNb1GRp73SdQRTJ/ZV3MctLHIgJtpG+bI2HODj82/wBu34mfta/tba3L8OPg/wDDbxPF8MtOlyrJ
+p1zE+ryociecMq4hBGYo2/32+bAX9cf28dIW+/ZY8b65E3lah4Tgi8QWEw4aK80qVLmJ1PY5TH0J
+HevqPwvqMmseGtJ1eXO++tIJ2z6yxqx/nQB+T3/BP/8AZZvtQ8ERa5+1f4L1W/8AGHhiZbPSYvE8
+zXtlb6ekaCA2dnIzRRNHtKMSpbpg4OB+vUUMMEaQwIsccahVVQAFUcAADoB6VJiigAooooAKKKKA
+CiiigAooooAKKKKACiiigAooooAztV0fSNe0+fSNcsYNRsbpds1vcRrNDIp7Ojgqw9iK/Gb9vX9m
+bWPhd8PZJf2Q9E8U2N54xuJ7PV9E8OPPLojWEsZM8k1modIWZiqp5ezdlvSv2qooA/ng/YB/aU/a
+C/Z0vrP4M/H3wZ4iPw/u5Fjs7+5sLlpNFkY4AJKEm0JI3L/yz+8vG5T+i3jLVfGP7XXxW1v4OeDN
+XufD/wAI/BEyW/ifV9OmaC81jUiokOlWs64aOGJSpuJF5JOzIyM/bHxD1y58M+APEviWyOLjSdMv
+buPjPzwQPIvH1Wvm39gfQItE/ZO8AXxbzbzxHZtrl7MeXmu9Uka6ldz1Jy+OewA7UAe7/Dj4OfCz
+4RaRBofw38K6d4ftoUC5tLdEkfHeSTG92PUsxJJ71N8Q/hF8MfixpE2ifEfwvp3iG1mUri8to5XX
+PdHI3o3oVII9a/OP9vv4oeKk+NHw0+COnS+Kf7A1WzvtW1Cz8GL/AMTnUZICI4IEfcuyNfmZyTjp
+3Ar6B/YC8b2vjP4EK8HjnVfHL6ZqNzaO+u2gs9V0/ZtIsboCWUSNF2k3cg4424Dirq6/roOa5Wk/
+66nKeFLvxd+x58VPD/wo8Q6peeIvg548uvsWgalqUzXF3oOrSAmLTJp3JaS2nC4gZ+Vb5c4ya/Qr
+cK+T/wBubw5b+JP2TviV5p2T6NpM2sWso4eK50rF5E6N1DBosZHYkVs32l+Kfi78F/BXiy18eah4
+Enn0qz1a9utPWHMgns0kdZPNUgKpYtxXVgMPCrWjTqT5E+rTdvlFN/cmZVpuMXKKu+3/AA59MAg0
+tfCv7GjfFLxKPEnxD8VeMNT8R+EL+Z7Tw+upBBLPbwSENfFUVVUS9EA6gE+mfuqvT4myP+zcbUwT
+qKbhZNq9r21WqTuno+zTRhgcX7ekqvK1fv8An890FFFFeCdYUUUUAFFFFABRRRQAUUUUAFFFFABR
+RRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFfHv7af7TN7+yv8LYPHw8ISeK9Ovrr+zrny
+7wWjWpnjYxSHMUu5WKle2DjnmvsKvFv2ifhPp/xx+CPjL4Wagit/b2nTRQMwz5d0g8y2k/4BMqN+
+FAH51/8ABJr9pC++JPwutfgfa+EnsrD4b6cFuNZa7DpcT3VzLJHEsHkrt+UsSfMONo4+bj9fa/PT
+/gmb8CNQ+Bv7M2nJ4m019L8S+KLmfUtRhmUpLHlzFBG6nkbYkU496/QugAooooAKKKKACiiigAoo
+ooA//9D9/KKKKACiiigAr4e/ag/Z4+LPxv8AGOgX/h3XdIh8N6FEJBpeqxzTQT3pY5lmiRSkiqu0
+KG6Hdxzz9w0hUHk17vDnEeJyrFLGYS3Ok0rpPdWej626nJjsFDEU/ZVNvLQ8O8EeA/HN18LNS8B/
+GTUNP1O71GK6smfSYDbW62M8PkrGEKrgqC3QY6eleK/sL+Kprb4W3HwE8UyiPxp8Hrh9A1KBvlZ7
+aN2NhdIp/wCWU9vtKHnofpX2Xq2qaXoWmXeta1dR2On2MTz3E8zhIooo1LO7sxAVVUEkngCvytst
+D+Mf7UfxYvP2rP2dru1+HenaDaNpWhXmo2sjf8JjGkuZHv41YEWIwRbttMmTuGO3mY3Fyr1pVpJJ
+yd7JJL5JaI3pU1CKiunc9c/bT/ZC+JH7Ueu+EZ/Dnjiz0DQ/C+64Om3tj9ut7m9L5EssTExSKEAU
+I6kdfU19Gfs9eBfjD8P/AAfcaF8ZfGdp411BbjNnPZ6dDpkVvaCNVWAQwIiHDBiDjocdBXhn/DXX
+xJ8B40v43fAzxXZX8WVe78MWy+INNnION8TwssyqfSSNSKRv2svix8QVbS/gV8DvE019NhE1DxZA
+ugabbluN8vmM9w6j+7HGSfbrXLHRNI0lrZvoXf23teTxN4P0L9mnw/N53ib4u6hBpggj+Z4dIilW
+TUrtwOVjjgVlycZZgB0Nfa2nWUWmWFtp1v8A6q1jSJM/3UUKP0FflRc/D743fspfEs/tbfFLVIvi
+rBrNkLDxc9raFLjw/aeb5iz6ShJJsoRgTx8OwG85OcfqN4Z8TaB4y8P6f4q8K38OqaRqkKXFrdQM
+HilikGVZWHUEfl0PNAG7RRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFAGTr2j2viH
+RNQ0C+z9m1K3ltpcdfLmQo2PwNfF/wCwtrknhrwBqn7NnimcR+L/AIQ3s2lTwMcNNpjyNLp13GDy
+0UkDqoYZ+ZTnGRX1L8Ufif4M+DvgjU/iB48v10/SdMjLMesksh4SGFOsksjYVEHJJr87dN+CP7Rv
+x38bS/tgWOqx/CfxglrHaeFNEuLcSq+lBy5TX9vzyNcBiRGh/cZXHzCgD6T/AGjf2efH3xE8a+EP
+jB8FvF0Hg3x74RjurOO4vLUXlpc2N4B5sMsfXIZQynB79Otbf7J/7OUv7OXgLU9F1rXD4m8S+JdU
+uda1jUfK8lZ7y6IL7I88KOcdCSScDgDzVf2s/ir8P1XS/jp8DvE8F9DlHv8AwpAuv6bcFeN8XlMs
+6KeuJIwR79aU/tcfEzx4G0z4IfA3xVeX8uFS88UW6+H9NgLHG+VpmaZlHXEcZJojorL+uv5g9dWa
+H7c/id9R+GVv+z34WmWXxp8YbmPQbC3U5ZLORw1/dSKORDDbK+5jjkivZ/id8K9X1/4D6h8H/Aeo
+ppc82lw6TbT3BYIkCKkTbygLcxKRwO9fC+hQfEL9mj9ouy+MP7WM9l4qi+IdtDo8Pimyjkis/C12
+8jFNOEUhIis5/lxPwxf/AFnBzX6uL5bqGXDA8gjpXXgMbUw2Ip4mlbmhJSV1dXTurrrqZ1qSnBwl
+s9Di/hx4Ri8A+AvDngmHYV0PT7azJjztZoYwrMM4OCQTzXb0gAHSlrLE4idapKtUd5Sbb9XqyoQU
+YqMdkFFFFYlBRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFAB
+RRRQB8u/Hz4/6v4B1fSPhT8JtGj8X/FTxQjS6fpbyeVb2loh2yahfyD/AFdtGeAPvSN8q9yPMNO/
+Yz1zx/A2p/tQfE3X/HOpXOGfT9MvJdD0S2J6pBb2bRyMB03u+WAyRnJp37F+mWvj68+IX7UuqYut
+W+IOuX1np8xJb7PoOkztaWlvHn7oZomkcDhmOetdv+1p+0X4g+A2keENG8B6HD4h8afEHWYNE0a1
+upTDbCaUgNLM6gtsTcvA9eoApNjSOOuP2DfAfhq1a5+CHjPxX8NtZjO+G4stZur63LjoJ7W+kmSV
+PVcrn1rR+Fnx1+JXgr4iWH7Pv7T9tbQ+JNVWT/hHvElinlaZ4hWEZdDH0trxV+Zofut1TsDsfswf
+tC+M/irr/j/4XfFfQ7TQfHnw3vYbbUI9Pmaeynhu0MkE0LOAwDKOQfr7Dd/bG+Gj/Ez4A+I4NLzD
+4j8OxHXNDuo/lltdT00GeB0fqu7aUbHVWIqrCufUdFfL0/7SWk6T+zDov7RF5Zy3sWq6VYXcVrFg
+PLc3yosceeigyPgnsPyqn8Kv2gvF3iH4kj4TfFfwknhLxDe6WusaeILsXkNxak7XUttQrIhzlcEc
+Hnpn6HBcKY7EYKePpQvTje+sU/dScrRb5moqScrJ2TVziq5hShVVGT95+T63trsr2dj6tooor507
+QooooAKKKKAP/9H9/KKKKACimPJHEhkkYIq9STgD8apW+raVdyGK0vIZnH8KSKx/IE0AaFRTzw2s
+MlzcOscUSlnZiAqqBkkk8AAckmq2p6hZaTpt3qupTrbWllE800rcLHHGpZ2Psqgmv5Sbz9tD4w/G
+f4+eMfC0Vxr+t/Dr4la3Cl54f0Ul7+TSrd1jSCyOGMTSQIqyhNokG7dgncAD9o9Rvb/9vXxjL4b0
+ky2v7PXhe8A1C9QtG3i+/tm/49YSNp/s+Fx+8cf61gApxyP0W0/T7HSrG30zTLeO0s7SNIYYYlCR
+xxxgKqIq8KqgAADgCsHwToXh/wAM+EdH0HwrpK6FpFlaxR2tisYh+zRBQRGUGQGXPzcnnOSTzXU0
+AFFFFAEc0MNzDJb3EayxSqVdGAZWVhggg8EEdRX5x6zouufsH+J7vxz4Thn1T4A69dGbWtJhVpZv
+CtzO3zX9mgyz2Tuf38Q/1ed68Zr9IKrXlra31pNZX0KXFtcI0csUih0kRxhlZWyCpBwQeCKAKeh6
+5o/ibRrLxD4evYdR0zUYUntrm3cSRTRSDcro65BUg5BFatfzBftU/tLeOP2VviL4o/Z7/Zp1jVfD
+3geHUIb8W1/bPE9jeJIZZ7XTJJNsn9nyOEOCMH5gh2El/wCh34B/F3Rfjt8HvCvxW0L5YPEFjHPJ
+HnJhuFyk8R945VZffGe9AHsFFVbm+srJd95cRwKe8jhB+pFLbXlpeJ5lnOk6esbBh+YoAs0UUUAF
+FFFABRRRQAUUUUAFFFFABRWfPq2lWsvkXN7DDIf4XkVW/ImryOkih0YMrdCDkGgB1ec/FX4r+Bfg
+v4Kv/H/xD1JNN0mwA5PzSTSt9yGGMfNJLIeEReSfbJHw5/wU3/an1r9nD4NWGn+AdSOn+NvFl2kV
+lKgDPb21syy3E2CCOfliGRzvOOleDfsO/EfTv28fHdx8VvjtqUWpeJfh55X9keF4YHi0qyLqA2qb
+XLie4kfKglv3PAC8qaAPqX4Y/CPx7+0F450r9or9pbT20q10h/P8I+DHbfFpYPK39/2lvXGCqkYh
+GAOc19+0UUAFGKKKAOW8b+CvDHxG8J6r4H8Z6fHqmia1A9td20oyskbjB9wR1VhgqwBBBAr4q+C3
+jTxN+zh8QbD9lP4wXc19oF8GXwJ4mu2/4/oE5/sm6c8C7t1IWIk/vUAwN2Afv6vjn9vDwxqXiv8A
+Zt8R6boXgO5+IGrr5ctja2Uqw3VlcxktHfQvkSb4CMhYgXfO3G0tQB9ib1LFARuHJHcZp1fzb/8A
+BM39qr4iz/tZa14Q+N2u3upah4/s1sS+oswki1DTQWt02tgR5QyptCjLlc85r+kYuiqXZgFHJJ4A
+oAdRWdFq+k3EvkQXsEkv9xZFLfkDmtGgAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAC
+iiigAooooAKKKKACiiigAooooA+HP2A5IfD3we1j4NXDbNW+GPiPWtGuonwJNj3kl1byleuyWKYM
+h7gHFc1+3n8OPiLr03wj+Lvw38PT+LLv4WeJ4NWutKtSoubmzJTzPJDEZZfLAwMnnODg103xk+Gv
+xB+FXxVk/ai+AmkN4ivtQt4rLxb4ZjcRtq9lB/qru0J4+3W4AVQ3+sj+Uc4B9V+E/wC1h8B/jHA6
+eF/FFvZ6rb/LdaTqZ+wanav0KTW0+1wVPBK7lz0Y0dmPuv61Pn/9jnwX8Q9Q+L3xr/aK8deF7zwX
+b/Ea+sItM0vUdq3i2unQmISyopOwuT0P6jBP05+0p8QbD4W/Abx1451FlCabpN15ascebPLGYoYl
+9WkkZVUdya0fiJ8f/gt8KdHk1vx/400vSLePoslyjTSH+7FChaWRj2VFYn0r5K0yw8c/tr+NdD8W
+eKtEufDHwL8MXcWp6bYahH5N/wCJr6Hm3ubiBsmKxjJ3xxuA0jAE8YIbe3kLzOtj+EsmkfsKaB8L
+PEHh268U3GkeG9PimsLGYQXbTQIjloGZWHmxsNyrtOSMY5rxf9mT4eeJ/Ef7Q9l8UZB4qm0Pw1ob
+WRvPFkPkXUt1NlBbQR4X91ChJLAHLZJOSK/VCivusi47r4DK6+W04X9pzK7b0U0oystrtK11bzva
+NvIxeUQrYiFeT+G2ne2q1/r87lFFFfCHrhRRRQAUUUUAf//S/fyvnr9on4+WPwL8N6e1jpcviXxh
+4nuhpvh7Q7cgT6hfOMgZ/ghjHzSyYwq+5FfQtfDHw5tF+KH7afxK8e6zEJYPhXY2HhjSEb5lguL6
+L7bfToDwHkSSOPcOdoIzgkUAU9E/ZK8V/FRV8UftdeMr/wAV6jdjf/wjuk3c2meHtPDdIUjtmjlu
+So4Mkztk8gDvvN/wT0/ZJt0aTw94Kbw5e4wt7pWo31ndRnsVljnznPrmvpz4keKda8FeC9S8S+Hf
+Dd54u1GzVDDpdg0a3NwXdUwhlIQbQdxJPQHAJ4r5f/Yg/aE+IP7RXhLx14i+IulxaJfaD4pvtJhs
+I1+e1gt0iYQyv0kkRnZWcAZx0pxV726A9EmeCfGPR/jF8BfCN94B+KPjbUvGHwM8YCPSLzxAUi/4
+SHw1DckRMbiUKEntJFJjedl8yIHPOPm+2Pgb+zd8DPgHoaWfwg8NWmmJcxqXvV/f3VypAwz3LlnY
+NgHAO30Feu+KvDOi+NPDOq+EfElqt7pWtWs1ndQuMrJDOhR1OfUE18m/sIeINeu/glc+AfEszXeo
+fDLXdV8JSXDkl5Y9LlAty2e4gdFJ77c96QH2jRRRQAUUUUAFFFFAHk/xY+Bnwl+OOh/8I98VfDFn
+4htF/wBWZ0xNCfWKZSskf/AWHvX53+C/B/jH4KeLvEf7Hf7GutvLbPNHq2qatq8a3dv4NjvF5ghI
+A+1XNwqq8UUn3MFmJ3ZX9QPG/iSHwb4M17xfcJvh0Owur91zjctrE0pH4hcV8tfsHeEJtG/Z60Tx
+3rhNz4n+JRk8U6vevzLcz6oxliy3XakBjVVzhRnGKAM2y/YG+CWtwfbPjTLq3xV1yY7577X9RuXV
+nPJ8q2hkjghXPRUTj1NNv/2C/hFoUIvfgXf6x8JtcgJaC70PULgwh+o86zuHlt5kJ6qyfQisf9or
+49fGuD49eEv2aP2ek0i08Ra1pV1rl9qWspJNBb2tuWRI1ji53O64Jweo6cmvT/2Ovj1rf7Qnwcg8
+WeL7GDTvE+mX15pOrQWu7yBd2MpjZo9xYhXGGxk4JPOKFrt/XT8wem/9dfyOb+Cvxx8faN8RH/Zu
+/aQjt4PHUVu91o2s2ieVYeJbGH78sKH/AFV1GOZoASByy/KK+zq+Jv29PDmPghJ8X9GAt/E/wnvb
+bxLpl2B+8iFrIv2qIHg7JoNyuvQ/KSDgV9laXfw6rplnqlv/AKq8hjmT/dkUMP0NAF+iiigAoooo
+AKKKKAKeo6jYaRp9zquqXCWlnZxPNNNKwSOOOMFndmPAVQCST0Ffnpo+r/Gn9tS5n1zwvr978Mfg
+gkjw2dzYqItd8SohKtPHM4Y2dmzAhGQeY45yOCPQf25tRudQ+HXhb4QWly9mfix4n0vwzcSxkq4s
+rlzLeKCOm+CJ0z719haLo2meHdGsdA0S2Sz0/TYY7a3gjUIkUMShERVGAAqgACgD4+H/AAT0/ZEn
+VZNb8CjXLzA3XmpahfXV05/vNK85bOec8Vz+ufssePfg8jeKv2RPGF7o9zaYlfwrrd3NqWh6kqZJ
+gBuGea0ZhwskT4B6juPCvj98cv2/vglqWjWhPgHWbnxhrH9l6DpVlFqEupXJkJKsyv5cYWNMGVy4
+Va/VfRf7V/saw/t7yv7T+zxfavIz5Xn7B5nl5527s7c84oW1wejsfld4Y+AHwn/b68dTfHX43Nft
+f+FSNAuPBMjG1XRrq1+eaK5dG8ycySOZFdTGjoVGDg1+mPgX4d+BfhjoMPhf4e6DZ+H9KgAC29nC
+sSnaMAttGWbH8TEk9zXyRr9mnwt/bw8J6vpbi30/4zaBf6ff26jasup6CFuYLlsdX+zu0ZPUgDng
+Y+6qACiiigAooooAKKKKAPgH9s74ffs3+GtL0746eNdDlg8f6VqFovh670TEOs32rb91tbRgDbOX
+Zfm81XCoCeAKk0P9mb4ofG5U8Wftb+L72RLw+bF4O8P3cunaRYRtyIriaBlnvJAPvl3CZyACBk35
+7Wz+Lf7eUtjrIF1pfwU8OW13a2zjKJrOvSPtucHgsltDtQ4ypOQQa+pPi74l8X+Dvhp4i8S/D/QX
+8T+JNPs5JNO01M/6Tc4xGhxg7cnLYIOM4IpN2Q0rux85H/gnl+yBEDJpfgFNJvMHbeWN/fW90hPV
+lmScMD75rzvxA3xo/YpK+Lptf1P4p/BeJlj1G1vwLnXfD0LH/j7iuVG+7to/+WiyfvFXkMeTWH8B
+P2lv2h5f2l7X9nf43L4d1y41PQTrM0/h7zA2iXCZ32d5lnXII2c4OSpBPSv0ov7O01GxuLC+gS5t
+rmN4pYpFDpIjgqyMpyCrAkEHqKpqxKZBous6X4i0ex1/RLqO907UoI7m2niYNHLDKodHVh1VlIIN
+adfCH7Dkt94Stvif+z9dSyTWvwr8UXFjpnmMXaPSb9BeWUOTyRGjlR7cdBX3fSGFFFFABRRRQAUU
+UUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFeFfF39nv4IfFjT7u++I/gjSt
+fu4oXK3FzbIbj5U4/fLiTjAx83Fe61ma1/yBr/8A695f/QDQB+bH/BOT9nz4ID9mP4c/E6TwRpU/
+ivUrSWafUprVJrhpEuZkVw0gbaQqgArjpX6dDivif/gnN/yZT8K/+wfcf+lk9fbFABRRRQAUUUUA
+FFFFABRRRQB//9P9/K+Hfg9cnwH+2H8Z/h5rDrFJ45g0vxbpmePPiSAafdKmepieFC2Om8V9xV8v
+/tJ/ArW/ijaaH46+GeqJ4c+J3gWdrzQdSdSYn3riayugPv21yvyuOcdR3BAPp818PfsP/Cvx78LN
+L+K8HjzSn0p/EHjrV9VsQ7o/nWVz5flSjYTgNg8HmpfB/wC214H028t/Av7SFnJ8IvHaDZNaasGG
+m3DqOZLLUQDbzRMORlww6EZr1nxF+1j+zL4V0qTWdZ+KPh1bWNdxMOpQXMhH+zHAzyMfYKTTTtf7
+vxT/AEB7W+f5/wCZ7pquqafoel3mtatcJaWNhDJcXE0hwkcUSl3dj2CqCTXxj+wRZape/B/Xfibq
+cBth8UPFOt+KoI2GGFrfzBLdiPSSOISL6qwNefeI/EHxD/bjkg8E+CNK1Hwf8EJXRtb1zUInsr7x
+BbAhjY2Fu+2aO3lHEs7hdy5C9ef0P0rS9O0PS7TRdIt0tLGwiSCCGJdqRxRqFRFA6BQABSA0KKKK
+ACiiigAooooA434i+Gj40+H/AIm8GqwQ69pl7p+49B9qgeLJ+m6vnH9hHxiPFX7MHgvS7oeTq3g6
+2/4RrUrVhiW1vNGY2jRSqeVbYiNg9mr7Ar4R+JPgH4n/AAF+K2qftBfAjRW8U6B4p2P4x8Kwusdx
+PLAu1NT07eQpuQnyyxZHm4BGW5oA4v8AaO+H3xl8EftS+Df2ovhN4Ofx9aW2g3nh/U9Mt7iOC6Tz
+WaSGZPM+UruYA4zjB9RXqX7Cfwa8Z/Bv4Im1+I9qlh4p8S6rqGt39pG4kW2e+mLJFuXglUAzgnBO
+K6fwJ+2p+zT45jkhXxtZeHdUtjsutN19v7HvraTukkN55ZyP9nI96g8d/ttfs2+CTHY2vi+38Wa1
+dZW10rw7nWL65kxwkcdmJBknjLECiOn9ed/zHJ3/AK8rfkYP7fHiFbL9m3X/AARZDz9c+Ictt4Y0
+u1Qgy3FzqcqxERr1OyLe5x0CmvrvRNNTRtGsNIjO5bG3igB9REgUH9K+KvhV8L/iX8YfitaftJft
+Dab/AGCuhJLH4O8KNIsp0qO4GJL69ZCUa9lTA2jIiHGdwBH3RQIKKKKACiiigAooooA+If25bb+x
+/CXw9+L0qO9l8MfGWj65fbATssd7W1xK2P4Y0mLt6AE19rWl1b31rFe2cizQToskbqcqyMMqwI6g
+jkGsvxL4b0Txh4e1Lwp4ls01DSdXt5bS6t5BlJYZlKOh+oPbn0r8+/CnjX4ifsRwt8PPi7YX/in4
+O6edmg+K7KFry60q0xlLLVYIg0uyEfJHcKpXaAGxjgA7O0+FPj/xV+3xqHxa8Z6Q48GeEPDCWHhy
+4dkaI3126tdSIuSyvtLITgcDFfdor5/0P9qz9mjxHpces6V8UfDjWsihwZdTt4HAPPMczo4PsVBr
+xzxd+2r4Z8R3Vz4D/Zb0+T4s+OX/AHSCwVho9g7Dia+1BgsKRr12ozM2MDnoLawPe5H47uI/iD+3
+d8MvDOmo0qfCzQdY17UJV5SGXWUWwtoXPZ3RXcA9VGa+56+bv2bvgZf/AAh0LVtb8b6oPEnxC8Z3
+f9peIdW27RNcFAqQQA8rbW6jZEvHGTgZxX0jQAUUUUAFFFFABRRRQB8L6O9t8OP2/fEkGqt5EHxf
+8K2E9hK5CpLfeHpJIZrdCesggmWTA/hGa+lPjYnxRf4WeIm+Cs1vD42jtWk0v7UiyQvOnzCNg/y/
+OAVBPAJBNcd+0b8B7b45+EbK303U38O+MPDN2mqeHdahGZdP1CEfKxH8UUg+SVOjLz1C48X8Kftn
+6Z4LuLTwF+1rpUnws8ZKRD9quEeXQdSboJbPUEDRAP1McpVk6HjkqSurDTsfN/wH+D3xm8V/th6J
++0Fq/wAKY/g7Yado1zB4j2XEROvapdhy8gihOGUyMHLsM/KCxztFfrzKyxRO7MFCgkk8Ae59q8G1
+X9qf9mrQ9Kk1nUfij4bW0jXeSmq20r7R6Rxuzn6BSa+X/FnxR8f/ALZ9qfht+z1b6j4b+HGoEx67
+42u7d7P7TYsMSWukRTqssjzAlTOVCKM4JJqr6WF1udV+xNNL411v40/HeIZ0r4geLZl0uXBC3Fho
+0S2MVwh7pJsJBHoa+865nwZ4P8PfD/wnpHgnwnZpp+jaHbRWlpBH92OKJdqjPUnjJJ5JyTya6akA
+UUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAV8O/t9/Hf4sf
+s5/BQfEz4Y6Rp2sQQXaWmqx6hFPIIra6UokyGGWLbiTCksSMsvFfcVeM/H7RfAPjD4R+KPAXxD1a
+y0nSvE2n3NkZr2eK3RWkQhJFaVlXdG+1xzwQKAPzL/4JC/G74q/Eb4f3Xw21TStOtfA3w5s0s7W8
+iimF5c3l1M8+15GlaIhEJLBYwfmXnrn9mq/P3/gnD4A8KfCT9nPRvBVvrWk6l4ou5bm/1ddOvre8
+K3EshCqWgdwdkSoK/QIEHkUAFFFFABRRRQAUUUUAFFFFAH//1P38ooooAxdd8N+HfFFi+meJtLtd
+Ws5PvQ3cKTxn6pIGH6V51oH7PnwG8Kah/a3hj4c+HdJvs7vPtdJtIZc+u9Iwf1rvfFmrapoXh2/1
+fRNIm16+tYy8NjbyRxS3D9kV5SqKT6scV84fswfGvx18Yr74iR+ONLi0WTwzrX2C3skw0tugjDNH
+NIpKyOrZBZQAewr28Hw/iK+CrY+FvZ0rc2qv7zSVo3va73tbzvoctTGQhVjRd7yvbTTTz2Pq9VVQ
+FUYA4AFOoorxDqCiiigAooooAKKKKACjg9aKKAPP/GHwn+FvxCx/wnvhDSPEe3odRsILsj6GVGqb
+wh8L/hr8PozD4D8KaV4cRuo06ygtAfr5SLXg3xz+LvxC0b4leCPgp8JlsYPEfi5Lm6kvdSR5re1t
+bVSSfLQqWZiCBz6euR0f7M/xe8Q/Fnwlqy+M7WC28SeFtVutH1E2u77PJNbNgSRhuQrKQcHNfVYj
+g7GUstjmk7cjs7X95RcpRUmuzlGS3v5WaPPhmdKVd0Fe/wCF0k2vWzTPpDpwKKKK+VPQCiiigAoo
+ooAKKKKACmuiSKUdQyngg8g06mNmgDyDW/2ePgF4k1L+2PEPw38Oalf53efc6TaSy59d7Rk5/GvS
+9F0DQvDlimmeHtOttLs4+FhtYUhjX6KgAH5V8K/Hb4qftTfCWc39jN4bv7bWtV/s/Q9OS3uZNQuj
+M58lCNwTcqYLtkKK+5vDJ15vDmlt4pEI1k2sBvRb58kXOweb5eedm/O3Pavpc34Xq4PC0cZKpCUK
+l0uV3elr3TS2va+19OjOHDY+NWpKmotOO913NuiiivmjuCiiigAooooAKKKKACszVtF0fXrKTTdc
+sYNRtJhh4biJZY2B7Mrgg/iK064b4meNLf4c/D7xD48uovPj0GxnvDHnb5hiQsEzzjccDOOK3wuG
+nWqxo0leUmkl3b0SIqVFGLlLZHJ6V+zp+z9oepjW9G+Gnhqx1AHcLiDSLSOUH13rEDn8a9ijjjiQ
+RxKEVRgADAA9hX59fs9ftE/Fb4k+OdE07XNZ8Kaxp2tWcl3d6fptwYtR0g7S8UbK7N9pONqybANh
+znpz+gy17fE/DGIynE/VcU1zWvo79WuqT3XbVWaummcuAx8MRT9pTvbzHUUUV86doUUUUAFFFFAB
+RRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQB8cfHT40+PdQ8e2n7N37Oxtj
+8Q9QtRf6lql2nm2Ph7Sy237RKo/1lxKeIIe/3m+XrV8G/sJfA7TZJNc+KdrP8WfFN2AbrVvFUh1F
+pG7iO3kJghTP3UVOBgZIFZH7CVpa+K/BXi/9oS7UTax8VPEmqX7TsP3i2FlcPZWVvn+5FHDx9aj/
+AG3fj38QfhHD8OPA/wANL2x0LWfiZrqaONa1FPNttMiJQNKYyVVmO8bdxxwfwPJDSO18W/sMfsue
+KLPy7DwJZeFNQjIe31Dw6v8AY97byDpJHJabBuHbcrD2rzzwZ8QPit+zV8QtD+Dfx71d/F/gvxVc
+fYvDHjCYbbqO7IJj07ViODK6giKcf6w8Nzkiz+yH8dfH3jXx38UvgX8T9asPFOv/AAxvbaNda06I
+QRXtteIWXfErMqyRMpRwDwRjqK9q/at+Glt8Wf2fPG3g6VR9qfTprqyl/igvrNftFtMpHIZJUU8e
+4702hH0PRXxbd/tJ6nov7Gnh39oOCxS91XVtH0yVIpX2x/a74RxBpD12q7bm9vzpPhT8Z/irZfGi
+1+Cfxml0nUb3XNFXWtPvNIR4kTBIkglR2bJAVirg8gdOePqsu4NxmKwE8xpW5I82l/efIoubS7RU
+k3qtHpezPPrZnSp1lRlu7emt7ffZn2nRRRXyh6AUUUUAFFFFAH//1f38ooooAQ18o/s2/DXxp4B8
+XfF7VPFen/YrbxR4ml1DTn82OTz7ZkwHwjMV57MAfavq+ivXwOdVcPhsRhIJctVRTvuuWSkra91r
+voc1XCxnUhUe8b2+asFFFFeQdIUUUUAFFFFABRRRQAUUUUAfGvx88AfEi2+MXw/+PHw10IeKrjwv
+DeWF9pguY7WWS3ulO143lwuVZjnvwOCM46L9lH4Y+Mfh74T8Q6t4/tI9N17xjrd7rNzZRyLMLUXD
+YSMyKSrEKATgnr1zX1RRX2OJ41xNXK45XKEeVJLm15nGMpTjF68tlKbekU9rvQ82GVwjXeIu7726
+XaSb77LuFFFFfHHpBRRRQAUUUUAFFFFABRRRQB8o658NfGXiz9rLRfHevWBfwV4S0OX+zZTJGV/t
+a5k2yN5YbzMrF0Yrj0Oa+rR0paK9bNc5q4tUY1EkqcFCKXZNu+71bbb7t7HPh8NGm5Nfad3/AF5B
+RRRXknQFFFFABRRRQAUUUUAFeb/GHwVP8Rvhb4q8CWkohn13Tri1idvurJIhCFsdt2M+1ekUV1YL
+GVMPWhiKTtKLTXqndGdWmpxcJbPQ/MD4R/A74rTfEz4U6jr3w8s/Adn8MrO4gv8AUbe6t5W1aR4j
+Em1YfnKscuTJkgs3PY/p6vSnUV9BxZxbXzitCtXgo8qaSjzW1lKb1lKT1lJ9dForJHHl2Www0HGD
+bu7627JdElsgooor5U9AKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACii
+igAooooA+Fv2GL208I+GPGv7Ol4wt9Y+FviPUrYW7H520zULh72xuBnqkqTH1wRg10X7avwk8c/F
+/wCG2m6N4J8L6F40NjqMNzeaPrm6Fbu2XIYW10jK1vMOzbhkE88YNr47/BDxvN410z9oP9n2a1sf
+iTosH2O7tLtjHY+INLzuNldMv3XVvmglP3G4OFORzvhn9vP4QRzPoPxtgvvg/wCJ7bAuNP8AEkDw
+Rbu5gvQDBNGf4WBUkYO0Ck1caZyP7C37Leu/Am78fePPFHh3T/Bt943urcWug6ZO13BpthZKyxRt
+OxPmSOWZ3bJyTn2Hv/7WnxLh+E/7PXjPxXv/ANPksZLHToQMvcahfD7PbQovUs0jjp0AJ6CuC8T/
+ALfP7MWjW/l+GPFY8c6tKQlvpvhqGTVbueQ9EVYAUUn1d1X1Nct4D+GPxY+P3xK0b46ftEad/wAI
+z4d8NObnwt4LZ/OeC5IIXUdUI+Q3Sqx8uIZEWck7siqbuSkd9bfBzWvD/wCyFpHwZ0zRLDxJqOke
+H7Ox/s/UmeO3uZYY03oXRlZGyDtcMMNg5FeIfs0/s7+IdG+NCfFbVvA7/D7S9G0lrC2sbjUzqlzc
+3c3yyTGQu+2JI/kRSQAMYHU1+ktFfYZNxvi8Dl1fLaCXLVum7yvaSSaspKDula7i2tbM83FZVTq1
+4V57x9Om2tr/AIhRRRXxx6YUUUUAFFFFAH//1v38ooooAKKKKACiiigAooooAKKKKACiiigAoooo
+AKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigA
+ooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigArn/E+m6dqWg3
+0GpWkN3GIJSEmjWRc7D2YEV0FZmtf8ga/wD+veX/ANANAHxb/wAE4dO063/Yy+GN7BaxRXE9hOZJ
+FRVdz9rnHzMBk/jX3L0r4n/4Jzf8mU/Cv/sH3H/pZPX2xQAUUUUAFFFFABRRRQAUUUUAf//X/fyi
+iigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKK
+KACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAoooo
+AKKKKACiiigAooooAKKKKACvgb/go140+Ovwy/Z8ufiX8DNbOk3OgXMZ1VBa290JdPuP3LNieOTb
+5bshyuPlJJOBX3zXy5+0N8bv2Z9B8I+IPht8ZfHGk6XHr1hcWN1ZSTiW6EVzGUJNvEJJV4bIJTr0
+oA/PH/gjn4w+N3jPwTrVn4o1syfDvwbEmlaPYfZoExdSyNcTOZljEr+WrADc5HznjgY/bGvzD/YH
++KX7K/ws+Cvhv4LeHfijompeIInnlu2eRrE3V5cys58sXaxM5C7VAGSccelfp2rBlDKcg9KAFooo
+oAKKKKACiiigAooooA//0P38ooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAoooo
+AKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigA
+ooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigD4W+LvxA8e/Gj4vXH7LnwV1ibw3ba
+PbR3fjPxLbAG40+C4GYNPsmOVW8nU7i5H7uPkfMePcPhD+zN8E/gdp5tfAHhi2gvJfmuNRuVF1qN
+1J1aSe6l3SMzHk8gZJIArxb9gBYdf+Ceo/F24Xdq3xK8Ra3rV5K3MhP22W2hjJ67Y4oVVV6AdK9m
+/aOk+Nlv8NdQvPgXqGk6VrdrHNNNcatFJMiW8cTsTCsYI83IGN4K+oqZysrlRjd2R2vxC+EHwu+K
+2izeH/iN4W07xBYzjBS7t0dl90fAdG9GRgR618VwHxb+w34w0DRrzWLnXvgD4juo9Nil1GQz3nhW
++uDttkM5wX0+RsRjfkxEgZxgHv8A/gnj4z8V/ED9kzwX4s8barca1rF99tM93dP5ksm27lVdzHrh
+QAPYV7j+0b4C074nfArxz4H1RVaHU9Iu1UsM7JUjMkUg9GSRVZT2IzWko2djOMrq57UCCMilr4Qi
++NfiaL9gTR/jDbXL23iK98KWU0dwiqzJeTRpGJMEEHDHPINZn7KvxNv/ABn45u9K1r4qap4kvrfT
+/NOjappEemMRIUP2iJlALqvT6NnFfX5dwXicTlVXNoyShBtWtNvRRb+GLil7y1k0jz6+ZwhiI4dr
+V+nn3d3t0R+gVFFFfHHpBRRRQAUUUUAf/9H9/KKKKACiiigAooooAKKKKACiiigAooooAKKKKACi
+iigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKK
+KACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooA+D/ANjbVbb4e658
+Rf2VtW/0XVPA2tXupaXERtFxoGsTG6tpos/eEbyNHIRwG4r7T8UaTJr3hrVtDhkEUmo2k9srsMhT
+NGUBIHYZzXgnx9/Z/u/ide6J8Q/h3rf/AAh3xN8Il20jWBEJY3ik/wBbZXkX/LW1l/iXqp+Ze4Pk
+2lfta/EnwAkukftKfCHXtDvrQYbVfDdrLr2jXIHWSNrcNPECOdkikqOC2RUyimrMcXZ3R6/+yZ8D
+9W/Z1+BHhz4Ra3qUGr3miC4D3NujJFJ587yjar88BsHNY/7ZnxKm+HPwE16HRd0/inxYn9gaDaRc
+zXOpamDBEqKOSEDGRsdFU15mn7d2jeO9EhvP2evht4t+I9zf8WksemS6bppOSN8l9dqsaxgghmVX
+IPauk+EnwB8f678Rrb9on9pjULbUfG1rC8Oi6JYZbSvDsEw+dYWbme6YHbJOfcJxg1cpNu7JirKy
+O+b4L+JdF/Zu0f4NfD3WY9C1fQdLsbO0u5I1mi8yzVMrIpDAo5UqSASAcgGuK+GPwV+LV38bU+Of
+xsvNITU9M0caPY2mi+aYypYl5pnlVSSdzYUZ69goB+yaK+jy3inE4TCVMHRUUpppy5VzWlZSSlvZ
+pLTpra13fir5dTqVI1JX0tpfTTZ2CiiivmzuCiiigAooooA//9L9/KKKKACiiigAooooAKKKKACi
+iigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKK
+KACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAoooo
+AKzNaJGj35HB8iX/ANANadZmtf8AIGv/APr3l/8AQDQB8df8E5+f2KfhXn/oHz/+lk9fbFfE/wDw
+Tm/5Mp+Ff/YPn/8ASyevtigAooooAKKKKACiiigAooooA//T/fyiiigAooooAKKKKACiiigAoooo
+AKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigA
+ooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACv
+z0/4KY6B8Trn9mjU/G/wn8R6p4f1fwbKuoXH9mXc1q1xp5Hl3KP5TLvCKwk+bgBWr9CXdI0aSRgq
+qCSScAAdSTXxP8RP2x/2d9Wi134Z6N/afxNup7eay1Cw8KaZPrOyOZTFIkkkI8jJBKkeZkHIOKAP
+hj/gjN4f+JOoeDvEvjrxT4h1S58L2JXRtE0ye6mexhKt591LFAzGMHcyqCFBB3epr9wa/LX9mn9o
+L4B/sw/CHw18IPFuleLfAFnpplT+0fFXh+606C4uLiVpXd5UEsaZLYyxUAAZNfproeu6L4m0i01/
+w7fwanpt/Gstvc20qzQyxsMq6OhKspHQg0AatFFFABRRRQAUUUUAFFFFAH//1P38ooooAKKKKACi
+iigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKK
+KACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAoooo
+AKKKKACiiigD8+fiDd6/+1l8a9b+AGkXt1pPwr8A+Uvi+7s5Ghn1fUZlEkekRzJhkhRCHuGRsk/u
+zjv9qeCvAfgb4X+HIPC/gTRrPw9o1koCW9rEsMahRjLY5Y46sxJPc18o/wDBPUrqn7N9v46uFA1T
+xpruv6xqDfxNdTalPGdx65CRqPoK3P2zfhnYfEfwFpLeL/iG3gDwJ4f1BNR8SFXeE6hYRDm1M8cs
+bRhuegYkkYUkCkxpH1lf2Ok6/ps2nalbwajp94hSSKVFmhlQ9VZWBVh6ggivzt8beFZP2GPFVn8W
+fhtJLB8FdXvY7fxV4cBaSDSZbyTZHqtgG3GJFkZRPCuFIO4DuvPf8E311e9n+KPiPwiur2/wX1LV
+Yj4Ni1mWWSUxRqy3MsImZnEDvgrk+x+YGvvD44+FdL8bfBvxt4U1sA2OqaNfwS7sYCtA/PPocHPb
+FU1YlM9RiminiSaFw8bgMrKcggjIIPcEVJX576Z4z8ca3/wTq8P+JtIW8vPE2reEbBEez3m686aN
+I/MTZ8+4D5sjmsP9lfVtI0f4uzeDPE8fjLRPFsukfaYLLxHqRvLa5t3Kl5Y06K4KnGeg3DOQRX2u
+VcGyxWVVszjU+Bv3Uk3aKi3J+8mo+8tUnazvY8vEZmqeIjQa36+t9Nt9O6P0kooor4k9UKKKKACi
+iigD/9X9/KKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKK
+KACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAoooo
+AKKKKACiiigAooooAKKKKACiiigAooqC6uraxtpby9lS3t4EaSSSRgiIiDLMzHAAAGSTwBQB8H/s
+yayvwd+LfxA/ZV8TKbPdqV54n8JyyYSO+0jU5POmhh6BntJ2dWUZbB3EYr0T9rT9lLTf2sfDOh+F
+Na8V6h4ZsdFvGvitikbi4l27YzIJB/yz5K47k+1fNWvaDr37fnxEs/FXg7U7rwb8L/h3NcN4f8VW
+CpHqmqa2v7pprRpAWWwhOQ3CiZhjOOnq+j+P/wBtr4VeZovxF+HVp8W7O3wsGt+Gry30+6nUd7iw
+vGjRZMfeMbBc5wuMGgadj1r9n74BeK/gm2rr4i+KfiD4iw6jHbx28OtyK8dkIN2fIC/d3hgCOmFF
+cZ+2t8RbvRPhXL8JvBLC8+IXxQJ0HQ7KNv33+lgpc3ZUcrFbQl3dyNoIAJ5rD1X44ftdeMbU6Z8M
+vgPL4avJjs/tDxXqtnHa24P/AC0NvZSyyy4/ugrn1rwvxJ8Dvjj+zz4z0v8AbD1HXJvi94ns7aa1
+8X6f9njTytJlYSO2gx4DQ/ZdvMeSZkzkZJFNu5KR9x6p8DbC9+Btj8E9I1e60CDTNPtLO0vbFyk0
+D2ap5bjkZG5fmXIyCRkVx/wv/Z21/wAM/Elvi58TvGkvjfxLBpw0qykNpHZRW1sDliERm3O2Tkkj
+qxOScj3nwH478J/EzwhpfjvwNqUWraHrMKz2tzEfldG9QcFWByGUgFSCCMiuur3sDxPjcNhKmCoz
+ShO9/djfW3MlJrmSlZXSaTtqclXAUp1FVktV5vptptoFFFFeAdgUUUUAFFFFAH//1v38ooooAKKK
+KACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAoooo
+AKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigA
+ooooAKKK8w+Mfxd8GfAr4dav8UPH872+iaMqNMYk3yMZHWNERcjLMzAAZoA9PJA5NfnV461/Wf21
+PG9/8GPh7cyW3wb8N3Yg8X69A5T+2biLDnSdPlT70YIAupVI4O1TyCU8f/GbUv2tPEEfwH/Zn1lZ
+vCN3bRy+MPGFkxMdlYXS5FhYy9Dezx53HnylzkBgQPuT4e/D/wAI/CzwZpPgDwLp0elaHosKwW1v
+GOFUclmPVndiWdjyzEknJoA29A0DRPCuiWPhvw3ZRabpWmQx21rbQKEihhiUKiIo4CqBgCteiigA
+pCARg96WigD85fF2ga3+xJ471D4u+B7WW++CXiW487xRodsrO2gXcrANq1lEM4tyTm6iXAUfOBgc
+foPoutaT4j0iz1/QruK/07UYUuLe4gcSRSxSDcjow4KsDkGrd3aWuoWs1jfQpcW1wjRyxSKHR0cY
+ZWU5BUg4IPBFfnRaLqX7B3jeDTXeW6/Z68WXjBJpWaQ+D9RuX+WMtzjTZ3ICkjELnk4PzAH6P0V4
+h8GP2ifhR+0A3iZvhXrK6zB4Uvxp91MgxG8hjDiSE/xxNllV+AxRiMrgn2+gAooooAKKKKAP/9f9
+/KKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigA
+ooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACi
+iigAooqjqmpWGi6Zd6xqk621lYwyTzyucLHFEpZ3Y+iqCTQBzPj74i+B/hb4aufGHxD1u08P6NaD
+95c3koiQHsozyzHoqqCxPABr5ZtP20B4tH2v4S/CLxv410kjMepxaamn2U6+sL30sLuP+ACuG+Bv
+gCb9qrX/APhqT44WS6l4duJWPgTw7dr5lpp+nIxVdQngb5Hu7raHDMDsTAU4Ix+gFzq2j6a6215e
+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
+0BRRRQAUUUUAFFFFABXl3xou/iBZfDHxDP8ACyyF/wCKjbeXYREqD5kjqhcF2VcopZxk4yB9K9Rp
+MA11YHEqhXhWcFLladpbOzvZ7aPZ+RnWp88HG9rrdbo/Jz9mC18ReCv2pP8AhEJPAV3oLL4UtLa+
+FxeW800e2SaY6hO8fErXU2VIX5gTk8Cv1jHSsxNE0WPVpNfjsLddTmiWB7oRIJ2iU5WNpMbioJyF
+JwK1K+o444rWc4uGL9lyNQjF6yd2t37zb19dt9bt8OV5f9WpunzX1b6fokFFFFfGnpH/0/32832o
+832qGigCbzfajzfaoaKAJvN9qPN9qhooAm832o832qGigCbzfajzfaoaKAJvN9qPN9qhooAm832o
+832qGigCbzfajzfaoaKAJvN9qPN9qhooAm832o832qGigCbzfajzfaoaKAJvN9qPN9qhooAm832o
+832qGigCbzfajzfaoaKAJvN9qPN9qhooAm832o832qGigCbzfajzfaoaKAJvN9qPN9qhooAm832o
+832qGigCbzfajzfaoaKAJvN9qPN9qhooAm832o832qGigCbzfajzfaoaKAJvN9qPN9qhooAm832o
+832qGigCbzfajzfaoaKAJvN9qPN9qhooAm832o832qGigCbzfajzfaoaKAJvN9qPN9qhooAm832o
+832qGigCbzfajzfaoaKAJvN9qPN9qhooAm832o832qGigCbzfajzfaoaKAJvN9qPN9qhooAm832o
+832qGigCbzfajzfaoaKAJvN9qPN9qhooA//Z" />
+</span></p></div>
+</div></div>
+<div class="paragraph"><p>We can use tree contraction to perform a rootfix computation.  To this
+end, we can associate with each adge a <strong><em>binary cluster</em></strong>, which is
+initially $-\infty$ but more generally represents the
+maximum node that corresponds to the path represented by that edge
+(initially each edge represents an empty path).  We then define the
+rake and compress  operations as follows.</p></div>
+<div class="olist arabic"><ol class="arabic">
+<li>
+<p>
+Compress operation: take the maximum of the deleted edges and the
+deleted node and assign that value to the new edge created.
+</p>
+</li>
+<li>
+<p>
+Rake operation:  do not change the weights on edges.
+</p>
+</li>
+</ol></div>
+<div class="paragraph"><p>At the expansion steps, we compute the correct values for raked and
+compressed operations by considering parent of the deleted vertex and
+the weight of the incoming edge and taking the maximum.</p></div>
+<div class="sidebarblock">
+<div class="content">
+<div class="title">Exercise</div>
+<div class="paragraph"><p>Complete the example given above to compute the maximums for the root
+to leaf paths using tree contraction.</p></div>
+</div></div>
+</div>
+</div>
 </div>
 </div>
 <div class="sect1">
@@ -31687,8 +32828,7 @@ of the vertices are stored is a single array, which  the
 <div class="title">A graph (top) and its compressed-array representation (bottom).</div>
 <div class="imageblock" style="text-align:center;">
 <div class="content">
-<img alt="An example di-graph." width="200pt"
-src="data:image/jpeg;base64,
+<img alt="An example di-graph." width="200pt" src="data:image/jpg;base64,
 /9j/4AAQSkZJRgABAQEASABIAAD/4QB0RXhpZgAATU0AKgAAAAgABAEaAAUAAAABAAAAPgEbAAUA
 AAABAAAARgEoAAMAAAABAAIAAIdpAAQAAAABAAAATgAAAAAAAAPoAAAAAQAAA+gAAAABAAKgAgAE
 AAAAAQAAAmygAwAEAAAAAQAAAbkAAAAA/+0AOFBob3Rvc2hvcCAzLjAAOEJJTQQEAAAAAAAAOEJJ
@@ -32345,8 +33485,7 @@ ACiiigAooooAKKKKACiiigAooooAKKKKACiiigD/2Q==" />
 </div>
 <div class="imageblock" style="text-align:center;">
 <div class="content">
-<img alt="The compressed-array representation." width="250pt"
-src="data:image/jpeg;base64,
+<img alt="The compressed-array representation." width="250pt" src="data:image/jpg;base64,
 /9j/4AAQSkZJRgABAQEASABIAAD/4QB0RXhpZgAATU0AKgAAAAgABAEaAAUAAAABAAAAPgEbAAUA
 AAABAAAARgEoAAMAAAABAAIAAIdpAAQAAAABAAAATgAAAAAAAAPoAAAAAQAAA+gAAAABAAKgAgAE
 AAAAAQAAAmygAwAEAAAAAQAAAOUAAAAA/+0AOFBob3Rvc2hvcCAzLjAAOEJJTQQEAAAAAAAAOEJJ
@@ -32886,7 +34025,7 @@ area of research at present.</p></div>
 <div class="paragraph"><p>We implemented the adjacency-list representation based on compressed
 arrays with a class called <code>adjlist</code>.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -32901,7 +34040,7 @@ http://www.gnu.org/software/src-highlite -->
   <span style="color: #008080">neighbor_list</span> <span style="font-weight: bold"><span style="color: #000000">get_out_edges_of</span></span><span style="color: #990000">(</span><span style="color: #008080">vtxid_type</span> v<span style="color: #990000">)</span> <span style="font-weight: bold"><span style="color: #0000FF">const</span></span><span style="color: #990000">;</span>
 <span style="color: #FF0000">}</span><span style="color: #990000">;</span></tt></pre></div></div>
 <div class="exampleblock">
-<div class="title">Example 66. Graph creation</div>
+<div class="title">Example 68. Graph creation</div>
 <div class="content">
 <div class="paragraph"><p>Sometimes it is useful for testing and debugging purposes to create a
 graph from a handwritten example. For this purpose, we define a type
@@ -32909,7 +34048,7 @@ to express an edge. The type is a pair type where the first component
 of the pair represents the source and the second the destination
 vertex, respectively.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -32917,7 +34056,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="paragraph"><p>In order to create an edge, we use the following function, which takes
 a source and a destination vertex and returns the corresponding edge.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -32928,7 +34067,7 @@ http://www.gnu.org/software/src-highlite -->
 specifying an edge list. Moreover, getting a textual representation of
 the graph is as easy as printing the graph by <code>cout</code>.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -32960,8 +34099,7 @@ using online tools, such is Click
 </div>
 <div class="imageblock" style="text-align:center;">
 <div class="content">
-<img alt="Sample graph." width="100pt"
-src="data:image/jpeg;base64,
+<img alt="Sample graph." width="100pt" src="data:image/jpg;base64,
 /9j/4AAQSkZJRgABAQEASABIAAD/4QBMRXhpZgAATU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAA
 A6ABAAMAAAABAAEAAKACAAQAAAABAAACbKADAAQAAAABAAACGQAAAAD/7QA4UGhvdG9zaG9wIDMu
 MAA4QklNBAQAAAAAAAA4QklNBCUAAAAAABDUHYzZjwCyBOmACZjs+EJ+/+IMWElDQ19QUk9GSUxF
@@ -33605,10 +34743,10 @@ iigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAP/2Q==" />
 </div>
 </div></div>
 <div class="exampleblock">
-<div class="title">Example 67. Adjacency-list interface</div>
+<div class="title">Example 69. Adjacency-list interface</div>
 <div class="content">
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -33811,12 +34949,12 @@ race conditions and avoid having to sacrifice a lot of
 performance. The basic idea is to guard each cell in our "visited"
 array by an atomic type.</p></div>
 <div class="exampleblock">
-<div class="title">Example 68. Accessing the contents of atomic memory cells</div>
+<div class="title">Example 70. Accessing the contents of atomic memory cells</div>
 <div class="content">
 <div class="paragraph"><p>Access to the contents of any given cell is achieved by the <code>load()</code>
 and <code>store()</code> methods.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -33856,7 +34994,7 @@ Otherwise, just return <code>false</code>.
 </li>
 </ol></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -33888,7 +35026,7 @@ function signature is the signature for our parallel BFS
 implementation. The function takes as parameters a graph and the
 identifier of a source vertex and returns an array of boolean flags.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -33900,10 +35038,10 @@ given source vertex if and only if there is a <code>true</code> value in the
 $v^{\mathrm{th}}$ position of the flags array that is
 returned by <code>bfs</code>.</p></div>
 <div class="exampleblock">
-<div class="title">Example 69. Parallel BFS</div>
+<div class="title">Example 71. Parallel BFS</div>
 <div class="content">
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -33918,8 +35056,7 @@ std<span style="color: #990000">::</span>cout <span style="color: #990000">&lt;&
 <div class="paragraph"><p>The following diagram shows the structure represented by <code>graph</code>.</p></div>
 <div class="imageblock" style="text-align:center;">
 <div class="content">
-<img alt="Graph from the example." width="120pt"
-src="data:image/jpeg;base64,
+<img alt="Graph from the example." width="120pt" src="data:image/jpg;base64,
 /9j/4AAQSkZJRgABAQEASABIAAD/4QBMRXhpZgAATU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAA
 A6ABAAMAAAABAAEAAKACAAQAAAABAAABgqADAAQAAAABAAACbAAAAAD/7QA4UGhvdG9zaG9wIDMu
 MAA4QklNBAQAAAAAAAA4QklNBCUAAAAAABDUHYzZjwCyBOmACZjs+EJ+/+IMWElDQ19QUk9GSUxF
@@ -34581,7 +35718,7 @@ called <code>edge_map</code> with the following signature the "edge
 map" operation. This operation takes as parameters a graph, an array
 of atomic flag values, and a frontier and returns a new frontier.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -34590,7 +35727,7 @@ http://www.gnu.org/software/src-highlite -->
 function to advance level by level through the graph. The traversal
 stops when the frontier is empty.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -34617,10 +35754,10 @@ because it is more convenient for us to program with ordinary
 <code>sparray</code>'s.  Here is an example describing the behavior of the
 <code>edge_map</code> function.</p></div>
 <div class="exampleblock">
-<div class="title">Example 70. A run of <code>edge_map</code></div>
+<div class="title">Example 72. A run of <code>edge_map</code></div>
 <div class="content">
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -34652,18 +35789,18 @@ at level $i+1$.</p></div>
 <div class="paragraph"><p>To implement <code>edge_map</code>, we shall use the following sentinel value to
 represent empty cells in sparse arrays of vertex identifiers.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
 <pre><tt><span style="font-weight: bold"><span style="color: #0000FF">const</span></span> <span style="color: #008080">vtxid_type</span> not_a_vertexid <span style="color: #990000">=</span> <span style="color: #990000">-</span>1l<span style="color: #990000">;</span></tt></pre></div></div>
 <div class="exampleblock">
-<div class="title">Example 71. Sparse-array representation of a set of vertex identifiers</div>
+<div class="title">Example 73. Sparse-array representation of a set of vertex identifiers</div>
 <div class="content">
 <div class="paragraph"><p>The following array represents a set of three valid vertex
 identifiers, with two positions in the array being empty.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -34672,7 +35809,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="paragraph"><p>Let us define two helper functions. The first one takes a sparse array
 of vertex identifiers and copies out the valid vertex identifiers.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -34682,7 +35819,7 @@ http://www.gnu.org/software/src-highlite -->
 <div class="paragraph"><p>The other function takes a graph and an array of vertex identifiers
 and returns the array of the degrees of the vertex identifiers.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -34700,7 +35837,7 @@ the vertex ids from the frontier of the previous level and the inner
 loop processes the neighbors of each vertex in the frontier of the
 previous level, adding newly visited neighbors to the result set.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -34823,7 +35960,7 @@ instruction and each deque operations executes in a single step to
 execute.  As a result, each iteration of the loop, a round, completes
 in constant steps.</p></div>
 <div class="listingblock">
-<div class="content"><!-- Generator: GNU source-highlight 3.1.8
+<div class="content"><!-- Generator: GNU source-highlight 3.1.4
 by Lorenzo Bettini
 http://www.lorenzobettini.it
 http://www.gnu.org/software/src-highlite -->
@@ -34917,14 +36054,13 @@ vertex of $q$ followed by the vertices in its deque
 ordered from bottom to top. If a vertex is in the work sequence of a
 process, then we say that it <strong><em>belongs</em></strong> to that process.</p></div>
 <div class="exampleblock">
-<div class="title">Example 72. Work sequence</div>
+<div class="title">Example 74. Work sequence</div>
 <div class="content">
 <div class="paragraph"><p>Consider the deque for a process shows below along with the assigned
 vertex.  The work sequence for this process is $\langle
 v_0, v_1, v_2, v_3 \rangle$.</p></div>
 <div class="paragraph"><p><span class="image">
-<img alt="" width="50pt"
-src="data:image/jpeg;base64,
+<img alt="" width="50pt" src="data:image/jpg;base64,
 /9j/4AAQSkZJRgABAQEASABIAAD/4QB0RXhpZgAATU0AKgAAAAgABAEaAAUAAAABAAAAPgEbAAUA
 AAABAAAARgEoAAMAAAABAAIAAIdpAAQAAAABAAAATgAAAAAAAAPoAAAAAQAAA+gAAAABAAKgAgAE
 AAAAAQAAAHmgAwAEAAAAAQAAAmwAAAAA/+0AOFBob3Rvc2hvcCAzLjAAOEJJTQQEAAAAAAAAOEJJ
@@ -35355,8 +36491,7 @@ tree.</p></div>
 <h4 id="_an_example_run_with_work_stealing">16.1.4. An Example Run with Work Stealing</h4>
 <div class="paragraph"><p>Consider the following computation dag.</p></div>
 <div class="paragraph"><p><span class="image">
-<img alt="" width="300pt"
-src="data:image/jpeg;base64,
+<img alt="" width="300pt" src="data:image/jpg;base64,
 /9j/4AAQSkZJRgABAQEASABIAAD/4QB0RXhpZgAATU0AKgAAAAgABAEaAAUAAAABAAAAPgEbAAUA
 AAABAAAARgEoAAMAAAABAAIAAIdpAAQAAAABAAAATgAAAAAAAAPoAAAAAQAAA+gAAAABAAKgAgAE
 AAAAAQAAAmygAwAEAAAAAQAAAbUAAAAA/+0AOFBob3Rvc2hvcCAzLjAAOEJJTQQEAAAAAAAAOEJJ
@@ -36063,8 +37198,7 @@ UUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFAH//
 using work stealing. Time flows left to right and top to bottom.</p></div>
 <div class="paragraph"><p>&#160;&#160;&#160;&#160;&#160;
 <span class="image">
-<img alt="" height="150pt"
-src="data:image/jpeg;base64,
+<img alt="" height="150pt" src="data:image/jpg;base64,
 /9j/4AAQSkZJRgABAQEASABIAAD/4QB0RXhpZgAATU0AKgAAAAgABAEaAAUAAAABAAAAPgEbAAUA
 AAABAAAARgEoAAMAAAABAAIAAIdpAAQAAAABAAAATgAAAAAAAAPoAAAAAQAAA+gAAAABAAKgAgAE
 AAAAAQAAAmygAwAEAAAAAQAAAl4AAAAA/+0AOFBob3Rvc2hvcCAzLjAAOEJJTQQEAAAAAAAAOEJJ
@@ -36735,8 +37869,7 @@ Eb+H+h2fh7SvMab7LYwpBD5j43NsQAZOBk45rsKKKACiiigAooooA//Z" />
 </span>
 &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
 <span class="image">
-<img alt="" height="150pt"
-src="data:image/jpeg;base64,
+<img alt="" height="150pt" src="data:image/jpg;base64,
 /9j/4AAQSkZJRgABAQEASABIAAD/4QB0RXhpZgAATU0AKgAAAAgABAEaAAUAAAABAAAAPgEbAAUA
 AAABAAAARgEoAAMAAAABAAIAAIdpAAQAAAABAAAATgAAAAAAAAPoAAAAAQAAA+gAAAABAAKgAgAE
 AAAAAQAAAmygAwAEAAAAAQAAAgMAAAAA/+0AOFBob3Rvc2hvcCAzLjAAOEJJTQQEAAAAAAAAOEJJ
@@ -37372,8 +38505,7 @@ ooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACi
 iigAooooAKKKKACiiigAooooAKKKKACiiigAooooA//Z" />
 </span></p></div>
 <div class="paragraph"><p><span class="image">
-<img alt="" height="150pt"
-src="data:image/jpeg;base64,
+<img alt="" height="150pt" src="data:image/jpg;base64,
 /9j/4AAQSkZJRgABAQEASABIAAD/4QB0RXhpZgAATU0AKgAAAAgABAEaAAUAAAABAAAAPgEbAAUA
 AAABAAAARgEoAAMAAAABAAIAAIdpAAQAAAABAAAATgAAAAAAAAPoAAAAAQAAA+gAAAABAAKgAgAE
 AAAAAQAAAmygAwAEAAAAAQAAAgMAAAAA/+0AOFBob3Rvc2hvcCAzLjAAOEJJTQQEAAAAAAAAOEJJ
@@ -38090,8 +39222,7 @@ iigAooooAKKKKAP/2Q==" />
 </span>
 &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
 <span class="image">
-<img alt="" height="150pt"
-src="data:image/jpeg;base64,
+<img alt="" height="150pt" src="data:image/jpg;base64,
 /9j/4AAQSkZJRgABAQEASABIAAD/4QB0RXhpZgAATU0AKgAAAAgABAEaAAUAAAABAAAAPgEbAAUA
 AAABAAAARgEoAAMAAAABAAIAAIdpAAQAAAABAAAATgAAAAAAAAPoAAAAAQAAA+gAAAABAAKgAgAE
 AAAAAQAAAmygAwAEAAAAAQAAAgMAAAAA/+0AOFBob3Rvc2hvcCAzLjAAOEJJTQQEAAAAAAAAOEJJ
@@ -38765,8 +39896,7 @@ iigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKK
 KACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooA//Z" />
 </span></p></div>
 <div class="paragraph"><p><span class="image">
-<img alt="" height="150pt"
-src="data:image/jpeg;base64,
+<img alt="" height="150pt" src="data:image/jpg;base64,
 /9j/4AAQSkZJRgABAQEASABIAAD/4QB0RXhpZgAATU0AKgAAAAgABAEaAAUAAAABAAAAPgEbAAUA
 AAABAAAARgEoAAMAAAABAAIAAIdpAAQAAAABAAAATgAAAAAAAAPoAAAAAQAAA+gAAAABAAKgAgAE
 AAAAAQAAAmygAwAEAAAAAQAAAgIAAAAA/+0AOFBob3Rvc2hvcCAzLjAAOEJJTQQEAAAAAAAAOEJJ
@@ -39499,8 +40629,7 @@ AKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigD/9k=" />
 </span>
 &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
 <span class="image">
-<img alt="" height="150pt"
-src="data:image/jpeg;base64,
+<img alt="" height="150pt" src="data:image/jpg;base64,
 /9j/4AAQSkZJRgABAQEASABIAAD/4QB0RXhpZgAATU0AKgAAAAgABAEaAAUAAAABAAAAPgEbAAUA
 AAABAAAARgEoAAMAAAABAAIAAIdpAAQAAAABAAAATgAAAAAAAAPoAAAAAQAAA+gAAAABAAKgAgAE
 AAAAAQAAAmygAwAEAAAAAQAAAgIAAAAA/+0AOFBob3Rvc2hvcCAzLjAAOEJJTQQEAAAAAAAAOEJJ
@@ -40112,8 +41241,7 @@ iigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKK
 KACiiigAooooAKKKKACiiigD/9k=" />
 </span></p></div>
 <div class="paragraph"><p><span class="image">
-<img alt="" height="150pt"
-src="data:image/jpeg;base64,
+<img alt="" height="150pt" src="data:image/jpg;base64,
 /9j/4AAQSkZJRgABAQEASABIAAD/4QB0RXhpZgAATU0AKgAAAAgABAEaAAUAAAABAAAAPgEbAAUA
 AAABAAAARgEoAAMAAAABAAIAAIdpAAQAAAABAAAATgAAAAAAAAPoAAAAAQAAA+gAAAABAAKgAgAE
 AAAAAQAAAmygAwAEAAAAAQAAAgIAAAAA/+0AOFBob3Rvc2hvcCAzLjAAOEJJTQQEAAAAAAAAOEJJ
@@ -40721,8 +41849,7 @@ ooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooA//Z" />
 </span>
 &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
 <span class="image">
-<img alt="" height="150pt"
-src="data:image/jpeg;base64,
+<img alt="" height="150pt" src="data:image/jpg;base64,
 /9j/4AAQSkZJRgABAQEASABIAAD/4QB0RXhpZgAATU0AKgAAAAgABAEaAAUAAAABAAAAPgEbAAUA
 AAABAAAARgEoAAMAAAABAAIAAIdpAAQAAAABAAAATgAAAAAAAAPoAAAAAQAAA+gAAAABAAKgAgAE
 AAAAAQAAAmygAwAEAAAAAQAAAgIAAAAA/+0AOFBob3Rvc2hvcCAzLjAAOEJJTQQEAAAAAAAAOEJJ
@@ -41329,8 +42456,7 @@ ooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKAP/2Q==" />
 </span></p></div>
 <div class="paragraph"><p>&#160;&#160;&#160;&#160;&#160;
 <span class="image">
-<img alt="" height="150pt"
-src="data:image/jpeg;base64,
+<img alt="" height="150pt" src="data:image/jpg;base64,
 /9j/4AAQSkZJRgABAQEASABIAAD/4QB0RXhpZgAATU0AKgAAAAgABAEaAAUAAAABAAAAPgEbAAUA
 AAABAAAARgEoAAMAAAABAAIAAIdpAAQAAAABAAAATgAAAAAAAAPoAAAAAQAAA+gAAAABAAKgAgAE
 AAAAAQAAAmygAwAEAAAAAQAAAl4AAAAA/+0AOFBob3Rvc2hvcCAzLjAAOEJJTQQEAAAAAAAAOEJJ
@@ -41964,8 +43090,7 @@ fD/wR8NdE/4Rv4f6HZ+HtK8xpvstjCkEPmPjc2xABk4GTjmuwoooAKKKKACiiigD/9k=" />
 </span></p></div>
 <div class="paragraph"><p>The enabling tree for this execution is shown below.</p></div>
 <div class="paragraph"><p><span class="image">
-<img alt="" width="300pt"
-src="data:image/jpeg;base64,
+<img alt="" width="300pt" src="data:image/jpg;base64,
 /9j/4AAQSkZJRgABAQEASABIAAD/4QB0RXhpZgAATU0AKgAAAAgABAEaAAUAAAABAAAAPgEbAAUA
 AAABAAAARgEoAAMAAAABAAIAAIdpAAQAAAABAAAATgAAAAAAAAPoAAAAAQAAA+gAAAABAAKgAgAE
 AAAAAQAAAmygAwAEAAAAAQAAAbYAAAAA/+0AOFBob3Rvc2hvcCAzLjAAOEJJTQQEAAAAAAAAOEJJ
@@ -42643,8 +43768,7 @@ is the ancestor relationship is proper.</p></div>
 <div class="content">
 <div class="title">Structural lemma illustrated.</div>
 <div class="paragraph"><p><span class="image">
-<img alt="" width="100pt"
-src="data:image/jpeg;base64,
+<img alt="" width="100pt" src="data:image/jpg;base64,
 /9j/4AAQSkZJRgABAQEASABIAAD/4QCMRXhpZgAATU0AKgAAAAgABgEGAAMAAAABAAIAAAESAAMA
 AAABAAEAAAEaAAUAAAABAAAAVgEbAAUAAAABAAAAXgEoAAMAAAABAAIAAIdpAAQAAAABAAAAZgAA
 AAAAAACQAAAAAQAAAJAAAAABAAKgAgAEAAAAAQAAAOmgAwAEAAAAAQAAAmwAAAAA/+0AOFBob3Rv
@@ -43163,8 +44287,7 @@ iigAooooAKKKKACiiigD/9k=" />
 </span>
 &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
 <span class="image">
-<img alt="" width="100pt"
-src="data:image/jpeg;base64,
+<img alt="" width="100pt" src="data:image/jpg;base64,
 /9j/4AAQSkZJRgABAQEASABIAAD/4QCMRXhpZgAATU0AKgAAAAgABgEGAAMAAAABAAIAAAESAAMA
 AAABAAEAAAEaAAUAAAABAAAAVgEbAAUAAAABAAAAXgEoAAMAAAABAAIAAIdpAAQAAAABAAAAZgAA
 AAAAAACQAAAAAQAAAJAAAAABAAKgAgAEAAAAAQAAAOmgAwAEAAAAAQAAAmwAAAAA/+0AOFBob3Rv
@@ -43689,8 +44812,7 @@ u_1$.  Immediately after the execution of the assigned node, the work
 sequence of the process consists of all the vertices in the deque and
 the lemma follows.</p></div>
 <div class="paragraph" id="dedicated::structural-popbottom-execute"><div class="title">Structural lemma illustrated after the assigned vertex is executed.</div><p><span class="image">
-<img alt="" width="100pt"
-src="data:image/jpeg;base64,
+<img alt="" width="100pt" src="data:image/jpg;base64,
 /9j/4AAQSkZJRgABAQEASABIAAD/4QB0RXhpZgAATU0AKgAAAAgABAEaAAUAAAABAAAAPgEbAAUA
 AAABAAAARgEoAAMAAAABAAIAAIdpAAQAAAABAAAATgAAAAAAAAPoAAAAAQAAA+gAAAABAAKgAgAE
 AAAAAQAAAN2gAwAEAAAAAQAAAmwAAAAA/+0AOFBob3Rvc2hvcCAzLjAAOEJJTQQEAAAAAAAAOEJJ
@@ -44231,8 +45353,7 @@ $x$, which is pushed onto the bottom of the deque.  In this
 case, $v_0$ becomes the parent of $x$.  The
 lemma holds.</p></div>
 <div class="paragraph" id="dedicated::structural-popbottom-enable-one"><div class="title">Structural lemma illustrated after the assigned vertex enables one child.</div><p><span class="image">
-<img alt="" width="100pt"
-src="data:image/jpeg;base64,
+<img alt="" width="100pt" src="data:image/jpg;base64,
 /9j/4AAQSkZJRgABAQEASABIAAD/4QB0RXhpZgAATU0AKgAAAAgABAEaAAUAAAABAAAAPgEbAAUA
 AAABAAAARgEoAAMAAAABAAIAAIdpAAQAAAABAAAATgAAAAAAAAPoAAAAAQAAA+gAAAABAAKgAgAE
 AAAAAQAAALugAwAEAAAAAQAAAmwAAAAA/+0AOFBob3Rvc2hvcCAzLjAAOEJJTQQEAAAAAAAAOEJJ
@@ -44767,8 +45888,7 @@ xl4W+DXjHUvEPxPlGnWth4pvRq2pX4kV1N9fwLBF9mVd5J3u5LAc4+av2qooA/Jb/gnj8I/iz+yz
   u_1$.  This holds because $v_0 \neq u_0$ and
   $v_0 \neq u_1$.  The lemma holds.</p></div>
 <div class="paragraph" id="dedicated::structural-popbottom-enable-two"><div class="title">Structural lemma illustrated after the assigned vertex enables two children.</div><p><span class="image">
-<img alt="" width="100pt"
-src="data:image/jpeg;base64,
+<img alt="" width="100pt" src="data:image/jpg;base64,
 /9j/4AAQSkZJRgABAQEASABIAAD/4QB0RXhpZgAATU0AKgAAAAgABAEaAAUAAAABAAAAPgEbAAUA
 AAABAAAARgEoAAMAAAABAAIAAIdpAAQAAAABAAAATgAAAAAAAAPoAAAAAQAAA+gAAAABAAKgAgAE
 AAAAAQAAAK2gAwAEAAAAAQAAAmwAAAAA/+0AOFBob3Rvc2hvcCAzLjAAOEJJTQQEAAAAAAAAOEJJ
@@ -45410,7 +46530,7 @@ P \lbrack X \ge \beta W \rbrack > 1 - \frac{1}{(1-\beta)e}.
 $$</div></div>
 </div></div>
 <div class="exampleblock">
-<div class="title">Example 73. An application of the lemma</div>
+<div class="title">Example 75. An application of the lemma</div>
 <div class="content">
 <div class="paragraph"><p>Let&#8217;s calculate the probability for $\beta = 1/2$.  By the
 lemma, we know that if $P$ balls are thrown into
@@ -45876,7 +46996,7 @@ multiprogrammed environments.</p></div>
 <div id="footnotes"><hr /></div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2016-02-20 19:30:14 EST
+Last updated 2016-02-23 08:42:41 EST
 </div>
 </div>
 </body>
