@@ -468,16 +468,20 @@ with single child's until the tree reduces to a single edge.
 We will now see that we can in fact compute in-order ranks for any
 tree, balanced or unbalanced, by simultaneously applying the same two
 operations recursively in a number of rounds.  Each round of
-application, rakes the leaves, and selects an independent set of nodes
-to compress.
+application rakes the leaves and selects an independent set of nodes
+to compress until the tree contracts down to a single node.  After the
+contraction phase completes, the expansion phase starts, proceeding in
+rounds, each of which reverses the corresponding contraction round by
+reinserting the compressed and raked nodes and computing the result
+for the corresponding tree.
 
 .Algorithm: Tree Contraction
 ****
 [source, {cpp}]
 ----
 tree_contract (T)
-if |T| < 1 
-  T
+if |T| = 1 
+  solve/expand T
 else
     TT = rake leaves of T
     TTT = compress and independent set of nodes with a single child in TT
@@ -496,97 +500,37 @@ Since expansion is symmetric to contraction and since we have already
 discussed expansion in some detail, in the rest of this chapter, we
 shall focus on contraction.
 
+[[ex:trees::tree-contraction::unbalanced]]
 .Tree Contraction 
 ====
 An example tree contraction illustrated on the  input tree below.
 Random coin flips are not illustrated.
 
+
 image:jpgs-620H/unbalanced-binary-tree-6.jpg["Input tree",width="350pt",align="center"]
+
+The first round rakes the nodes *a, c, e, g, m, o* and compresses *i, k*,
+resulting in the tree below.
 
 image:jpgs-620H/unbalanced-binary-tree-6-tc-1.jpg["Tree contraction, round 1",width="350pt",align="center"]
 
+
+The second round rakes the nodes *b, f, n* and compresses *j*,
+resulting in the tree below.
+
 image:jpgs-620H/unbalanced-binary-tree-6-tc-2.jpg["Tree contraction, round 2",width="350pt",align="center"]
+
+
+The third round rakes the nodes *d, l* and compresses no nodes,
+resulting in a tree with a single node, thus completing the
+contraction phase.
 
 image:jpgs-620H/unbalanced-binary-tree-6-tc-3.jpg["Tree contraction, round 3",width="350pt",align="center"]
 ====
 
-
-As in our earlier examples, we can choose the rake and compress
-operations to collect information about the tree to compute the
-desired property.  For example, we use rake and compress to compute
-the in-order rank of the nodes as discussed.  It turns out that rake
-and compress are quite flexible and can be used to compute many
-different properties.  Another interesting example is expression
-trees, where we use a tree to represent a mathematical expression.  To
-compute the value of such an expression we can use tree contraction
-with rake and compress operations.  As we rake and compress nodes, we
-have to be careful about accumulating intermediate values of
-expressions so that we can compute in the end the result for the
-expression.  To this end, we may use (partially computed) expressions
-themselves as clusters.
-
-
-.Tree Contraction for an expression tree 
-====
-The expression tree shown below represents  the expression 
-
-[latexmath]
-+++++++++++
-
-$$
-(1+2) \cdot (3 + 4) 
-+ 
-\left(
-\left( 5 + ( 7 + ( (10 + 11) \cdot 9 ) \right) 
-\cdot 
-6 
-\right)
-.
-$$
-+++++++++++
-
-image:jpgs-620H/unbalanced-expression-tree.jpg["An expression tree",width="350pt",align="center"]
-
-To compute the value for the expression we first annotate the initial
-values for each cluster, which we associate with edges.  Initially all
-clusters are identity functions written as latexmath:[$x$].  As before
-we use "dangling" edges to represent the values computed for leaves.
-
-image:jpgs-620H/unbalanced-expression-tree-round-0.jpg["An expression tree",width="350pt",align="center"]
-
-In the first round, we perform a number of rakes and update the
-corresponding clusters.  Note that clusters are univariate functions.
-
-image:jpgs-620H/unbalanced-expression-tree-round-1.jpg["An expression tree",width="350pt",align="center"]
-
-In the second round, we perform a number of rakes and one compress and
-update the corresponding clusters. Note that clusters remain to be
-univariate functions. 
-
-image:jpgs-620H/unbalanced-expression-tree-round-2.jpg["An expression tree",width="350pt",align="center"]
-
-In the third round, we again perform a number of rakes and one
-compress and update the corresponding clusters. Note that clusters
-remain to be univariate functions.
-
-image:jpgs-620H/unbalanced-expression-tree-round-2.jpg["An expression tree",width="350pt",align="center"]
-
-
-It can be shows that the expressions on the edges will always have the
-form latexmath:[$ax+b$] where latexmath:[$a$] and latexmath:[$b$] are
-constants.  As a result, as tree contraction progresses, expressions
-do not grow into larger expressions, rather they can be simplified
-into a simple form. This is crucial is making sure that rake and
-compress operations require  constant work.
-
-====
-
-
-
-
-We start by establishing a key lemma that says that each round of tree
-contraction reduces the expected number of nodes in the tree by a
-factor of latexmath:[$3/4$].
+To analyze the tree-contraction algorithm, we start by establishing a
+key lemma that says that each round of tree contraction reduces the
+expected number of nodes in the tree by a factor of latexmath:[$3/4$].
 
 .Lemma [Contraction Ratio]
 ****
@@ -665,28 +609,153 @@ conclude that in expectation latexmath:[$3/4$] of the nodes remain live.
 .Theorem[Work and Span of Tree Contraction]
 ****
 
-Tree contraction performs latexmath:[$O(n)$] expected work in
-latexmath:[$O(\lg{n})$] expected span. 
+Assuming that all rake, compress, and expansion operations complete in
+latexmath:[$O(1)$] work, tree contraction performs latexmath:[$O(n)$]
+expected work in latexmath:[$O(\lg{n})$] expected span.
 
 ****
 
 .Proof
 ****
 
-The proof of this theorem is the same as the proof for chains given
-above.  For brevity, we don't repeat the proof here.
+The proof of this theorem is essentially the same as the proof for
+chains given above.  For brevity, we don't repeat the proof.
 
 ****
 
 
-=== Other Tree Computations
+=== Applications of Tree Contraction
 
-We have thus far seen several example tree computations, such as
-in-order traversals and expressions trees.  In this section, we cover
-a broader class of tree computations, which can broadly be called
-*_treefix computations_*.  Such computations generalize the "prefix
-sum" or the "scan" example for sequences to rooted trees by separately
-considering the two possible directions:
+In order to apply tree contraction to solve a particular problem, we
+need to determine how various operation in tree contraction manipulate
+the application data, specifically the following:
+
+. the computation performed by a  rake operation,
+. the computation performed by a compress operation, 
+. the computation performed for expanding singleton tree,
+. the computation performed for expanding raked nodes, and
+. the computation performed for expanding compressed nodes.
+
+To specify these it is often helpful to view the tree contraction
+algorithm as a hierarchical clustering of the input tree
+latexmath:[$T$]. 
+
+. We view a rake operation as constructing a *_unary cluster_*, which
+correspond to a subtree rooted at a node of the tree
+latexmath:[$T$]. The simplest unary cluster consists of a leaf in the
+tree.
+
+. We view the compress operation as construction a *_binary cluster_*,
+which corresponds to a subtree of the tree latexmath:[$T$] that is
+induced by the nodes that are ancestors of a given node
+latexmath:[$u$] and descendants of another node latexmath:[$v$]. The
+simplest binary cluster is an edge in latexmath:[$T$].
+
+Based on this view, for a tree where each node has at most
+latexmath:[$d$] children, we can specify a rake operation as
+constructing a unary cluster by combining latexmath:[$d-1$] unary
+clusters and one binary cluster by also taking into account the label
+of the node being raked.  Similarly, we can specify a compress
+operation as constructing a binary cluster by combining
+latexmath:[$d-1$] unary clusters with two binary clusters by also
+taking into account the label of the node being compressed.
+
+.Hierarchical Clustering via Tree Contraction
+====
+
+The figure below illustrates a hierarchical clustering of the example
+tree from the <<ex:trees::tree-contraction::unbalanced, example
+above.>> Clusters constructed during earlier rounds are nested inside
+those constructed in later rounds.  Each edge of the tree represents a
+binary cluster and each node represents a unary cluster.
+
+image:jpgs-620H/unbalanced-binary-tree-6-clustering.jpg["Clustering
+via tree contraction",width="450pt",align="center"]
+
+====
+
+A classic application of tree contraction is the expression trees
+problem.  In this problem, we use a tree to represent a mathematical
+expression and are asked to compute the value the expression. To solve
+this problem, we can use tree contraction with rake and compress
+operations.  To this end, we  first need to determine the definitions
+for the unary and binary clusters. Let's assume for this example that
+the expression is the addition and multiplication of a number of
+integers as can be represented by a tree where leaves are integers and
+internal nodes are plus or multiplication operations as shown in the
+example below.
+
+.Tree Contraction for an expression tree 
+====
+Consider the expression
+
+[latexmath]
++++++++++++
+
+$$
+(1+2) \cdot (3 + 4) 
++ 
+\left(
+\left( 5 + ( 7 + ( (10 + 11) \cdot 9 ) \right) 
+\cdot 
+6 
+\right)
+.
+$$
+
++++++++++++
+The expression tree shown below represents  this expression 
+
+image:jpgs-620H/unbalanced-expression-tree.jpg["An expression tree",width="350pt",align="center"]
+
+==== 
+
+By remembering that unary clusters represent subtrees of the tree
+rooted at a node, we can see that a natural definition for a unary
+cluster is the value of the corresponding subexpression.  Determining
+the value for a binary cluster is a bit more tricky. Recall that a
+binary cluster is a sub-tree induced by a set of nodes between two
+nodes in the tree.  What should such a structure reduce to?  After
+some reflection, we can see that such a subtree "transforms" the value
+at its lower boundary node by applying a linear transformation of the
+form latexmath:[$a \cdot x + b$], where latexmath:[$a,b$] are
+integers.
+
+To apply tree contraction, we first annotate the initial values for
+each binary cluster, which is the identity functions written as
+latexmath:[$x$]. The initial values for unary clusters can be defined
+as the value stored at the leaf.
+
+image:jpgs-620H/unbalanced-expression-tree-round-0.jpg["An expression tree",width="350pt",align="center"]
+
+In the first round, we perform a number of rakes and update the
+corresponding clusters.  
+
+image:jpgs-620H/unbalanced-expression-tree-round-1.jpg["An expression tree",width="350pt",align="center"]
+
+In the second round, we perform a number of rakes and one compress and
+update the corresponding clusters. 
+
+image:jpgs-620H/unbalanced-expression-tree-round-2.jpg["An expression tree",width="350pt",align="center"]
+
+In the third round, we again perform a number of rakes and one
+compress and update the corresponding clusters.
+
+image:jpgs-620H/unbalanced-expression-tree-round-2.jpg["An expression tree",width="350pt",align="center"]
+
+
+It is important the expressions on the binary clusters have the form
+latexmath:[$ax+b$] where latexmath:[$a$] and latexmath:[$b$] are
+constants.  As a result, as tree contraction progresses, expressions
+do not grow into larger expressions, rather they can be simplified
+into a simple form. This is crucial is making sure that rake and
+compress operations require constant work.
+
+
+Another broad class of tree computations include *_treefix
+computations_*, which generalize the "prefix sum" or the
+"scan" example for sequences to rooted trees by separately considering
+the two possible directions:
 
 . from root to leaf, which are called rootfix computations, and 
 
@@ -704,9 +773,9 @@ latexmath:[$T$] to all the leaves of latexmath:[$T$].
 .Maximum on root-to-leaf path
 ====
 
-Suppose that we are given a tree where each node is labeled with an
-integer number.  We wish to compute for each leaf in the tree the
-maximum node from the leaf to the root.  An example tree and the
+Suppose that we are given a binary tree where each node is labeled
+with an integer number.  We wish to compute for each leaf in the tree
+the maximum node from the leaf to the root.  An example tree and the
 result to be computed are shown below.  This computation is a rootfix
 computation with "max" operation on integers.
 
@@ -715,16 +784,17 @@ image:jpgs-620H/unbalanced-binary-tree-6-max-rootfix.jpg["Maximum node on root-t
 ====
 
 We can use tree contraction to perform a rootfix computation.  To this
-end, we can associate with each adge a *_binary cluster_*, which is
-initially latexmath:[$-\infty$] but more generally represents the
-maximum node that corresponds to the path represented by that edge
-(initially each edge represents an empty path).  We then define the
-rake and compress  operations as follows.
+end, we define each binary cluster to represent the maximum node on
+the path between the boundary nodes of the cluster. Initially each
+edge is a binary cluster with an empty path and thus has the initial
+value of latexmath:[$-\infty$].  We don't define any specific value
+for unary cluster.  We then define the rake and compress operations as
+follows.
 
-. Compress operation: take the maximum of the deleted edges and the
-deleted node and assign that value to the new edge created. 
+. Compress operation: take the maximum of the deleted clusters and the
+deleted node and assign that value to the new binary cluster created.
 
-. Rake operation:  do not change the weights on edges.
+. Rake operation: no specific computation on unary clusters is needed.
 
 At the expansion steps, we compute the correct values for raked and
 compressed operations by considering parent of the deleted vertex and
@@ -747,43 +817,46 @@ in latexmath:[$T$], the latexmath:[$\oplus$]-sum of the in-order
 traversal of the subtree rooted at that node.
 
 
-.Maximum on root-to-leaf path
+.Maximum in a subtree
 ====
 
-Suppose that we are given a tree where each node is labeled with an
-integer number.  We wish to compute for each leaf in the tree the
-maximum node from the leaf to the root.  An example tree and the
+Suppose that we are given a binary tree where each node is labeled with an
+integer number.  We wish to compute for each subtree rooted at a node
+in the tree the maximum node in that subtree.  An example tree and the
 result to be computed are shown below.  This computation is a rootfix
 computation with "max" operation on integers.
 
-image:jpgs-620H/unbalanced-binary-tree-6-max-leaffix.jpg["Maximum node on root-to-leaf paths",width="350pt",align="center"]
+image:jpgs-620H/unbalanced-binary-tree-6-max-leaffix.jpg["Maximum node
+in each rooted subtree",width="350pt",align="center"]
 
 ====
 
-We can use tree contraction to perform a rootfix computation.  To this
-end, we can associate with each adge a *_binary cluster_*, which is
-initially latexmath:[$-\infty$] but more generally represents the
-maximum node that corresponds to the path represented by that edge
-(initially each edge represents an empty path).  We then define the
-rake and compress  operations as follows.
-
-. Compress operation: take the maximum of the deleted edges and the
-deleted node and assign that value to the new edge created. 
-
-. Rake operation:  do not change the weights on edges.
-
-At the expansion steps, we compute the correct values for raked and
-compressed operations by considering parent of the deleted vertex and
-the weight of the incoming edge and taking the maximum.
+We can use tree contraction to perform a leaffix computation.  
 
 .Exercise
 ****
 
-Complete the example given above to compute the maximums for the root
-to leaf paths using tree contraction.
+Specify the unary and binary clusters for performing the leaffix-max
+computation.  Describe how rake and compress operations should behave
+and how expansion works.
+
 
 ****
 
+
+
+.Exercise
+****
+
+Specify the necessary operations to compute the in-order rank of the
+nodes in a tree.  
+
+. What information does a unary cluster contain? 
+. What information does binary cluster contain? 
+. What computation should rake and compress perform? 
+. How should expansion work? 
+
+****
 
 
 
