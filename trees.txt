@@ -2,13 +2,16 @@
 == Chapter: Tree Computations
 
 Trees are a basic structure for representing relations.  It is thus
- natural to ask whether we can compute various propertios of trees in
+ natural to ask whether we can compute various properties of trees in
  parallel.
+
+=== Computing In-Order Traversals with Divide-and-Conquer and Contraction
 
 As our first motivating example, let's consider the following
 question: we are given a binary tree latexmath:[$T$] and asked to
 determine the *_in-order rank_* of each node in the tree, defined as
-the order of the node in an in-order traversal of the tree.
+the order of the node in an in-order traversal of the tree.  We shall
+use this example to develop several key ideas.
 
 As two important special cases of this problem, let's consider a
 complete binary tree, where each internal node has exactly two
@@ -27,8 +30,6 @@ nodes in the following order: *a,b,c,d,e,f,g,h,i,j,k,l,m,n,o*.
 
 Let's apply two algorithm design techniques to this problem: divide
 and conquer and contraction.
-
-=== Divide and Conquer
 
 For divide and conquer, we can use a two-pass algorithm:
 
@@ -83,9 +84,8 @@ example.
 
 ====
 
-=== Contraction
-
-Appling the idea behind the contraction technique, we want to
+Another technique we have seen for parallel algorithm design is
+contraction. Appling the idea behind this technique, we want to
 "contract" the tree into a smaller tree, solve the problem for the
 smaller tree, and "expand" the solution for the smaller tree to
 compute the solution for the original tree.
@@ -121,6 +121,7 @@ for the input tree.
 ====
 
 image:jpgs-620H/perfect-binary-tree-8.jpg["Computing ranks",width="400pt",align="center"]
+
 Given the example tree above, we rake all the leaves and store their
 size in clustered stored in the parents.  For the drawings we draw
 the clusters on the edges.
@@ -454,8 +455,6 @@ latexmath:[$E \lbrack W(n) \rbrack = O(n)$]
 
 //////////////////////////////////////////////////////////////////////
 
-
-
 === Tree Contraction
 
 In this chapter thus far, we have seen that we can compute the
@@ -466,11 +465,11 @@ that we can compute in-order ranks of nodes in a worst-case unbalanced
 tree, a chain, by using a contraction algorithm that compresses nodes
 with single child's until the tree reduces to a single edge.
 
-We shall now see that we can in fact compute in-order ranks for any
+We will now see that we can in fact compute in-order ranks for any
 tree, balanced or unbalanced, by simultaneously applying the same two
 operations recursively in a number of rounds.  Each round of
 application, rakes the leaves, and selects an independent set of nodes
-to compress. 
+to compress.
 
 .Algorithm: Tree Contraction
 ****
@@ -678,6 +677,74 @@ The proof of this theorem is the same as the proof for chains given
 above.  For brevity, we don't repeat the proof here.
 
 ****
+
+
+=== Other Tree Computations
+
+We have thus far seen several example tree computations, such as
+in-order traversals and expressions trees.  In this section, we cover
+a broader class of tree computations, which can broadly be called
+*_treefix computations_*.  Such computations generalize the "prefix
+sum" or the "scan" example for sequences to rooted trees by separately
+considering the two possible directions:
+
+. from root to leaf, which are called rootfix computations, and 
+
+. from leaf to root, which are called leaffix computations.
+
+For the rest of this section, we shall assume binary trees.
+
+==== Rootfix computations
+
+Let latexmath:[$\oplus$] be an associative binary operation.  A
+*_rootfix computation_* on a binary tree latexmath:[$T$] computes the
+latexmath:[$\oplus$]-sum for all the (simple) paths from the root of
+latexmath:[$T$] to all the leaves of latexmath:[$T$].
+
+.Maximum on root-to-leaf path
+====
+
+Suppose that we are given a tree where each node is labeled with an
+integer number.  We wish to compute for each leaf in the tree the
+maximum node from the leaf to the root.  An example tree and the
+result to be computed are shown below.  This computation is a rootfix
+computation with "max" operation on integers.
+
+image:jpgs-620H/unbalanced-binary-tree-6-max.jpg["Maximum node on root-to-leaf paths",width="350pt",align="center"]
+
+====
+
+We can use tree contraction to perform a rootfix computation.  To this
+end, we can associate with each adge a *_binary cluster_*, which is
+initially latexmath:[$-\infty$] but more generally represents the
+maximum node that corresponds to the path represented by that edge
+(initially each edge represents an empty path).  We then define the
+rake and compress  operations as follows.
+
+. Compress operation: take the maximum of the deleted edges and the
+deleted node and assign that value to the new edge created. 
+
+. Rake operation:  do not change the weights on edges.
+
+At the expansion steps, we compute the correct values for raked and
+compressed operations by considering parent of the deleted vertex and
+the weight of the incoming edge and taking the maximum.
+
+.Exercise
+****
+
+Complete the example given above to compute the maximums for the root
+to leaf paths using tree contraction.
+
+*** 
+ 
+
+==== Leaffix computations
+
+Let latexmath:[$\oplus$] be an associative binary operation.  A *_leaf
+computation_* on a binary tree latexmath:[$T$] computes for each node
+in latexmath:[$T$], the latexmath:[$\oplus$]-sum of the in-order
+traversal of the subtree rooted at that node.
 
 
 

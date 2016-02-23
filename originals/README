@@ -1,0 +1,12 @@
+VARIOUS CONVERSIONS ON IMAGES
+
+
+bash-3.2$ sips -s format jpeg ./unbalanced-binary-tree-6-max.png --out ./jpgs/unbalanced-binary-tree-6-max.jpg
+/Users/umut/r/tapp/originals/unbalanced-binary-tree-6-max.png
+  /Users/umut/r/tapp/originals/jpgs/unbalanced-binary-tree-6-max.jpg
+bash-3.2$ cp jpgs/unbalanced-binary-tree-6-max.jpg jpgs-620H/
+bash-3.2$ cd jpgs-620H/
+bash-3.2$ sips -Z 620 unbalanced-binary-tree-6-max.jpg 
+/Users/umut/r/tapp/originals/jpgs-620H/unbalanced-binary-tree-6-max.jpg
+<CGColor 0x7f9910609340> [<CGColorSpace 0x7f99106050c0> (kCGColorSpaceDeviceRGB)] ( 0 0 0 1 )
+  /Users/umut/r/tapp/originals/jpgs-620H/unbalanced-binary-tree-6-max.jpg
