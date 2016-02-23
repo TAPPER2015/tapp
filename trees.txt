@@ -641,15 +641,20 @@ algorithm as a hierarchical clustering of the input tree
 latexmath:[$T$]. 
 
 . We view a rake operation as constructing a *_unary cluster_*, which
-correspond to a subtree rooted at a node of the tree
-latexmath:[$T$]. The simplest unary cluster consists of a leaf in the
-tree.
+correspond to a subtree rooted at a node latexmath:[$u$] of the tree
+latexmath:[$T$] along with the edge between latexmath:[$u$] and its
+parent; we refer to latexmath:[$u$] as the boundary of the unary
+cluster.  The simplest unary cluster consists of a leaf in the tree and
+the edge from the parent.
 
 . We view the compress operation as construction a *_binary cluster_*,
 which corresponds to a subtree of the tree latexmath:[$T$] that is
-induced by the nodes that are ancestors of a given node
-latexmath:[$u$] and descendants of another node latexmath:[$v$]. The
-simplest binary cluster is an edge in latexmath:[$T$].
+defined by two nodes latexmath:[$u$] and latexmath:[$v$] where
+latexmath:[$v$] is a proper descendant of latexmath:[$u$].  Such a
+binary cluster consists of the subtree induced by the all the proper
+descendants of latexmath:[$u$] except for the descendants of
+latexmath:[$v$] and the edge that connects latexmath:[$v$] to the
+parent and the edge that connects latexmath:[$u$] to its child.
 
 Based on this view, for a tree where each node has at most
 latexmath:[$d$] children, we can specify a rake operation as
@@ -671,6 +676,11 @@ binary cluster and each node represents a unary cluster.
 
 image:jpgs-620H/unbalanced-binary-tree-6-clustering.jpg["Clustering
 via tree contraction",width="450pt",align="center"]
+
+This clustering can be represented as a balanced tree of clusters.
+We can thus say that tree contraction maps an arbitrary possibly
+unbalanced trees to balanced trees (of clusters).
+
 
 ====
 
