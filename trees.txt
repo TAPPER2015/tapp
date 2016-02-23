@@ -710,7 +710,7 @@ maximum node from the leaf to the root.  An example tree and the
 result to be computed are shown below.  This computation is a rootfix
 computation with "max" operation on integers.
 
-image:jpgs-620H/unbalanced-binary-tree-6-max.jpg["Maximum node on root-to-leaf paths",width="350pt",align="center"]
+image:jpgs-620H/unbalanced-binary-tree-6-max-rootfix.jpg["Maximum node on root-to-leaf paths",width="350pt",align="center"]
 
 ====
 
@@ -736,7 +736,7 @@ the weight of the incoming edge and taking the maximum.
 Complete the example given above to compute the maximums for the root
 to leaf paths using tree contraction.
 
-*** 
+**** 
  
 
 ==== Leaffix computations
@@ -746,6 +746,43 @@ computation_* on a binary tree latexmath:[$T$] computes for each node
 in latexmath:[$T$], the latexmath:[$\oplus$]-sum of the in-order
 traversal of the subtree rooted at that node.
 
+
+.Maximum on root-to-leaf path
+====
+
+Suppose that we are given a tree where each node is labeled with an
+integer number.  We wish to compute for each leaf in the tree the
+maximum node from the leaf to the root.  An example tree and the
+result to be computed are shown below.  This computation is a rootfix
+computation with "max" operation on integers.
+
+image:jpgs-620H/unbalanced-binary-tree-6-max-leaffix.jpg["Maximum node on root-to-leaf paths",width="350pt",align="center"]
+
+====
+
+We can use tree contraction to perform a rootfix computation.  To this
+end, we can associate with each adge a *_binary cluster_*, which is
+initially latexmath:[$-\infty$] but more generally represents the
+maximum node that corresponds to the path represented by that edge
+(initially each edge represents an empty path).  We then define the
+rake and compress  operations as follows.
+
+. Compress operation: take the maximum of the deleted edges and the
+deleted node and assign that value to the new edge created. 
+
+. Rake operation:  do not change the weights on edges.
+
+At the expansion steps, we compute the correct values for raked and
+compressed operations by considering parent of the deleted vertex and
+the weight of the incoming edge and taking the maximum.
+
+.Exercise
+****
+
+Complete the example given above to compute the maximums for the root
+to leaf paths using tree contraction.
+
+****
 
 
 
