@@ -106,7 +106,7 @@ interfence.
 Using the rake operation, we can give an algorithm for computing the
 in-order traversal of a tree:
 
-. *Base case:*  The tree has only one node, compute the resulty.
+. *Base case:*  The tree has only one node, compute the result.
 
 . *Contraction step:*  Rake all the leaves to contract the tree.
 
@@ -481,7 +481,7 @@ if |T| < 1
   T
 else
     TT = rake leaves of T
-    TTT = compress and independent set of nodes with a single-child in TT
+    TTT = compress and independent set of nodes with a single child in TT
     tree_contract (TTT)
     expand to TT
     expand to T
