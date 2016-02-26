@@ -723,6 +723,14 @@ unbalanced trees to balanced trees (of clusters).
 
 ====
 
+.Exercise
+****
+
+Draw the tree representing the hierarchical clustering.  Why is this
+cluster tree balanced?  
+
+****
+
 A classic application of tree contraction is the expression trees
 problem.  In this problem, we use a tree to represent a mathematical
 expression and are asked to compute the value the expression. To solve
