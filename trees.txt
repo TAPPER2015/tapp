@@ -285,21 +285,21 @@ is fully independent of the other rounds, and
 does not affect that of any other coin flip.
 
 Let latexmath:[$F_i$] be a random variable denoting the fraction of
-internal nodes of the chain that are not compressed at round
+internal nodes of the chain that are not compressed after round
 latexmath:[$i$].  We know that the probability that a node is
 compressed is latexmath:[$1/4$].  We thus know that latexmath:[$E
-\lbrack F_i \rbrack = m / (m - m/4) = 3/4$] for all latexmath:[$i$].
+\lbrack F_i \rbrack = \frac{m - m/4}{m} = 3/4$] for all latexmath:[$i$].
 
 
 Let latexmath:[$X_i$] be a random variable denoting the size of the
-tree at round latexmath:[$i$].  
+tree at the beginning of round latexmath:[$i$].  
 
 We have
 
 [latexmath]
 +++++++++++
 $$
-X_i = n \cdot \Pi_{j=1}^i{F_i}.
+X_i =  \left( \Pi_{j=0}^{i-1}{F_i} \right) \cdot n.
 $$
 +++++++++++
 
@@ -309,12 +309,10 @@ and thus we can write:
 [latexmath]
 +++++++++++
 $$
-E \lbrack X_i \rbrack = n \cdot \Pi_{j=1}^i{E \lbrack F_i \rbrack} =
-\frac{3}{4}^i \cdot n.
+E \lbrack X_i \rbrack = \left( \Pi_{j=0}^{i-1}{E \lbrack F_i \rbrack} \right) =
+\left( \frac{3}{4} \right) ^{i-1} \cdot n.
 $$
 +++++++++++
-
-
 
 Since we perform constant work per node in each round, we can bound
 the work as follows.
@@ -325,7 +323,7 @@ $$
 \begin{array}{lll}
 W(n) & \le & \sum_{i = 1}^{\infty}{X_i}
 \\
-E \lbrack W(n) \rbrack & \le & \sum_{i = 1}^{\infty}{\frac{3^i}{4^i} \cdot n}
+E \lbrack W(n) \rbrack & \le & \sum_{i = 1}^{\infty}{\frac{3^{i-1}}{4^{i-1}} \cdot n}
 \\
 E \lbrack W(n) \rbrack & \le & O(n).
 \end{array}
@@ -339,19 +337,20 @@ conclude that the algorithm is work efficient.
 
 To bound the span, we need a high-probability bound.  Let's consider
 the probability that the number of nodes is non-trivial after
-latexmath:[$i = 10 \lg{n}$] rounds.  By Markov's inequality we have
+latexmath:[$9 \lg{n}$] rounds, that is at the beginning of round
+latexmath:[$r = 9 \lg{n} + 1$].  By Markov's inequality we have
 
 
 [latexmath]
 +++++++++++
 $$
 \begin{array}{lll}
-P \lbrack X_i \ge 1 \rbrack 
+P \lbrack X_r \ge 1 \rbrack 
 & \le & 
-E \lbrack X_i \rbrack / 1  =
+E \lbrack X_r \rbrack / 1  =
 \\
 & \le & 
-\frac{3}{4}^{10\lg{n}}
+\left( \frac{3}{4} \right)^{9\lg{n}}
 \\
 & \le & 
 n^{-3}.
@@ -359,24 +358,24 @@ n^{-3}.
 $$
 +++++++++++
 
-This means that after latexmath:[$10\log{n}$] rounds, the probability
+This means that after latexmath:[$9\log{n}$] rounds, the probability
 that the tree constains more than a few nodes is tiny.  We can thus
 state with high probability that the algorithm terminates after
-latexmath:[$O(\log{n})$ rounds. If it does not, we know that we can
-always solve the problem using a linear work algorithm.
-We can thus write our span bound as follows.
+latexmath:[$O(\log{n})$] rounds. If it does not, we know that the span
+is no more than linear in expectation, because the algorithm does
+expected linear work.  Let latexmath:[$R$] a random variable denoting
+the span of the algorithm, we can thus write span as follows.
 
 
- 
 [latexmath]
 +++++++++++
 $$
 S(n) = 
 \left\{ 
 \begin{array}{ll}
-R & \mbox{if}~ R \le 10\lg{n}
+R & \mbox{if}~ R \le 9\lg{n}
 \\
-n & \mbox{otherwise} 
+W(n) & \mbox{otherwise} 
 \end{array}
 \right.
 
@@ -392,12 +391,12 @@ $$
 \begin{array}{lll}
 E \lbrack S(n)] 
 & \le & 
-E \lbrack S(n) | R \le 10\lg{n} \rbrack  \cdot P  \lbrack  R \le 10\lg{n}  \rbrack  
+E \lbrack S(n) | R \le 9\lg{n} \rbrack  \cdot P  \lbrack  R \le 9\lg{n}  \rbrack  
 +
-E \lbrack S(n) | R > 10\lg{n} \rbrack  \cdot P  \lbrack  R > 10\lg{n}  \rbrack  
+E \lbrack S(n) | R > 9\lg{n} \rbrack  \cdot P  \lbrack  R > 9\lg{n}  \rbrack  
 \\
 & \le & 
-10 \lg{n} \cdot (1-1/n^{3}) 
+9 \lg{n} \cdot (1-1/n^{3}) 
 + 
 n \cdot 1/n^3.
 \\
@@ -528,9 +527,37 @@ contraction phase.
 image:jpgs-620H/unbalanced-binary-tree-6-tc-3.jpg["Tree contraction, round 3",width="350pt",align="center"]
 ====
 
-To analyze the tree-contraction algorithm, we start by establishing a
-key lemma that says that each round of tree contraction reduces the
-expected number of nodes in the tree by a factor of latexmath:[$3/4$].
+To analyze the tree-contraction algorithm, we first establish a basic
+facts about binary trees.
+
+[[lem:trees::branches-and-leaves]]
+.Lemma[Branches and Leaves]
+****
+Consider any binary tree and let latexmath:[$\ell$] denote the number
+of leaves in the tree and let latexmath:[$b$] denote the number of
+branches or internal nodes with two chilren. We have latexmath:[$\ell
+= b + 2$]
+****
+
+.Proof
+****
+
+The proof is by induction.  In the base case, the tree consists of a
+single node and thus latexmath:[$\ell = 1, b = 0$] and the lemma holds. 
+Assume that the lemma holds for all tree up to and including
+latexmath:[$n > 1$] and consider a tree with latexmath:[$n+1$] nodes.
+
+We have two cases to consider.  In the first case, the root has a
+single child.  In this case, we know by induction that for the subtree
+rooted at the child of the root, latexmath:[$\ell' = b'+1$].  Since
+latexmath:[$\ell = \ell' = b' + 1 = b + 1$].  In the second case, we
+know that latexmath:[$\ell_1 = b_1 + 1$] for the left subtree and know
+that latexmath:[$\ell_2 = b_2 + 1$] for the right subtree.  Thus, we
+knaw that know that latexmath:[$\ell = \ell_1 + \ell_2 = b_1 + b_2 +
+2$].  Since latexmath:[$b = b_1 + b_2 + 1$], we have 
+latexmath:[$\ell = b + 1$].
+ 
+****
 
 .Lemma [Contraction Ratio]
 ****
@@ -543,6 +570,11 @@ nodes in expectation.
 
 .Proof
 ****
+
+For the proof, we shall assume that rake and compresses are applied
+simultaneously in each round.  This assumption is justifiably, because
+applying the operations sequentially only improves the number of nodes
+deleted.
 
 Partition the nodes in latexmath:[$T$] into four disjoint sets
 
@@ -577,10 +609,10 @@ V = R \cup V_0 \cup V_{10} \cup V_{11} \cup V_{12} \cup V_2.
 $$
 +++++++++++
 
-Let's not consider the nodes in the set latexmath:[$V_{11} \cup
-V_{12}$].  These are exactly the nodes an independent subset of which
-we compress.  What fraction of them are compressed, i.e., deleted?
-The probability that a particular node is selected as part of the
+Let's consider the nodes in the set latexmath:[$V_{11} \cup V_{12}$].
+These are exactly the nodes an independent subset of which we
+compress.  What fraction of them are compressed, i.e., deleted?  The
+probability that a particular node is selected as part of the
 independent set is latexmath:[$1/4$].  Thus latexmath:[$3/4$] fraction
 of these vertices remain live at the end of this round.
 
@@ -589,11 +621,10 @@ latexmath:[$R \cup V_0 \cup V_{10}  \cup V_2$].
 
 We have the following relationships between these sets.
 
-. latexmath:[$|V_{10}| \le |V_0|$], because the second set is a
-superset of the first.
+. latexmath:[$|V_{10}| \le |V_0|$].
 
-. latexmath:[$|V_{2}| +1 = |V_0|$], which can be proven by strong
-induction on the size of trees.
+. latexmath:[$|V_{2}| +1 = |V_0|$] (by the
+<<lem:trees::branches-and-leaves, Branches and Leaves Lemma>>. 
 
 Since latexmath:[$R$] is a singleton, we have latexmath:[$|R \cup V_0 \cup V_{10}  \cup V_2| \le 3|V_0|$].  
 
@@ -604,6 +635,14 @@ We have thus partitioned the set of all nodes into two subsets and
 showed that a fraction of at most latexmath:[$3/4$] (expected) and
 latexmath:[$2/3$] remain live at the end of the round.  We thus
 conclude that in expectation latexmath:[$3/4$] of the nodes remain live.
+****
+
+.Exercise
+****
+
+Improve the constant factor to latexmath:[$2/3$] by changing the way
+compress warks.
+
 ****
 
 .Theorem[Work and Span of Tree Contraction]
