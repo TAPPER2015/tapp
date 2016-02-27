@@ -482,10 +482,8 @@ tree_contract (T)
 if |T| = 1 
   solve/expand T
 else
-    TT = rake leaves of T
-    TTT = compress and independent set of nodes with a single child in TT
-    tree_contract (TTT)
-    expand to TT
+    T' = rake the leaves and an independent set of nodes with a single, non-leaf child in T
+    tree_contract T'
     expand to T
 ----
 ****  
