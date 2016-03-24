@@ -1,5 +1,4 @@
-Chapter: Graph processing
--------------------------
+== Chapter: Graph processing
 
 In just the past few years, a great deal of interest has grown for
 frameworks that can process very large graphs. Interest comes from a
@@ -35,8 +34,7 @@ personal computer.
 
 //////
 
-Graph representation
-~~~~~~~~~~~~~~~~~~~~~
+=== Graph representation
 
 
 We will use an adjacency lists representation based on *_compressed
@@ -206,8 +204,8 @@ seeing the basic pattern of BFS, we are going to generalize a little
 to consider general-purpose graph-traversal techniques that are useful
 for implementing a large class of parallel graph algorithms.
 
-Breadth-first search
-~~~~~~~~~~~~~~~~~~~~
+=== Breadth-first search
+
 
 The breadth-first algorithm is a particular graph-search algorithm
 that can be applied to solve a variety of problems such as finding all
@@ -471,8 +469,8 @@ was_successful = 1; visited[v] = 1
 was_successful2 = 0; visited[v] = 1
 ----
 
-Implementing parallel BFS
-~~~~~~~~~~~~~~~~~~~~~~~~~
+==== Implementing parallel BFS
+
 
 So far, we have seen pseudocode that describes at a high level the
 idea behind the parallel BFS. We have seen that special care is
@@ -731,8 +729,6 @@ such an algorithm. Does in perform better?
 
 === Depth First Search
 
-TODO: describe the implementation of frontierFromSeq...
-
 In Depth First Seach (DFS), we visit vertices of a graph in "depth
 first" order by visiting the most recently seen vertex.  We can
 write the pseudocode for DFS as follows.
@@ -746,7 +742,7 @@ dfs (G, X, v) =
   else
     if compare_and_swap (&v, false, true) succeeds then 
       visit v
-      X = X union {s}
+      X = X union {v}
       for u in out_neighbor (G, v) do
         X = dfs (G, X, u) 
 -------------------
@@ -862,7 +858,7 @@ pdfs (G, source) =
   
 ----
 
-===== Work Efficient PDFS
+==== Work Efficient PDFS
 
 It seems unlikely for this algorithm to be work efficient, because of
 two issues.
@@ -916,11 +912,16 @@ represent the frontier, making PDFS work efficient requires designing
 a highly efficient frontier data structure.  This data structure needs
 to support at least the following operations:
 
+. `mkEmpty`: return an empty frontier
 . `remove`: remove a vertex from a given frontier
 . `insert`: insert a vertex into a given frontier
 . `union`: union two frontiers
 . `split`: split a given  frontier into two frontiers, preferably evenly
 . `frontierFromSeq`: constructs a frontier from a sequence.
+
+The operation `frontierFromSeq` can be implemented by starting with an
+empty frontier and inserting the elements of the sequence one by one
+into it. A more direct implementation can be more efficient, however.
  
 Since the frontier data structure does not have to enforce any
 ordering on the vertices and since a vertex can be inserted into the
@@ -948,15 +949,15 @@ operation to implement union.
 ****
 
 Convince yourself that the we can implement frontiers using treaps
-such that all operations require $O(\lg{n})$ work.  How about when
-using finger trees?
+such that all operations require latexmath:[$O(\lg{n})$] work.  How
+about when using finger trees?
 
 ****   
 
-An $O(\log{n})$-work implementation does not give us a work-efficient
-algorithm, however. At the very least, we would like to achieve
-constant work `insert` and `remove` operations and do so with very
-small constant factors.  We can afford a more expensive `split`
+An latexmath:[$O(\log{n})$]-work implementation does not give us a
+work-efficient algorithm, however. At the very least, we would like to
+achieve constant work `insert` and `remove` operations and do so with
+very small constant factors.  We can afford a more expensive `split`
 operation because these operations generate parallelism, which we can
 amortize by granularity control. We now describe how to implement an
 observably efficient frontier data structure.
@@ -968,7 +969,7 @@ structure.
 image::jpgs-620H/frontier.jpg["A frontier data structure illustrated.",width="300pt",align="center"]
 
 
-ARTHUR: describe the operations
+ARTHUR: describe the operations...
 
 
 ==== Lazy Splitting

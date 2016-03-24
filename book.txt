@@ -29,28 +29,27 @@ include::fork-join.txt[]
 
 include::mutual-exclusion.txt[]
 
-//include::benchmarking.txt[]
+include::benchmarking.txt[]
 
-//// include::scheduling.txt[]
+// include::scheduling.txt[]
 
-//include::work-efficiency.txt[]
+include::work-efficiency.txt[]
 
-//include::granularity-control.txt[]
+include::granularity-control.txt[]
 
-//include::parallel-arrays.txt[]
+include::parallel-arrays.txt[]
 
-//include::sorting.txt[]
+include::sorting.txt[]
 
-//include::graph-theory.txt[]
+include::graph-theory.txt[]
 
-//include::trees.txt[]
+include::trees.txt[]
 
 include::graphs.txt[]
 
-//include::dedicated.txt[]
+include::dedicated.txt[]
 
-
-// include::synchronization.txt[]
+include::synchronization.txt[]
 				   
 // include::concurrency.txt[]
 

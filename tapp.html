@@ -11624,9 +11624,8 @@ std<span style="color: #990000">::</span>cout <span style="color: #990000">&lt;&
 was_successful2 = 0; visited[v] = 1</code></pre>
 </div></div>
 </div>
-</div>
-<div class="sect2">
-<h3 id="_implementing_parallel_bfs">8.3. Implementing parallel BFS</h3>
+<div class="sect3">
+<h4 id="_implementing_parallel_bfs">8.2.3. Implementing parallel BFS</h4>
 <div class="paragraph"><p>So far, we have seen pseudocode that describes at a high level the
 idea behind the parallel BFS. We have seen that special care is
 required to eliminate problematic race conditions.  Let&#8217;s now put
@@ -12474,8 +12473,9 @@ the outer loop.</p></div>
 <code>v</code> by the length of the shortest path between
 <code>v</code> and the source vertex?</p></div>
 </div></div>
+</div>
 <div class="sect3">
-<h4 id="_performance_analysis">8.3.1. Performance analysis</h4>
+<h4 id="_performance_analysis">8.2.4. Performance analysis</h4>
 <div class="paragraph"><p>Our parallel BFS is asymptotically work efficient: the BFS takes work
 $O(n + m)$. To establish this bound, we need to assume
 that the compare-and-exchange operation takes constant time. After
@@ -12508,7 +12508,7 @@ such an algorithm. Does in perform better?</p></div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_depth_first_search">8.4. Depth First Search</h3>
+<h3 id="_depth_first_search">8.3. Depth First Search</h3>
 <div class="paragraph"><p>In Depth First Seach (DFS), we visit vertices of a graph in "depth
 first" order by visiting the most recently seen vertex.  We can
 write the pseudocode for DFS as follows.</p></div>
@@ -12524,7 +12524,7 @@ http://www.gnu.org/software/src-highlite -->
   <span style="font-weight: bold"><span style="color: #0000FF">else</span></span>
     <span style="font-weight: bold"><span style="color: #0000FF">if</span></span> <span style="font-weight: bold"><span style="color: #000000">compare_and_swap</span></span> <span style="color: #990000">(&amp;</span>v<span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #0000FF">false</span></span><span style="color: #990000">,</span> <span style="font-weight: bold"><span style="color: #0000FF">true</span></span><span style="color: #990000">)</span> succeeds then
       visit v
-      X <span style="color: #990000">=</span> <span style="color: #008080">X</span> <span style="font-weight: bold"><span style="color: #0000FF">union</span></span> <span style="color: #FF0000">{</span>s<span style="color: #FF0000">}</span>
+      X <span style="color: #990000">=</span> <span style="color: #008080">X</span> <span style="font-weight: bold"><span style="color: #0000FF">union</span></span> <span style="color: #FF0000">{</span>v<span style="color: #FF0000">}</span>
       <span style="font-weight: bold"><span style="color: #0000FF">for</span></span> u <span style="color: #008080">in</span> <span style="font-weight: bold"><span style="color: #000000">out_neighbor</span></span> <span style="color: #990000">(</span>G<span style="color: #990000">,</span> v<span style="color: #990000">)</span> <span style="font-weight: bold"><span style="color: #0000FF">do</span></span>
         X <span style="color: #990000">=</span> <span style="font-weight: bold"><span style="color: #000000">dfs</span></span> <span style="color: #990000">(</span>G<span style="color: #990000">,</span> X<span style="color: #990000">,</span> u<span style="color: #990000">)</span></tt></pre></div></div>
 <div class="exampleblock">
@@ -14579,8 +14579,8 @@ http://www.gnu.org/software/src-highlite -->
     <span style="font-weight: bold"><span style="color: #000000">pdfs_rec</span></span> <span style="color: #990000">(</span>F<span style="color: #990000">,</span> G<span style="color: #990000">)</span>
   <span style="color: #FF0000">}</span>
 </tt></pre></div></div>
-<div class="sect4">
-<h5 id="_work_efficient_pdfs">Work Efficient PDFS</h5>
+<div class="sect3">
+<h4 id="_work_efficient_pdfs">8.3.1. Work Efficient PDFS</h4>
 <div class="paragraph"><p>It seems unlikely for this algorithm to be work efficient, because of
 two issues.</p></div>
 <div class="olist arabic"><ol class="arabic">
@@ -14631,7 +14631,6 @@ http://www.gnu.org/software/src-highlite -->
     <span style="color: #990000">(</span>Fa<span style="color: #990000">,</span> Fb<span style="color: #990000">)</span> <span style="color: #990000">=</span> split F in
     <span style="color: #008080">async</span> <span style="font-weight: bold"><span style="color: #000000">pdfs_rec</span></span> <span style="color: #990000">(</span>Fa<span style="color: #990000">,</span> G<span style="color: #990000">)</span>
     <span style="color: #008080">async</span> <span style="font-weight: bold"><span style="color: #000000">pdfs_rec</span></span> <span style="color: #990000">(</span>Fb<span style="color: #990000">,</span> G<span style="color: #990000">)</span></tt></pre></div></div>
-</div>
 <div class="sect4">
 <h5 id="_frontier_data_structure_for_pdfs">Frontier Data Structure for PDFS</h5>
 <div class="paragraph"><p>Umut: ARTHUR, I have left lots of comments for you.</p></div>
@@ -14640,6 +14639,11 @@ represent the frontier, making PDFS work efficient requires designing
 a highly efficient frontier data structure.  This data structure needs
 to support at least the following operations:</p></div>
 <div class="olist arabic"><ol class="arabic">
+<li>
+<p>
+<code>mkEmpty</code>: return an empty frontier
+</p>
+</li>
 <li>
 <p>
 <code>remove</code>: remove a vertex from a given frontier
@@ -14666,6 +14670,9 @@ to support at least the following operations:</p></div>
 </p>
 </li>
 </ol></div>
+<div class="paragraph"><p>The operation <code>frontierFromSeq</code> can be implemented by starting with an
+empty frontier and inserting the elements of the sequence one by one
+into it. A more direct implementation can be more efficient, however.</p></div>
 <div class="paragraph"><p>Since the frontier data structure does not have to enforce any
 ordering on the vertices and since a vertex can be inserted into the
 frontier many times (once for each incoming edge), we can think of the
@@ -14687,11 +14694,13 @@ operation to implement union.</p></div>
 <div class="content">
 <div class="title">Exercise:</div>
 <div class="paragraph"><p>Convince yourself that the we can implement frontiers using treaps
-using finger trees?</p></div>
+such that all operations require $O(\lg{n})$ work.  How
+about when using finger trees?</p></div>
 </div></div>
-<div class="paragraph"><p>algorithm, however. At the very least, we would like to achieve
-constant work <code>insert</code> and <code>remove</code> operations and do so with very
-small constant factors.  We can afford a more expensive <code>split</code>
+<div class="paragraph"><p>An $O(\log{n})$-work implementation does not give us a
+work-efficient algorithm, however. At the very least, we would like to
+achieve constant work <code>insert</code> and <code>remove</code> operations and do so with
+very small constant factors.  We can afford a more expensive <code>split</code>
 operation because these operations generate parallelism, which we can
 amortize by granularity control. We now describe how to implement an
 observably efficient frontier data structure.</p></div>
@@ -15009,10 +15018,11 @@ KACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAoooo
 AKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooA//Z" />
 </div>
 </div>
-<div class="paragraph"><p>ARTHUR: describe the operations</p></div>
+<div class="paragraph"><p>ARTHUR: describe the operations&#8230;</p></div>
+</div>
 </div>
 <div class="sect3">
-<h4 id="_lazy_splitting">8.4.1. Lazy Splitting</h4>
+<h4 id="_lazy_splitting">8.3.2. Lazy Splitting</h4>
 <div class="paragraph"><p>LEFT FOR FUTURE.  I think we can skip this for this iteration of the
 course.  It can be added later.  Otherwise, it is quite a bit of
 work, especially because the frontier data structure needs to be discussed.</p></div>
