@@ -731,6 +731,8 @@ such an algorithm. Does in perform better?
 
 === Depth First Search
 
+TODO: describe the implementation of frontierFromSeq...
+
 In Depth First Seach (DFS), we visit vertices of a graph in "depth
 first" order by visiting the most recently seen vertex.  We can
 write the pseudocode for DFS as follows.
@@ -966,11 +968,11 @@ structure.
 image::jpgs-620H/frontier.jpg["A frontier data structure illustrated.",width="300pt",align="center"]
 
 
-
-
+ARTHUR: describe the operations
 
 
 ==== Lazy Splitting
 
-
-FOR ARTHUR
+LEFT FOR FUTURE.  I think we can skip this for this iteration of the
+course.  It can be added later.  Otherwise, it is quite a bit of
+work, especially because the frontier data structure needs to be discussed.
