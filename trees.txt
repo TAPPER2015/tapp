@@ -569,11 +569,6 @@ nodes in expectation.
 .Proof
 ****
 
-For the proof, we shall assume that rake and compresses are applied
-simultaneously in each round.  This assumption is justifiably, because
-applying the operations sequentially only improves the number of nodes
-deleted.
-
 Partition the nodes in latexmath:[$T$] into four disjoint sets
 
 . latexmath:[$R$]: singleton set containing the root.

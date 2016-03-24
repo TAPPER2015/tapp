@@ -74,11 +74,14 @@ o multithreading:
 o there are some inconsistencies in the defition of threads in the
 multithreading seciton and fork-join section.
 
+o insert async finish discussion.  Use fibonacci as an example.
+
 o graphs: present the graph library and the operations possible.
 o sorting: observed work efficiency factor terminology.
 o parallel arrays: show destructors/deallocation, and the move operator.
 
 o other models
   see vijaya ramachandran's notes
+
 
 

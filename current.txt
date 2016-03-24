@@ -39,11 +39,11 @@ Author: {author}
 //include::sorting.txt[]
 
 
-include::graph-theory.txt[]
+// include::graph-theory.txt[]
 
-include::trees.txt[]
+// include::trees.txt[]
 
-// include::graphs.txt[]
+include::graphs.txt[]
 
 //include::graphs.txt[]
 

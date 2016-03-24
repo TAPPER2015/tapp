@@ -232,17 +232,15 @@ as the shortest distance from latexmath:[$s$] to latexmath:[$v$], that
 is the number of edges on the shortest path connecting latexmath:[$s$]
 to latexmath:[$v$]. 
 
-////
 
-// .BFS Levels
-// ===========
+.BFS Levels
+===========
 
-// A graph and its levels.
+A graph, where each vertex is labeled with its level.
 
-// image::jpgs-620H/directed-graph-levels.jpg["A graph and its levels.",width="300pt",align="center"]
+image::jpgs-620H/directed-graph-levels.jpg["A graph and its levels.",width="300pt",align="center"]
 				   
-// ===========
-////
+===========
 
 
 Sequential BFS
@@ -731,3 +729,248 @@ such an algorithm. Does in perform better?
 				   
 
 
+=== Depth First Search
+
+In Depth First Seach (DFS), we visit vertices of a graph in "depth
+first" order by visiting the most recently seen vertex.  We can
+write the pseudocode for DFS as follows.
+
+.Pseudocode for DFS
+[source,{cpp}]
+-------------------
+dfs (G, X, v) = 
+  if v in X then 
+    ()
+  else
+    if compare_and_swap (&v, false, true) succeeds then 
+      visit v
+      X = X union {s}
+      for u in out_neighbor (G, v) do
+        X = dfs (G, X, u) 
+-------------------
+
+.DFS 
+====
+
+A graph, where each vertex is labeled with the order that it was
+visited by a DFS starting an vertex *"a"*. The out-edges of each
+vertex are ordered counterclockwise starting from left.  The edges
+that lead to a successful visit are highlighted.
+
+image::jpgs-620H/directed-graph-dfs.jpg["A graph and DFS traversal.",width="300pt",align="center"]
+				   
+====
+
+An important property of the DFS algorithm is that it recursively
+explores the out-neighbors of a vertex in order.  This
+"lexicographical graphic" ordering bestows DFS with special powers.
+It can be used to solve many  interesting graph problems, exactly
+because it visit vertices in a specific order.
+
+The DFS problem, however, is a P-complete problem, suggesting that DFS
+is difficult to parallelize.  There are parallel algorithm for special
+graphs, such as planar graphs, but work-efficient general-purpose
+algorithms remain unknown.  
+
+The lexicographical ordering followed by DFS is not useful in some
+applications.  For example, the reachability problem, which requires
+finding the vertices that are reachable from a given vertex, does not
+require the vertices to be ordered.  An interesting question therefore
+is whether an "unordered DFS", a.k.a., *_pseudo DFS_*, can be
+performed in parallel.  
+
+Before we answer this question, let's convince ourselves that it is a
+worth our while.  Considering that we already have a parallel graph
+traversal algorithm, parallel BFS, why is there a need? The reason is
+that parallel BFS requires global synchronization on every level of
+the graph. It can help to avoid such synchronization. 
+
+
+
+We define a *_parallel pseudo DFS_* or *_PDFS_* for short as a
+parallel algorithm in which each processor performs a DFS on the
+portion of the graph that it is traversing at any time but without
+observing any ordering constraints. 
+
+
+.PDFS  
+====
+
+A graph, where each vertex is labeled with the processors
+and the time at which it is visited when using two processors *P* and
+*Q*.
+
+image::jpgs-620H/directed-graph-pdfs.jpg["A graph and its two processor PDFS traversal.",width="300pt",align="center"]
+
+====
+
+We can write the pseudocode for PDFS as follows.  The function `pdfs`
+takes as argument the graph an the source vertex and calls nested
+inside a `finish` block the function `pdfs_rec` with a frontier
+consisting only of the source vertex and the graph. The `finish` block
+waits for all the parallel computations spawned off by the function
+`pdfs_rec`to complete.  The function `pdfs_rec` takes as argument a
+frontier `F`, a set of vertices that are to be visited, and a graph
+`G`. Based on the size of the frontier, the algorithm performs the
+following actions.
+
+. If the frontier is empty, then it returns.  
+
+.  If the frontier contains only one vertex, then the algorithm uses a
+compare-and-swap to make sure that the vertex is visited exactly once.
+If the compare-and-swap succeeds then the algorithm visits the vertex
+and performs a PDFS on the out-neighbors of the vertex.  Note that at
+this point, the frontier is empty, and thus the out-neighbors of the
+vertex can be used as the new frontier.  The function `toFrontier`
+converts the out-neighbors returned to a proper frontier data
+structure.
+
+. If the frontier contains more than one vertex, then the algorithm
+splits the frontier into two frontiers `Fa` and `Fb` and performs in
+parallel a PDFS on each frontier.  To perform the two searches in
+parallel, the algorithm uses the `async` function, which spawns off a
+parallel computation to perform the given argument.
+
+
+
+.Pseudocode for PDFS
+[source,{cpp}]
+----
+pdfs_rec (F, G) = 
+  if |F| = 0 then
+    ()
+  else if |F| = 1 then  
+    let v = remove F in (* F is empty after removal. *) 
+      if compare_and_swap (&v.flag, false, true) succeeds then
+        visit v
+        N = out_neighbors (G, v) in
+        pdfs_rec (frontierFromSeq N, G)  
+  else
+    (Fa, Fb) = split F in
+    async pdfs_rec (Fa, G)
+    async pdfs_rec (Fb, G)
+
+pdfs (G, source) =  
+  F = empty frontier
+  F = insert (F, source)
+
+  finish  {
+    pdfs_rec (F, G) 
+  }
+  
+----
+
+===== Work Efficient PDFS
+
+It seems unlikely for this algorithm to be work efficient, because of
+two issues.
+
+. The algorithm creates tiny threads by recursing down to single
+element frontiers.  
+
+. The algorithm relies on a frontier data structure that the serial
+DFS algorithm does not use.  In fact, the serial DFS algorithm uses no
+auxiliary data structures.
+
+The first issue is can be partially ameliorated by changing the base
+case to visit multiple vertices, as shows below.  This algorithm stops
+when it encounters a small frontier consisting of K or fewer vertices
+and visits K vertices until it generates parallelism.
+
+.Pseudocode for granularity-controlled PDFS
+[source,{cpp}]
+----
+pdfs_rec (F, G) = 
+  if |F| = 0 then
+    ()
+  else if |F| <= K then 
+    v = remove F in
+    repeat 
+      if compare_and_swap (&v, false, true) succeeds then
+        (* v is not visited. *)
+        visit v
+        N = frontierFromSeq (out_neighbors (G,v)) 
+        F = F union N
+        v = remove F
+    until 
+      K vertices are visited 
+      or
+      F is empty
+
+      (* PDFS recursively on the remaining frontier *)
+      pdfs_rec (F, G)        
+  else
+    (Fa, Fb) = split F in
+    async pdfs_rec (Fa, G)
+    async pdfs_rec (Fb, G)
+----
+
+===== Frontier Data Structure for PDFS
+
+Umut: ARTHUR, I have left lots of comments for you.
+
+Since the serial DFS algorithm does not use any data structures to
+represent the frontier, making PDFS work efficient requires designing
+a highly efficient frontier data structure.  This data structure needs
+to support at least the following operations:
+
+. `remove`: remove a vertex from a given frontier
+. `insert`: insert a vertex into a given frontier
+. `union`: union two frontiers
+. `split`: split a given  frontier into two frontiers, preferably evenly
+. `frontierFromSeq`: constructs a frontier from a sequence.
+ 
+Since the frontier data structure does not have to enforce any
+ordering on the vertices and since a vertex can be inserted into the
+frontier many times (once for each incoming edge), we can think of the
+frontier data structure as implementing a bag, which is a set that
+allows multiplicity.
+
+
+ARTHUR, can we say that this data structure can be implemented
+asymptotically efficiently by using well-known data structure?  If so,
+then what would that be?  We need efficient split and union, which
+requires balance.  But since there is no ordering it seems like this
+is possible. I describe an approach based on what I thought them but
+something more general might be better.
+
+We can use a finger-search tree, with a finger at the "first element"
+of the frontier to implement these operations efficiently.  When
+maintaining order such an implementation can require linear work for
+the `union` operation.  But since we do not maintain an order, we can
+use simply our Treap-based binary search trees and the `join`
+operation to implement union.
+
+
+.Exercise:
+****
+
+Convince yourself that the we can implement frontiers using treaps
+such that all operations require $O(\lg{n})$ work.  How about when
+using finger trees?
+
+****   
+
+An $O(\log{n})$-work implementation does not give us a work-efficient
+algorithm, however. At the very least, we would like to achieve
+constant work `insert` and `remove` operations and do so with very
+small constant factors.  We can afford a more expensive `split`
+operation because these operations generate parallelism, which we can
+amortize by granularity control. We now describe how to implement an
+observably efficient frontier data structure.
+
+
+The drawing below illustrates the structure of the frontier data
+structure.  
+
+image::jpgs-620H/frontier.jpg["A frontier data structure illustrated.",width="300pt",align="center"]
+
+
+
+
+
+
+==== Lazy Splitting
+
+
+FOR ARTHUR
