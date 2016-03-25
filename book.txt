@@ -11,9 +11,7 @@ v1.0 2016-01
 :cplusplus: Clatexmath:[++]
 
 
-
-
-Author: {author}
+Copyright: {author}
 
 include::preface.txt[]
 
