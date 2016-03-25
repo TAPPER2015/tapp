@@ -1,0 +1,79 @@
+== Models of Parallel Computation
+
+[quote, James Christopher Wyllie, Ph.D. Thesis Cornell University 1979]
+_____
+Recent advances in microelectronics have brought closer to feasibility
+the construction of computers containing thousands (or more)
+processing elements.
+_____
+
+Parallel computing has fascinated computer scientists from the early
+days of computing, even before parallel computers have become easily
+available starting in 2000's. The architecture of early parallel
+computers varied greatly. 
+
+.  Cray-1 was the first vectorized parallel machine that can perform
+operations on sequences of data called vectors.
+
+.  ILLIAC IV had 64 processors laid out on a rectangular grid.  Each
+processor had its own memory but could communicate its four neighbors
+on the grid and thus request data from them.  ILLIAC was a synchronous
+machine where each processor would execute the same instruction in
+each step, operating on its own memory.
+
+. CM (Connection Machine) could have many (tens of thousands)
+processors arranged into clusters, which are in turn arranged into
+superclusters, and communication taking place through buses connecting
+processors with each level of the cluster hierarchy.  Each processor
+had its own memory and access the memory of others via the
+communication bus.  The machine operated asynchronously allowing each
+processor to perform instructions independently of the others.
+
+This diversity continues to exist today.  For example, graphics
+processors (GPUs), multicore computers, large data centers consisting
+of many clusters of computers have characteristics of these earlier
+designs.  
+
+It is thus natural to consider the question of how one might design
+algorithms for these machines.  This question may be viewed as
+especially relevant because serial algorithms are traditionally
+designed for the RAM (Random Access Memory) machine of computation,
+which is equivalent to a Turing Machine and thus to Lambda Calculus.
+In 1979, James C. Wyllie proposed the PRAM model as a RAM-like model
+for parallel computing.  Wyllie viewed asynchronous computation as
+inappropriate for the purposes of worst-case complexity analysis and
+thus proposed a synchronous model of computation that combines the
+synchronous computation model of ILLIAC-IV with the hierarchical
+memory model of the Connection Machine.  As mentioned by Wyllie, the
+PRAM model was used by many authors before it was proposed by Wyllie,
+probably because it is a relatively natural generalization of the
+sequential RAM model.
+
+A PRAM consists of 
+. an unbounded number of processors, $P_0, \ldots, P_n$,
+. an unbounded global memory,
+. a finite program.
+
+Each processor in turn has 
+. a unique processor id,
+. a program counter,
+. an unbounded local memory,
+. a flag indicating whether or not a processor is running.
+
+The program can be viewed as a usual program but it also allows a
+processor to start an inactive processor at a specified instruction in
+the program. Each processor can access its own local memory or the
+global memory but not the local memory of another processor.
+
+Execution proceeds synchronously with each active processor executing
+one instruction.  Since inactive processors can be activated and
+"jumped" to any point in the program, different processors can execute
+different instructions.  Processors can use their processor id to
+select the part of the memory they operate on.  For example, each
+processor $i$ can read the $i$ cell of an input array.  
+
+The PRAM model abstracts over various connection pattern used by
+parallel architectures by supplying a global memory that is accessible
+to all processors.
+
+
