@@ -49,31 +49,176 @@ PRAM model was used by many authors before it was proposed by Wyllie,
 probably because it is a relatively natural generalization of the
 sequential RAM model.
 
+=== PRAM Model
+
+
+==== The Machine
 A PRAM consists of 
-. an unbounded number of processors, $P_0, \ldots, P_n$,
+
+. an unbounded number of processors, $P_0, \ldots$,
 . an unbounded global memory,
 . a finite program.
 
 Each processor in turn has 
+
 . a unique processor id,
 . a program counter,
 . an unbounded local memory,
-. a flag indicating whether or not a processor is running.
+. a flag indicating whether or not a processor is running or active.
 
-The program can be viewed as a usual program but it also allows a
-processor to start an inactive processor at a specified instruction in
-the program. Each processor can access its own local memory or the
-global memory but not the local memory of another processor.
+.A 4-Processor PRAM
+====
+The drawing below illustrates a 4-processor PRAM. 
 
-Execution proceeds synchronously with each active processor executing
-one instruction.  Since inactive processors can be activated and
-"jumped" to any point in the program, different processors can execute
-different instructions.  Processors can use their processor id to
-select the part of the memory they operate on.  For example, each
-processor $i$ can read the $i$ cell of an input array.  
+image:jpgs-620H/pram-model.jpg["A 4-processor PRAM.",width="400pt",align="center"]
+====
 
 The PRAM model abstracts over various connection pattern used by
 parallel architectures by supplying a global memory that is accessible
 to all processors.
 
+A PRAM program is a synchronous program that specifies the computation
+performed by each processor at each step.  Execution of a PRAM program
+proceeds in step.  In each step all active processors execute the
+instruction pointed by their program counter.  The instruction may use
+the id of the processor, which can be though as being stored in the
+local memory. For example, each processor $i$ can read the $i$ cell of
+an array stored in global memory.  Each processor can access its own
+local memory or the global memory but not the local memory of another
+processor.  A processor may choose be not participate in a step; such
+a processor would be inactive on that step.  An active processor may
+activate by an inactive processor and direct it to a certain
+instruction by setting its program counter.
 
+In his formulation of the PRAM model Wyllie did not permit multiple
+processors to write into the same (global) memory cell.  Many
+different variations of this model, however, been later proposed that
+allow different degrees of "concurrency."  Some notable variants
+include the following.
+
+. EREW (Exclusive-Read-Exclusive-Write) PRAM: concurrent reads from
+or writes into the same global memory cell are disallowed.
+
+. CREW (Concurrent-Read-Exclusive-Write) PRAM: concurrent reads from
+global memory cells are permitted but concurrent writes into the same
+global memory cell are disallowed.
+
+. CRCW (Concurrent-Read-Concurrent-Write) PRAM: concurrent reads from
+and concurrent writes into the same global memory cells are
+permitted.  It is possible to  distinguish further between different
+CRCW PRAMs.
+
+.. Common CRCW: concurrent writes must all write the same value.
+
+.. Arbitrary CRCW: concurrent rites can write different values in a
+step, but only one arbitrary write succeeds.
+
+.. Priority CRCW: concurrent rites can write different values in a
+step, but only the processor with the highest priority defined as the
+processor with the minimum id succeeds.
+
+
+In terms of computational power, these different models turn out to be
+similar.
+
+==== An Example: Array Sum
+
+Suppose that we are given an array of elements stored in global memory
+and wish to compute the sum of the elements.  We can write a PRAM
+program to find the sum.  Suppose that the array contains $n$ elements
+and we wish to use $n$ processors.  Let's assume for simplicity that
+$n$ is a power of $2$. We can proceed in rounds.  In the first round,
+each processors $P_i$, where $0 \le i n/2$ add up the pair of elements
+at position $2i$ and $2i+1$ and place in in position $i$.  In the
+second round, we repeat the same computation but consider only the
+first $n/2$ of the elements and so on.  After $\lg{n}$ rounds, the sum
+is placed in the first position of the input array.  The drawing below
+illustrates this algorithm for an input of size $8$.
+
+.Array sum in PRAM
+====
+The drawing below illustrates the PRAM array sum algorithm for an
+array with $8$ elements. 
+
+image:jpgs-620H/pram-array-sum.jpg["Array sum with PRAM.",width="400pt",align="center"]
+====
+
+
+
+
+We can write the code for this algorithm as follows. In the code the
+local variable `i` denotes the id of the processor.  The computation
+starts by each processor executing this piece of code.
+
+[source,cpp]
+----
+array_sum (A, n) = 
+  for j = 1 to lg n  {
+    active_procs  = n/2^j
+    if (i < active_procs) {
+      x = global_read A[2i]
+      y = global_read A[2i+1]
+      z = x + y
+      global_write z into A[i] 
+    }
+----
+
+Note the role that the synchronous execution of PRAM programs. If the
+processors did not execute each step synchronously at the same time,
+then the execution can mix up results from different rounds and obtain
+an incorrect result.
+
+In this algorithm,  no (global) memory cell is read my more than one
+processor at the same step.  Similarly, no (global) memory cell is
+written my more than one processor at the same step.  This algorithm
+is thus a EREW PRAM algorithm.
+
+=== Work-Time Framework
+
+Since a PRAM program must specify the action that each processor must
+take at each step, it can be very tedious to use.  One alternative
+approach is the work-time framework.
+
+
+=== PRAM in Practice
+
+Several assumptions of the PRAM model make it unlikely that the human
+kind will ever be able to build an actual PRAM.
+
+. Constant memory access: in PRAM, all processors can access memory in
+constant time independent of the number of processors.  This is
+currently impossible because an arbitrary number of processors and
+memory cannot be packed into the same 3-dimensional space.  Assuming
+that memory access speed is bounded by the speed of light, there will
+thus be a dependence between the number of processors and the time for
+memory access.
+
+. Concurrent memory reads and writes: all known memory hardware can
+serve a constant number of reads and writes in the same time step but
+in a PRAM with $p$ processors, there can be $p$ concurrent reads from
+and writes into the same memory location.
+
+Another problem with the PRAM model is that the PRAM algorithms do not
+translate to practice well.
+
+. The synchrony assumption, that all processors execute program
+instructions in lock step, is nearly impossible to guarantee.  In
+practice, parallel programs are executed by a system that maps many
+processes on the same processors, swapping processes in and out as
+needed.  Furthermore, the programmers write their programs using
+higher level languages which then translate to many individual machine
+instructions. Even if these instruction might be executed on the
+hardware in lock step, the programmer does not have control over these
+instructions.
+
+. PRAM programs specify instructions executed by each processor at
+each time step.  In other words, they must specify the algorithm and
+the schedule for the algorithm.  This is very tedious and extremely
+difficult to do in practice because for example, we may not know the
+number of processors available, or worse the number of processors may
+change during execution.
+
+For these reasons, the value of a PRAM algorithm from a practical
+perspective is limited to the ideas of the algorithm.  Such ideas can
+still be valuable but usually new ideas are needed to implement PRAM
+algorithms in practice.
