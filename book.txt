@@ -43,6 +43,8 @@ include::graph-theory.txt[]
 
 include::trees.txt[]
 
+include::models.txt[]
+
 include::graphs.txt[]
 
 include::dedicated.txt[]
