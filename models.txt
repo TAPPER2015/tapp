@@ -55,7 +55,7 @@ sequential RAM model.
 ==== The Machine
 A PRAM consists of 
 
-. an unbounded number of processors, $P_0, \ldots$,
+. an unbounded number of processors, latexmath:[$P_0, \ldots$],
 . an unbounded global memory,
 . a finite program.
 
@@ -82,13 +82,13 @@ performed by each processor at each step.  Execution of a PRAM program
 proceeds in step.  In each step all active processors execute the
 instruction pointed by their program counter.  The instruction may use
 the id of the processor, which can be though as being stored in the
-local memory. For example, each processor $i$ can read the $i$ cell of
-an array stored in global memory.  Each processor can access its own
-local memory or the global memory but not the local memory of another
-processor.  A processor may choose be not participate in a step; such
-a processor would be inactive on that step.  An active processor may
-activate by an inactive processor and direct it to a certain
-instruction by setting its program counter.
+local memory. For example, each processor latexmath:[$i$] can read the
+latexmath:[$i$] cell of an array stored in global memory.  Each
+processor can access its own local memory or the global memory but not
+the local memory of another processor.  A processor may choose be not
+participate in a step; such a processor would be inactive on that
+step.  An active processor may activate by an inactive processor and
+direct it to a certain instruction by setting its program counter.
 
 In his formulation of the PRAM model Wyllie did not permit multiple
 processors to write into the same (global) memory cell.  Many
@@ -125,20 +125,23 @@ similar.
 
 Suppose that we are given an array of elements stored in global memory
 and wish to compute the sum of the elements.  We can write a PRAM
-program to find the sum.  Suppose that the array contains $n$ elements
-and we wish to use $n$ processors.  Let's assume for simplicity that
-$n$ is a power of $2$. We can proceed in rounds.  In the first round,
-each processors $P_i$, where $0 \le i n/2$ add up the pair of elements
-at position $2i$ and $2i+1$ and place in in position $i$.  In the
+program to find the sum.  Suppose that the array contains
+latexmath:[$n$] elements and we wish to use latexmath:[$n$]
+processors.  Let's assume for simplicity that $n$] is a power of
+latexmath:[$2$]. We can proceed in rounds.  In the first round, each
+processors latexmath:[$P_i$], where latexmath:[$0 \le i n/2$] add up
+the pair of elements at position latexmath:[$2i$] and
+latexmath:[$2i+1$] and place in in position latexmath:[$i$.  In the
 second round, we repeat the same computation but consider only the
-first $n/2$ of the elements and so on.  After $\lg{n}$ rounds, the sum
-is placed in the first position of the input array.  The drawing below
-illustrates this algorithm for an input of size $8$.
+first latexmath:[$n/2$] of the elements and so on.  After
+latexmath:[$\lg{n}$] rounds, the sum is placed in the first position
+of the input array.  The drawing below illustrates this algorithm for
+an input of size latexmath:[$8$].
 
 .Array sum in PRAM
 ====
 The drawing below illustrates the PRAM array sum algorithm for an
-array with $8$ elements. 
+array with latexmath:[$8$] elements. 
 
 image:jpgs-620H/pram-array-sum.jpg["Array sum with PRAM.",width="400pt",align="center"]
 ====
@@ -150,6 +153,7 @@ We can write the code for this algorithm as follows. In the code the
 local variable `i` denotes the id of the processor.  The computation
 starts by each processor executing this piece of code.
 
+.PRAM code for array sum
 [source,cpp]
 ----
 array_sum (A, n) = 
@@ -173,14 +177,9 @@ processor at the same step.  Similarly, no (global) memory cell is
 written my more than one processor at the same step.  This algorithm
 is thus a EREW PRAM algorithm.
 
-=== Work-Time Framework
-
-Since a PRAM program must specify the action that each processor must
-take at each step, it can be very tedious to use.  One alternative
-approach is the work-time framework.
 
 
-=== PRAM in Practice
+==== PRAM in Practice
 
 Several assumptions of the PRAM model make it unlikely that the human
 kind will ever be able to build an actual PRAM.
@@ -195,8 +194,9 @@ memory access.
 
 . Concurrent memory reads and writes: all known memory hardware can
 serve a constant number of reads and writes in the same time step but
-in a PRAM with $p$ processors, there can be $p$ concurrent reads from
-and writes into the same memory location.
+in a PRAM with latexmath:[$p$] processors, there can be
+latexmath:[$p$] concurrent reads from and writes into the same memory
+location.
 
 Another problem with the PRAM model is that the PRAM algorithms do not
 translate to practice well.
@@ -222,3 +222,59 @@ For these reasons, the value of a PRAM algorithm from a practical
 perspective is limited to the ideas of the algorithm.  Such ideas can
 still be valuable but usually new ideas are needed to implement PRAM
 algorithms in practice.
+
+=== Work-Time Framework
+
+Since a PRAM program must specify the action that each processor must
+take at each step, it can be very tedious to use. Parallel algorithms
+therefore are usually expressed in the *_work-time (WT) framework_*.
+In this approach, we describe the parallel algorithm in terms of a
+number of steps, where each step may contain any number of operations
+that can all be executed in parallel.  To express such a step, all we
+need is a "parallel for" construct, written `pfor`.  Once the
+algorithm is described at this high level, we then use a general
+scheduling principle to map the WT algorithm to a PRAM algorithm.  The
+basic idea is to distribute the total work in each step among the
+available processors as evenly as possible.  Since this second
+transformation step is usually routine, and is often omitted.
+
+
+.Array sum in work-time framework
+====
+
+The array-sum algorithm can be written as follows.
+
+[source,cpp]
+----
+array_sum (A, n) = 
+  for j = 1 to lg n  {
+    pfor i = 0 to n/(2^j) {
+      A[i] = A[2i] +  A[2i+1]
+    }
+  }
+----
+
+Having specified the algorithm, we can then derive a PRAM algorithm by
+mapping each parallel step to a sequence of PRAM steps by distributing
+the work among the available processors.  For example, if we wish to
+use latexmath:[$n$] processors, then we can schedule `pfor` by
+assigning each iteration to the first latexmath:[$\frac{n}{2^j}$]
+processor.  Doing so yields the PRAM algorithm described earlier in
+the section.
+  
+====
+
+==== Work-Time Framework versus Work-Span Model
+
+In this course, we primarily used the work-span model instead of the
+work-time framework.  The two are similar but the work-span model is
+somewhat more expressive: we don't have to use just parallel for's.
+We can use any number of available parallelism constructs such as
+fork-join, async-finish, and futures.  In other words, the work-span
+model is more amenable as a language-level cost model.  In the
+work-span model we also do not care to specify the PRAM algorithm at
+all, because we expect that the algorithm will be executed with a
+scheduler that is able to keep the processors busy without us
+specifying how to do so.  As we have seen, this is a realistic
+assumption, because there are scheduling algorithms such as work
+stealing that can schedule computations efficiently.
