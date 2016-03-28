@@ -1,0 +1,124 @@
+[[ch:futures]]
+== Chapter: Structured Parallelism with Futures
+
+Futures were first used for expressing parallelism in the context of
+functional languages, because they permit a parallel computation to be
+a first-class value.  Such a value can be treated just like any other
+value in the language.  For example, it can be placed into a data
+structure, passed to other functions as arguments.  Another crucial
+difference between futures and fork-join and async-finish parallelism
+is synchronization: in the latter synchronization is guided by
+"control dependencies", which are made apparent by the code.  By
+inspecting the code we can identify the synchronization points for a
+piece of parallel computation, which correspond to `join` and
+`finish`.  In futures, synchronization can be more complex because it
+is based on "data dependencies."  When a parallel computation is
+needed, the programmer can `force` the computation to be completed.
+If the computation has not completed, then it will be executed to
+completion.  If it has completed, its result will be used. 
+
+
+
+=== Parallel Fibonacci via Futures
+
+Recall that the latexmath:[$n^{th}$] Fibonnacci number is defined
+by the recurrence relation
+
+[latexmath]
+++++
+$$
+\begin{array}{lcl}
+F(n) & = & F(n-1) + F(n-2)
+\end{array}
+$$
+++++
+
+with base cases
+
+[latexmath]
+++++
+$$
+F(0) = 0, \, F(1) = 1
+$$
+++++
+
+When using futures, we can parallelize essentially any computation,
+even if it may depend on other parallel computations.  Recall that
+when using fork-join and async-finish, we have had to ensure that the
+parallel computations being spawned are indeed independent.  To
+indicate that parallel computations, we use `future` construct, which
+starts a parallel computation that will complete sometime in the
+future.  This constructs returns the future as a value, which we can
+then use just like any other piece of data.  When the time comes to
+use the value of the future, we demand its completion by using the
+`force` construct.
+
+[source, {cpp}]
+----
+long fib_par(long n) {
+  if (n < 2) {
+     return n;
+  } else {
+    long future a, b;
+    a = future [&] fib_par(n-1);
+    b = future [&] fib_par(n-2);
+    return (force a) +  (force b);
+  }
+}
+----
+
+=== Incrementing an array, in parallel
+
+Recall our example for mapping an array to another by incrementing
+each element by one.  We can write the code for a function `map_incr`
+that performs this computation serially.
+
+[source,{cpp}]
+----
+void map_incr(const long* source, long* dest, long n) {
+  for (long i = 0; i < n; i++)
+    dest[i] = source[i] + 1;
+}
+----
+
+Using async-finish, we can write to code parallel array increment by
+using only a single `finish` block and `async`' ing all the parallel
+computations inside that `finish`.
+
+[source,{cpp}]
+----
+void map_incr_rec_aux (const long* source, long* dest, long lo, long hi) {
+  long n = hi - lo;
+  if (n == 0) {
+    // do nothing
+  } else if (n == 1) {
+    dest[lo] = source[lo] + 1;
+  } else {
+    long mid = (lo + hi) / 2;
+    async ([&] {
+      map_incr_rec_aux(source, dest, lo, mid);
+    };
+    async [&] {
+      map_incr_rec_aux(source, dest, mid, hi);
+    };
+  }
+}
+
+
+void map_incr_rec (const long* source, long* dest, long lo, long hi) {
+
+  finish ([&] { 
+    map_inc_rec_aux (source, dest, lo, hi));
+  };
+} 
+
+----
+
+It is helpful to compare this to fork-join, where we had to
+synchronize parallel branches in pairs.  Here, we are able to
+synchronize them all at a single point.
+
+
+Nevertheless, this change does not alter the work and span of the
+computation, which remain as latexmath:[O(n)] work and
+latexmath:[$O(\log{n})$] span.

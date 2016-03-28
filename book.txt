@@ -27,6 +27,8 @@ include::fork-join.txt[]
 
 include::async-finish.txt[]
 
+include::futures.txt[]
+
 include::mutual-exclusion.txt[]
 
 include::benchmarking.txt[]

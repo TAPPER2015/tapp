@@ -1,5 +1,5 @@
 [[ch:async-finish]]
-== Chapter: Async-finish parallelism
+== Chapter: Structured Parallelism with Async-Finish
 
 The "async-finish" approach offers another mechanism for structured
 parallelism.  It is similar to fork-join parallelism but is more
@@ -125,6 +125,30 @@ synchronize parallel branches in pairs.  Here, we are able to
 synchronize them all at a single point.
 
 
-Nevertheless, this change does not alter the work and span of the
-computation, which remain as latexmath:[O(n)] work and
-latexmath:[$O(\log{n})$] span.
+.Dag for parallel increment on an array of latexmath:[$8$] using async-finish: Each vertex corresponds a call to `map_inc_rec_aux` excluding the `async`  or the continuation of `async`, which is empty, and is annotated with the interval of the input array that it operates on (its argument).
+[[fig:parallel-inc-dag-async-finish]]
+image::jpgs-620H/inc-parallel-dag-async-finish.jpg["Dag for parallel increment using async-finish",width="500pt",align="center"]
+
+<<fig:parallel-inc-dag-async-finish, The Figure above>> illustrates
+the dag for an execution of `map_incr_rec`.  Each invocation of this
+function corresponds to a thread labeled by "M".  The threads labeled
+by latexmath:[$M\lbrack i,j \rbrack $] corresponds to the part of the
+invocation of `map_incr_rec_aux` with arguments `lo` and `hi` set to
+latexmath:[$i$] and latexmath:[$j$] respectively.  Note that all
+threads synchronize at the single finish node.
+
+Based on this dag, we can create another dag, where each thread is
+replaced by the sequence of instructions that it represents.  This
+would give us a picture similar to the
+<<multithreading::general-threads, dag we drew before>> for general
+multithreaded programs.  Such a dag representation, where we represent
+each instruction by a vertex, gives us a direct way to calculate the
+work and span of the computation.  If we want to calculate work and
+span on the dag of threads, we can label each vertex with a weight
+that corresponds to the number of instruction in that thread.
+
+Using async-finish does not alter the asymptotic work and span of the
+computation compared to fork-join, which remain as latexmath:[O(n)]
+work and latexmath:[$O(\log{n})$] span.  In practice, however, the
+async-finish version creates nearly much fewer threads (by about a
+factor of two),  which can make a significant difference.

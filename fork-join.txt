@@ -404,7 +404,7 @@ of execution up and including the `fork2` or all of the function if
 this is a base case.  The second corresponds to the "continuation" of
 the `fork2`, which is in this case includes no computation.
 
-Based on this dag, we can create another dag, wherea each thread is
+Based on this dag, we can create another dag, where each thread is
 replaced by the sequence of instructions that it represents.  This
 would give us a picture similar to the
 <<multithreading::general-threads, dag we drew before>> for general
