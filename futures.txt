@@ -18,6 +18,20 @@ If the computation has not completed, then it will be executed to
 completion.  If it has completed, its result will be used. 
 
 
+With futures, we can parallelize essentially any piece of computation,
+even if it depends on other parallel computations.  Recall that when
+using fork-join and async-finish, we have had to ensure that the
+parallel computations being spawned are indeed independent.  This is
+not necessary with futures.  To indicate a parallel computations, we
+shall use the `future` construct, which takes an expression as an
+argument and starts a parallel computation that will compute the value
+of that expression sometime in the future.  The construct returns a
+"future" value representing the computation, which can be used just
+like any other value of the language.  When the time comes to use the
+value of the future, we demand its completion by using the `force`
+construct.
+
+
 
 === Parallel Fibonacci via Futures
 
@@ -42,16 +56,7 @@ F(0) = 0, \, F(1) = 1
 $$
 ++++
 
-When using futures, we can parallelize essentially any computation,
-even if it may depend on other parallel computations.  Recall that
-when using fork-join and async-finish, we have had to ensure that the
-parallel computations being spawned are indeed independent.  To
-indicate that parallel computations, we use `future` construct, which
-starts a parallel computation that will complete sometime in the
-future.  This constructs returns the future as a value, which we can
-then use just like any other piece of data.  When the time comes to
-use the value of the future, we demand its completion by using the
-`force` construct.
+We can write a parallel version of Fibonacci using futures as follows.
 
 [source, {cpp}]
 ----
@@ -67,6 +72,16 @@ long fib_par(long n) {
 }
 ----
 
+Note that this code is very similar to the fork-join version.  In
+fact, we can directly map any use of fork-join parallelism to futures.
+
+Much in the same way, we can represent fork-join and async-finish
+computations with a dag of threads, we can also represent future-based
+computations with a dag.  The idea is to spawn a subdag for each
+`future` and for each `force` add an edge from the terminus of that
+subdag to the vertex that corresponds to the `force`.
+
+
 === Incrementing an array, in parallel
 
 Recall our example for mapping an array to another by incrementing
@@ -81,44 +96,137 @@ void map_incr(const long* source, long* dest, long n) {
 }
 ----
 
-Using async-finish, we can write to code parallel array increment by
-using only a single `finish` block and `async`' ing all the parallel
-computations inside that `finish`.
+We can write a parallel version of this code using futures by
+following the same approach that we did for Fibonacci.  But let's
+consider something slightly different.  Suppose that the array is
+given to us an array of future values.   We can write a serial version
+of `map_incr` for such an array as follows.
+
 
 [source,{cpp}]
 ----
-void map_incr_rec_aux (const long* source, long* dest, long lo, long hi) {
-  long n = hi - lo;
-  if (n == 0) {
-    // do nothing
-  } else if (n == 1) {
-    dest[lo] = source[lo] + 1;
-  } else {
-    long mid = (lo + hi) / 2;
-    async ([&] {
-      map_incr_rec_aux(source, dest, lo, mid);
-    };
-    async [&] {
-      map_incr_rec_aux(source, dest, mid, hi);
-    };
-  }
+void future_map_incr(const long^* source, long^* dest, long n) {
+  for (long i = 0; i < n; i++)
+    dest[i] = future [&] {force (source[i]) + 1};
 }
-
-
-void map_incr_rec (const long* source, long* dest, long lo, long hi) {
-
-  finish ([&] { 
-    map_inc_rec_aux (source, dest, lo, hi));
-  };
-} 
-
 ----
 
-It is helpful to compare this to fork-join, where we had to
-synchronize parallel branches in pairs.  Here, we are able to
-synchronize them all at a single point.
+The function `future_map_incr` takes an array of futures of long,
+written `long^` and returns an array of the same type.  To compute
+each value of the array, the function `force`s the corresponding element
+of the source inside a `future`.
 
 
-Nevertheless, this change does not alter the work and span of the
-computation, which remain as latexmath:[O(n)] work and
-latexmath:[$O(\log{n})$] span.
+
+=== Futures and Pipelining
+
+Futures enable expressing parallelism at a very fine level of
+granularity, at the level of individual data dependencies.  This in
+turn allows parallelizing computations at a similarly finer grain,
+enabling a technique called pipelining.  The idea behind
+*_pipelining_* is to partition a task $T$ into a sequence of smaller
+subtasks $T_0, \ldots, T_k$ to be performed in that order and overlap
+computation of multiple tasks by starting another instance of the same
+kind of task as soon as the first  subtask completes.  As a result, if
+we have a collection of the same kinds of tasks that can be decomposed
+in the same way, we can have multiple of them "in flight" without
+having to wait for one to complete.  
+
+When computing sequentially, pipelining does not help performance
+because we can perform one computation at each time step.  But when
+on parallel hardware, we can keep multiple processors busy by
+pipelining.
+
+Suppose as an example, we have a sequence of tasks latexmath:[$T^0, T^1, T^2,
+T^3, T^4, T^5$ that we wish to compute.  Suppose furthermore that
+these task depend on each other, that is a later task use the results
+of an earlier task.  Thus it might seem that there is no parallelism
+that we can exploit.  Upon further inspection, however, we may realize
+that we can partition each task latexmath:[$T_i$] into subtasks
+latexmath:[$T_0^i, T_1^i, T_2^i, T_3^i, T_4^i, T_5^i$] such that a
+the subtask latexmath:[$j$] of task latexmath:[$i$] is used by 
+the subtask latexmath:[$j+1$] of task latexmath:[$i+1$].  We can then
+execute these tasks in parallel as shows below.  Thus in the "steady
+state" where we have a large supply of these tasks, we can increase
+performance by a factor latexmath:[$5$], the number of subtasks that
+we are able to partition each task into. 
+
+
+[width="100%",cols="<^,^,^,^,^,^,<",options="header"]
+|=========
+| Processor |  Step 0  | Step 1   | Step 2 | Step 3 | Step 4 | Step 5
+| latexmath:[$P_0$] | latexmath:[$T_0^0$] | latexmath:[$T_1^0$] | latexmath:[$T_2^0$] | latexmath:[$T_3^0$] | latexmath:[$T_4^0$] |     latexmath:[$T_5^0$]     
+| latexmath:[$P_1$] | | latexmath:[$T_0^1$] | latexmath:[$T_1^1$] | latexmath:[$T_2^1$] | latexmath:[$T_3^1$] | latexmath:[$T_4^1$] 
+| latexmath:[$P_1$] | | | latexmath:[$T_0^2$] | latexmath:[$T_1^2$] | latexmath:[$T_2^2$] | latexmath:[$T_3^2$] 
+| latexmath:[$P_3$] | | | | latexmath:[$T_0^3$] | latexmath:[$T_1^3$] | latexmath:[$T_2^3$] 
+| latexmath:[$P_4$] | | | | | latexmath:[$T_0^4$] | latexmath:[$T_1^4$]  
+| latexmath:[$P_5$] | | | | | | latexmath:[$T_0^5$] 
+|=========
+
+This idea of pipelining turns out to be quite important in some
+algorithms, leading sometimes to asymptotic improvements in run-time.
+It can, however, be painful to design the algorithm to take advantage
+of pipelining, except with futures.  Futures make it trivial to
+express pipelined algorithms, by allowing us to express data
+dependencies and ignoring how exactly the individual computations may
+need to be specified.  For example, in our hypothetical example, all
+we have to do is create a future for each sub-task, and force the
+relevant subtask as needed, leaving it to the scheduler to take
+advantage of the parallelism made available.
+
+
+As a more concrete example, let's go back to our array increment
+function and generalize to array map, and assume that we have another
+function `mk_array` that populates the contents of the array.
+
+[source,{cpp}]
+----
+
+long f (long i) {
+  ...
+}
+
+long g (long i) {
+  ...
+}
+
+void mk_array (long^* source, long n) {
+  for (long i = 0; i < n; i++)
+    source[i] = future [&] { f(i)};
+}
+
+void future_map_g (const long^* source, long^* dest, long n) {
+  for (long i = 0; i < n; i++)
+    dest[i] = future [&] {g (force (source[i]))};
+}
+
+main (long n) {
+  long^* source = alloc (long, n);
+  long^* dest = alloc (long, n);
+  mk_array (source, n)
+  future_map_g (source, dest, n) 
+
+}
+----
+
+In this example, the latexmath:[$i^{th}$] element of the destination
+array depends only on the latexmath:[$i^{th}$] element of the source,
+thus as soon as that element is available, the function `g` might be
+invoked.  This allows us to pipeline the execution of the functions
+`mk_array` and `future_map_g`.
+
+While we shall not discuss this in detail, it is possible to improve
+the asymptotic complexity of certain algorithms by using futures and
+pipelining.
+
+An important research question regarding futures is their scheduling.
+One challenge is primarily contention.  When using futures, it is easy
+to create dag vertices, whose out-degree is non-constant.  The
+question is how can such dag nodes can be represented to make sure
+that they don't create a bottleneck, while also allowing the
+small-degree instance, which is the common case, to proceed
+efficiently. Another challenge is data locality.  Async-finish and
+fork-join programs can be scheduled to exhibit good data locality, for
+example, using work stealing.  With futures, this is more tricky.  It
+can be shown for example, that even a single scheduling action can
+cause a large negative impact on the data locality of the computation.
