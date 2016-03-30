@@ -1,0 +1,1207 @@
+== Chapter: Graph processing
+
+In just the past few years, a great deal of interest has grown for
+frameworks that can process very large graphs. Interest comes from a
+diverse collection of fields. To name a few: physicists use graph
+frameworks to simulate emergent properties from large networks of
+particles; companies such as Google mine the web for the purpose of
+web search; social scientists test theories regarding the origins of
+social trends.
+
+In response, many graph-processing frameworks have been implemented
+both in academia and in the industry. Such frameworks offer to client
+programs a particular application programming interface. The purpose
+of the interface is to give the client programmer a high-level view of
+the basic operations of graph processing. Internally, at a lower level
+of abstraction, the framework provides key algorithms to perform basic
+functions, such as one or more functions that "drive" the traversal of
+a given graph.
+
+The exact interface and the underlying algorithms vary from one
+graph-processing framework to another. One commonality among the
+frameworks is that it is crucial to harness parallelism, because
+interesting graphs are often huge, making it practically infeasible to
+perform sequentially interesting computations.
+
+//////
+
+One dimension on which the frameworks differ is whether or not the
+framework assumes shared or distributed memory. In this chapter, we
+focus on shared memory for two reasons. First, distributed memory is
+out of the scope of this course. Second, nowadays, many interesting
+graphs fit comfortably in the main memory of a well-provisioned
+personal computer.
+
+//////
+
+=== Graph representation
+
+
+We will use an adjacency lists representation based on *_compressed
+arrays_* to represent directed graphs.  In this representation, a
+graph is a collection of unordered neighbor lists. Each vertex in the
+graph latexmath:[$G = (V, E)$] is assigned an identifier latexmath:[$v
+\in \{ 0, \ldots, n-1 \}$], where latexmath:[$n = |V|$] is the number
+of vertices in the graph. For each vertex latexmath:[$v$] in the
+graph, the adjacency list stores one neighbor list, `out_edges_of[v]`,
+that describes the set of out-neighbors of `v`.  The adjacency lists
+of the vertices are stored is a single array, which  the
+`out_edges_of` array references as shows below.
+
+
+
+////
+For our purposes, it suffices to store in `out_edges_of[v]` only lists
+of outgoing edges, although sometimes it is useful to store just
+incoming edges, and other times useful to store both.
+////
+
+
+
+[[quicksort-speedup, Figure 11]]
+.A graph (top) and its compressed-array representation (bottom).
+*****
+image::jpgs-620H/dir-graph-1.jpg["An example di-graph.",width="200pt",align="center"]
+image::jpgs-620H/compressed-array.jpg["The compressed-array representation.",width="250pt",align="center"]
+****
+
+The compressed-array representation supports efficiently several
+operations that are key for parallel graph search.  For example, we
+can determine the out-neighbors af a given vertex with constant work.
+Similarly, we can determine the out-degree of a given vertex with
+constant work.
+
+.Exercise
+*********
+
+Give a constant-work algorithm for computing the out-degree of a vertex.
+
+*********
+
+
+Another important concern in representing graphs is space use.  Space
+use is a major concern because graphs can have tens of billions of
+edges or more. The Facebook social network graph (including just the
+network and no metadata) uses 100 billion edges, for example, and as
+such could fit snugly into a machine with 2TB of memory. Such a large
+graph is a greater than the capacity of the RAM available on current
+personal computers. But it is not that far off, and there are many
+other interesting graphs that easily fit into just a few
+gigabytes. Our adjacency list consumes a total of latexmath:[$n + m$]
+vertex-id cells in memory, where latexmath:[$n = |V|$] and
+latexmath:[$m = |E|$]. For simplicity, we always use 64 bits to
+represent vertex identifiers but note that a practical library would
+support 32 bit representations as well.  Although the format that we
+use is reasonably space efficient for storing large graphs, we should
+point out that there are other representations that may offer more
+compact graphs. In fact, graph-compression techniques are an active
+area of research at present.
+
+We implemented the adjacency-list representation based on compressed
+arrays with a class called `adjlist`.
+
+[source,{cpp}]
+----
+using vtxid_type = value_type;
+using neighbor_list = const value_type*;
+
+class adjlist {
+public:
+  long get_nb_vertices() const;
+  long get_nb_edges() const;  
+  long get_out_degree_of(vtxid_type v) const;
+  neighbor_list get_out_edges_of(vtxid_type v) const;
+};
+----
+
+.Graph creation
+==========================
+
+Sometimes it is useful for testing and debugging purposes to create a
+graph from a handwritten example. For this purpose, we define a type
+to express an edge. The type is a pair type where the first component
+of the pair represents the source and the second the destination
+vertex, respectively.
+
+[source,{cpp}]
+----
+using edge_type = std::pair<vtxid_type, vtxid_type>;
+----
+
+In order to create an edge, we use the following function, which takes
+a source and a destination vertex and returns the corresponding edge.
+
+[source,{cpp}]
+----
+edge_type mk_edge(vtxid_type source, vtxid_type dest) {
+  return std::make_pair(source, dest);
+}
+----
+
+Now, specifying a (small) graph in textual format is as easy as
+specifying an edge list. Moreover, getting a textual representation of
+the graph is as easy as printing the graph by `cout`.
+
+[source,{cpp}]
+----
+adjlist graph = { mk_edge(0, 1), mk_edge(0, 3), mk_edge(5, 1), mk_edge(3, 0) };
+std::cout << graph << std::endl;
+----
+
+Output:
+
+----
+digraph {
+0 -> 1;
+0 -> 3;
+3 -> 0;
+5 -> 1;
+}
+----
+
+NOTE: The output above is an instance of the "dot" format. This format
+is used by a well-known graph-visualization tool called
+http://www.graphviz.org/[graphviz]. The diagram below shows the
+visualization of our example graph that is output by the graphviz
+tool.  You can easily generate such visualizations for your graphs by
+using online tools, such is Click
+http://sandbox.kidstrythisathome.com/erdos/[this one].
+
+image::jpgs-620H/sample-graph.jpg["Sample graph.",width="100pt",align="center"]
+
+==========================
+
+.Adjacency-list interface
+==========================
+
+[source,{cpp}]
+----
+adjlist graph = { mk_edge(0, 1), mk_edge(0, 3), mk_edge(5, 1), mk_edge(3, 0),
+                  mk_edge(3, 5), mk_edge(3, 2), mk_edge(5, 3) };
+std::cout << "nb_vertices = " << graph.get_nb_vertices() << std::endl;
+std::cout << "nb_edges = " << graph.get_nb_edges() << std::endl;
+std::cout << "neighbors of vertex 3:" << std::endl;
+neighbor_list neighbors_of_3 = graph.get_out_edges_of(3);
+for (long i = 0; i < graph.get_out_degree_of(3); i++)
+  std::cout << " " << neighbors_of_3[i];
+std::cout << std::endl;
+----
+
+Output:
+
+----
+nb_vertices = 6
+nb_edges = 7
+neighbors of vertex 3:
+ 0 5 2
+----
+
+==========================
+
+Next, we are going to study a version of breadth-first search that is
+useful for searching in large in-memory graphs in parallel. After
+seeing the basic pattern of BFS, we are going to generalize a little
+to consider general-purpose graph-traversal techniques that are useful
+for implementing a large class of parallel graph algorithms.
+
+=== Breadth-first search
+
+
+The breadth-first algorithm is a particular graph-search algorithm
+that can be applied to solve a variety of problems such as finding all
+the vertices reachable from a given vertex, finding if an undirected
+graph is connected, finding (in an unweighted graph) the shortest path
+from a given vertex to all other vertices, determining if a graph is
+bipartite, bounding the diameter of an undirected graph, partitioning
+graphs, and as a subroutine for finding the maximum flow in a flow
+network (using Ford-Fulkerson's algorithm).  As with the other
+graph searches, BFS can be applied to both directed and undirected
+graphs.
+
+The idea of *_breadth first search_*, or *_BFS_* for short, is to
+start at a _source_ vertex latexmath:[$s$] and explore the graph
+outward in all directions level by level, first visiting all vertices
+that are the (out-)neighbors of latexmath:[$s$] (i.e. have distance 1
+from latexmath:[$s$]), then vertices that have distance two from
+latexmath:[$s$], then distance three, etc.  More precisely, suppose
+that we are given a graph latexmath:[$G$] and a source
+latexmath:[$s$].  We define the *_level_* of a vertex latexmath:[$v$]
+as the shortest distance from latexmath:[$s$] to latexmath:[$v$], that
+is the number of edges on the shortest path connecting latexmath:[$s$]
+to latexmath:[$v$]. 
+
+
+.BFS Levels
+===========
+
+A graph, where each vertex is labeled with its level.
+
+image::jpgs-620H/directed-graph-levels.jpg["A graph and its levels.",width="300pt",align="center"]
+				   
+===========
+
+
+Sequential BFS
+^^^^^^^^^^^^^^
+
+Many variations of BFS have been proposed over the years. The one that
+may be most widely known is the classic sequential BFS that uses a FIFO
+queue to buffer vertices that are waiting to be visited. The
+FIFO-based approach is a poor approach for parallelization because
+accesses to the FIFO queue are by definition serialized.
+
+Parallel BFS
+^^^^^^^^^^^^
+
+Our goal is to design and implement a parallel algorithm for BFS that
+is observably work efficient and has plenty of parallelism.  To this
+end, let's consider an algorithm that traverses the graph in level
+order.  We can implement such a level-order traversal by maintaining a
+*_frontier_* as a set of vertices that have not yet been visited but
+will be visited next, and visiting the vertices in the frontier (which
+represents all the vertices is a level) all together in parallel.  The
+pseudo-code for this is shown below.
+
+.Set-based pseudocode for parallel BFS
+-------------
+frontier = { source }
+visited = {}
+while frontier not empty 
+  start level
+    next = {}
+    foreach vertex v in current frontier
+      visit v  
+    visited = visited set-union frontier
+
+    foreach v in frontier
+      next = next set-union (neighbors of v)
+    frontier = next set-difference visited
+  end level
+-----------
+
+
+
+.Exercise
+*********
+
+Convince yourself that this algorithm does indeed perform a BFS by
+performing a level-by-level traversal.
+
+*********
+ 
+Assuming that we have a parallel set data structure, let us
+parallelize this algorithm.  First, note that we can visit all the
+vertices in the frontier in parallel.  That is, we can parallelize the
+first `foreach` loop.  Second, we can also compute the next set
+(frontier) in parallel by performing a reduce with the set-union
+operation, and then by taking a set-difference operation.
+
+Our goal is to implement an observably work-efficient version of this
+algorithm on a hardware-shared memory parallel machine such as a
+modern multicore computer.  The key challenge in doing so will be the
+elimination of the set operations performed for computing the next
+frontier.  Apart from maintaining a visited set to prevent a vertex
+from being visited more than once, the serial algorithm does not have
+to perform these operations.
+
+
+////
+//In addition, it turns out that there are many different ways to
+//implement the BFS algorithm by considering two factors:
+
+//. The specific set data structure that we wish to use.
+
+//. Whether we wish to use atomic read-modify-write operations such as
+compare-and-swap operations available in modern multicore computers
+
+////
+
+We will use atomic read-modify-write operations to achieve observable
+work efficiency and competitiveness with the serial BFS.
+Specifically. we shall use the compare-and-swap operation.  This will
+also allow us to represent the frontier set with arrays.  To achieve
+observable work efficiency, we will change the notion of the frontier
+slightly.  Instead of holding the vertices that we are will visit
+next, the frontier will hold the vertices we just visited.  At each
+level, we will visit the neighbors of the vertices in the frontier,
+but only if they have not yet been visited. This guard is necessary,
+because two vertices in the frontier can both have a vertex as their
+neighbor. In fact, without such a guard, the algorithm can may fail to
+terminate if the graph has a cycle.  After we visited all the
+neighbors of the vertices in the frontier at this level, we assign the
+frontier to be the vertices visited.  The pseudocode for this
+algorithm is shown below.
+
+
+.Pseudocode for parallel BFS
+-------------------
+visit source
+frontier = { source }
+while frontier not empty 
+  start level
+    foreach vertex v in current frontier    
+      foreach neighbor u of vertex
+        if u is not visited
+          visit u
+    frontier = vertices visited at this level 
+   end level
+-------------------
+
+
+Let's turn our attention to parallelism. From the pseudocode, we see
+that there are at least two clear opportunities for parallelism. The
+first is the foreach loop that processes the frontier and the second
+the foreach loop that processes the neighbors of the vertex that is
+currently being visited. These two loops should expose a lot of
+parallelism, at least for certain classes of graphs.  The outer loop
+exposes a lot of parallelism when the frontier gets to be large. The
+inner loop exposes a lot of parallelism when the traversal reaches a
+vertex that has a high out degree.
+
+Parallelizing the two foreach loops requires some extra care, because
+parallelizing in a naive fashion would enable a race condition. To see
+why, we need to consider how an implementation of BFS keeps track of
+which vertices have been visited already and which have not. Suppose
+that we use an array of booleans `visited[v]` of size
+latexmath:[$n$] that is keyed by the vertex identifier. If
+`visited[v] == true`, then vertex
+`v` has been visited already and has not
+otherwise. Suppose now that two processors, namely latexmath:[$A$] and
+latexmath:[$B$], concurrently attempt to gain access to the same
+vertex `v` (via two different neighbors of
+`v`). If latexmath:[$A$] and latexmath:[$B$] both read
+`visited[v]` at the same time, then both consider that
+they have gained access to `v`. Both processors then mark
+`v` as visited and then proceed to visit the neighbors of
+`v`. As such, `v` will be visited twice and
+subsequently have its outgoing neighbors processed twice.
+
+Consider now the implication: owing to the race condition, such an
+implementation of parallel BFS cannot in general guarantee that each
+reachable vertex is visited once and only once. Of course, the race
+does not necessarily happen every time a vertex is visited. But even
+if it happens only rarely, there is a real chance that a huge, in fact
+unbounded, amount of redundant work is performed by the BFS: when the
+same vertex is visited twice, all of its neighbors are processed
+twice. The amount of redundant work that is performed is high when the
+outdegree of the vertex is high. In other words, a racy parallel BFS
+is not even an asymptotically work-efficient BFS due to the unbounded
+amount of redundant work that it could perform in any given round.
+
+
+
+.Exercise
+*********
+
+Clearly, the race conditions on the visited array that we described
+above can cause BFS to visit any given vertex twice.
+
+- Could such race conditions cause the BFS to visit some vertex
+  that is not reachable? Why or why not?
+
+- Could such race conditions cause the BFS to not visit some vertex
+  that is reachable? Why or why not?
+
+- Could such race conditions trigger infinite loops? Why or why not?
+
+*********
+
+
+The issues relating to the race conditon leads us to consider
+lightweight atomic memory.  We can use lightweight atomic memory, as
+described in this <<ch:race-conditions, chapter>> to both eliminate
+race conditions and avoid having to sacrifice a lot of
+performance. The basic idea is to guard each cell in our "visited"
+array by an atomic type.
+
+.Accessing the contents of atomic memory cells
+==========================
+Access to the contents of any given cell is achieved by the `load()`
+and `store()` methods.
+
+[source,{cpp}]
+----
+const long n = 3;
+std::atomic<bool> visited[n];
+long v = 2;
+visited[v].store(false);
+std::cout << visited[v].load() << std::endl;
+visited[v].store(true);
+std::cout << visited[v].load() << std::endl;
+----
+
+Output:
+
+----
+0
+1
+----
+
+==========================
+
+The key operation that enables us to eliminate the race condition is
+the *compare and exchange* operation.  This operation performs the
+following steps, atomically:
+
+. Read the contents of the target cell in the visited array.
+. If the contents is false (i.e., equals the contents of `orig`),
+then write `true` into the cell and return `true`.
+. Otherwise, just return `false`.
+
+[source,{cpp}]
+----
+const long n = 3;
+std::atomic<bool> visited[n];
+long v = 2;
+visited[v].store(false);
+bool orig = false;
+bool was_successful = visited[v].compare_exchange_strong(orig, true);
+std::cout << "was_successful = " << was_successful << "; visited[v] = " << visited[v].load() << std::endl;
+bool orig2 = false;
+bool was_successful2 = visited[v].compare_exchange_strong(orig2, true);
+std::cout << "was_successful2 = " << was_successful2 << "; visited[v] = " << visited[v].load() << std::endl;
+----
+
+Output:
+
+----
+was_successful = 1; visited[v] = 1
+was_successful2 = 0; visited[v] = 1
+----
+
+==== Implementing parallel BFS
+
+
+So far, we have seen pseudocode that describes at a high level the
+idea behind the parallel BFS. We have seen that special care is
+required to eliminate problematic race conditions.  Let's now put
+these ideas together to complete and implementation.  The following
+function signature is the signature for our parallel BFS
+implementation. The function takes as parameters a graph and the
+identifier of a source vertex and returns an array of boolean flags.
+
+[source,{cpp}]
+----
+sparray bfs(const adjlist& graph, vtxid_type source);
+----
+
+The flags array is a length latexmath:[$|V|$] array that specifies the
+set of vertices in the graph which are reachable from the source
+vertex: a vertex with identifier `v` is reachable from the
+given source vertex if and only if there is a `true` value in the
+latexmath:[$v^{\mathrm{th}}$] position of the flags array that is
+returned by `bfs`.
+
+.Parallel BFS
+====
+
+[source,{cpp}]
+----
+adjlist graph = { mk_edge(0, 1), mk_edge(0, 3), mk_edge(5, 1), mk_edge(3, 0),
+                  mk_edge(3, 5), mk_edge(3, 2), mk_edge(5, 3),
+                  mk_edge(4, 6), mk_edge(6, 2) };
+std::cout << graph << std::endl;
+sparray reachable_from_0 = bfs(graph, 0);
+std::cout << "reachable from 0: " << reachable_from_0 << std::endl;
+sparray reachable_from_4 = bfs(graph, 4);
+std::cout << "reachable from 4: " << reachable_from_4 << std::endl;
+----
+
+The following diagram shows the structure represented by `graph`. 
+
+image::jpgs-620H/sample-graph-2.jpg["Graph from the example.",width="120pt",align="center"]
+
+Output:
+
+----
+digraph {
+0 -> 1;
+0 -> 3;
+3 -> 0;
+3 -> 5;
+3 -> 2;
+4 -> 6;
+5 -> 1;
+5 -> 3;
+6 -> 2;
+}
+reachable from 0: { 1, 1, 1, 1, 0, 1, 0 }
+reachable from 4: { 0, 0, 1, 0, 1, 0, 1 }
+----
+
+====
+
+
+To complete our implementation, let's assume that we have a function
+called `edge_map` with the following signature the "edge
+map" operation. This operation takes as parameters a graph, an array
+of atomic flag values, and a frontier and returns a new frontier.
+
+[source,{cpp}]
+----
+sparray edge_map(const adjlist& graph, std::atomic<bool>* visited, const sparray& in_frontier);
+----
+
+The main loop of BFS is shown below. The algorithm uses the edge-map
+function to advance level by level through the graph. The traversal
+stops when the frontier is empty.
+
+[source,{cpp}]
+----
+loop_controller_type bfs_init_contr("bfs_init");
+
+sparray bfs(const adjlist& graph, vtxid_type source) {
+  long n = graph.get_nb_vertices();
+  std::atomic<bool>* visited = my_malloc<std::atomic<bool>>(n);
+  parallel_for(bfs_init_contr, 0l, n, [&] (long i) {
+    visited[i].store(false);
+  });
+  visited[source].store(true);
+  sparray cur_frontier = { source };
+  while (cur_frontier.size() > 0)
+    cur_frontier = edge_map(graph, visited, cur_frontier);
+  sparray result = tabulate([&] (value_type i) { return visited[i].load(); }, n);
+  free(visited);
+  return result;
+}
+----
+
+One minor technical complication relates to the result value: our
+algorithm performs extra work to copy out the values from the visited
+array. Although it could be avoided, we choose to copy out the values
+because it is more convenient for us to program with ordinary
+`sparray`'s.  Here is an example describing the behavior of the
+`edge_map` function.
+
+
+
+.A run of `edge_map`
+====
+
+[source,{cpp}]
+----
+adjlist graph = // same graph as shown in the previous example
+const long n = graph.get_nb_vertices();
+std::atomic<bool> visited[n];
+for (long i = 0; i < n; i++)
+  visited[i] = false;
+visited[0].store(true);
+visited[1].store(true);
+visited[3].store(true);
+sparray in_frontier = { 3 };
+sparray out_frontier = edge_map(graph, visited, in_frontier);
+std::cout << out_frontier << std::endl;
+sparray out_frontier2 = edge_map(graph, visited, out_frontier);
+std::cout << out_frontier2 << std::endl;
+----
+
+Output:
+
+----
+{ 5, 2 }
+{  }
+----
+
+====
+
+From the perspective of BFS, the edge-map function is the function
+that advances one level ahead in the level-by-level traversal of the
+graph. More concretely, this function takes as argument the frontier
+at level latexmath:[$i$] in the BFS traversal and returns the frontier
+at level latexmath:[$i+1$].
+
+
+To implement `edge_map`, we shall use the following sentinel value to
+represent empty cells in sparse arrays of vertex identifiers.
+
+[source,{cpp}]
+----
+const vtxid_type not_a_vertexid = -1l;
+----
+
+.Sparse-array representation of a set of vertex identifiers
+====
+
+The following array represents a set of three valid vertex
+identifiers, with two positions in the array being empty.
+
+[source,{cpp}]
+----
+{ 3, not_a_vertexid, 0, 1, not_a_vertexid }
+----
+
+====
+
+Let us define two helper functions. The first one takes a sparse array
+of vertex identifiers and copies out the valid vertex identifiers.
+
+[source,{cpp}]
+----
+sparray just_vertexids(const sparray& vs) {
+  return filter([&] (vtxid_type v) { return v != not_a_vertexid; }, vs);
+}
+----
+
+The other function takes a graph and an array of vertex identifiers
+and returns the array of the degrees of the vertex identifiers.
+
+[source,{cpp}]
+----
+sparray get_out_degrees_of(const adjlist& graph, const sparray& vs) {
+  return map([&] (vtxid_type v) { return graph.get_out_degree_of(v); }, vs);
+}
+----
+
+At a high level, our solution is the following. First, we construct a
+sparse-array representation of the set of vertex ids that are to be
+returned by the edge map. Second, we construct a compact
+representation of the sparse the array and return the compacted result
+array. Aside from this sparse-array detail, the algorithm implemented
+here corresponds exactly to the high level description that we
+presented in the previous section. That is, the outer loop processes
+the vertex ids from the frontier of the previous level and the inner
+loop processes the neighbors of each vertex in the frontier of the
+previous level, adding newly visited neighbors to the result set.
+
+[source,{cpp}]
+----
+loop_controller_type process_out_edges_contr("process_out_edges");
+loop_controller_type edge_map_contr("edge_map");
+
+sparray edge_map(const adjlist& graph, std::atomic<bool>* visited, const sparray& in_frontier) {
+  // temporarily removed.
+}
+----
+
+The complexity function used by the outer loop in the edge map is
+interesting because the complexity function treats the vertices in the
+frontier as weighted items. In particular, each vertex is weighted by
+its out degree in the graph. The reason that we use such weighting is
+because the amount of work involved in processing that vertex is
+proportional to its out degree. We cannot treat the out degree as a
+constant, unfortunately, because the out degree of any given vertex is
+unbounded, in general. As such, it should be clear why we need to
+account for the out degrees explicitly in the complexity function of
+the outer loop.
+
+.Question
+*********
+
+What changes you need to make to BFS to have BFS annotate each vertex
+`v` by the length of the shortest path between
+`v` and the source vertex?
+
+*********
+
+Performance analysis
+^^^^^^^^^^^^^^^^^^^^
+
+Our parallel BFS is asymptotically work efficient: the BFS takes work
+latexmath:[$O(n + m)$]. To establish this bound, we need to assume
+that the compare-and-exchange operation takes constant time. After
+that, confirming the bound is only a matter of inspecting the code
+line by line. On the other hand, the span is more interesting.
+
+.Question
+*********
+
+What is the span of our parallel BFS?
+
+*********
+ 
+TIP: In order to answer this question, we need to know first about the
+graph *diameter*. The diameter of a graph is the length of the
+shortest path between the two most distant vertices. It should be
+clear that the number of iterations performed by the while loop of the
+BFS is at most the same as the diameter.
+
+
+.Exercise
+*********
+
+By using sentinel values, it might be possible to implement BFS to
+eliminate the compaction used by `edge_map.`  Describe and implement
+such an algorithm. Does in perform better?  
+
+*********
+				   
+
+
+=== Depth First Search
+
+In Depth First Seach (DFS), we visit vertices of a graph in "depth
+first" order by visiting the most recently seen vertex.  We can
+write the pseudocode for DFS as follows.
+
+.Pseudocode for DFS
+[source,{cpp}]
+-------------------
+dfs (G, X, v) = 
+  if v in X then 
+    ()
+  else
+    if compare_and_swap (&v, false, true) succeeds then 
+      visit v
+      X = X union {v}
+      for u in out_neighbor (G, v) do
+        X = dfs (G, X, u) 
+-------------------
+
+.DFS 
+====
+
+A graph, where each vertex is labeled with the order that it was
+visited by a DFS starting an vertex *"a"*. The out-edges of each
+vertex are ordered counterclockwise starting from left.  The edges
+that lead to a successful visit are highlighted.
+
+image::jpgs-620H/directed-graph-dfs.jpg["A graph and DFS traversal.",width="300pt",align="center"]
+				   
+====
+
+An important property of the DFS algorithm is that it recursively
+explores the out-neighbors of a vertex in order.  This
+"lexicographical graphic" ordering bestows DFS with special powers.
+It can be used to solve many  interesting graph problems, exactly
+because it visit vertices in a specific order.
+
+The DFS problem, however, is a P-complete problem, suggesting that DFS
+is difficult to parallelize.  There are parallel algorithm for special
+graphs, such as planar graphs, but work-efficient general-purpose
+algorithms remain unknown.  
+
+The lexicographical ordering followed by DFS is not useful in some
+applications.  For example, the reachability problem, which requires
+finding the vertices that are reachable from a given vertex, does not
+require the vertices to be ordered.  An interesting question therefore
+is whether an "unordered DFS", a.k.a., *_pseudo DFS_*, can be
+performed in parallel.  
+
+Before we answer this question, let's convince ourselves that it is a
+worth our while.  Considering that we already have a parallel graph
+traversal algorithm, parallel BFS, why is there a need? The reason is
+that parallel BFS requires global synchronization on every level of
+the graph. It can help to avoid such synchronization. 
+
+
+
+We define a *_parallel pseudo DFS_* or *_PDFS_* for short as a
+parallel algorithm in which each processor performs a DFS on the
+portion of the graph that it is traversing at any time but without
+observing any ordering constraints. 
+
+
+.PDFS  
+====
+
+A graph, where each vertex is labeled with the processors
+and the time at which it is visited when using two processors *P* and
+*Q*.
+
+image::jpgs-620H/directed-graph-pdfs.jpg["A graph and its two processor PDFS traversal.",width="300pt",align="center"]
+
+====
+
+We can write the pseudocode for PDFS as follows.  The function `pdfs`
+takes as argument the graph an the source vertex and calls nested
+inside a `finish` block the function `pdfs_rec` with a frontier
+consisting only of the source vertex and the graph. The `finish` block
+waits for all the parallel computations spawned off by the function
+`pdfs_rec`to complete.  The function `pdfs_rec` takes as argument a
+frontier `F`, a set of vertices that are to be visited, and a graph
+`G`. Based on the size of the frontier, the algorithm performs the
+following actions.
+
+. If the frontier is empty, then it returns.  
+
+.  If the frontier contains only one vertex, then the algorithm uses a
+compare-and-swap to make sure that the vertex is visited exactly once.
+If the compare-and-swap succeeds then the algorithm visits the vertex
+and performs a PDFS on the out-neighbors of the vertex.  Note that at
+this point, the frontier is empty, and thus the out-neighbors of the
+vertex can be used as the new frontier.  The function `toFrontier`
+converts the out-neighbors returned to a proper frontier data
+structure.
+
+. If the frontier contains more than one vertex, then the algorithm
+splits the frontier into two frontiers `Fa` and `Fb` and performs in
+parallel a PDFS on each frontier.  To perform the two searches in
+parallel, the algorithm uses the `async` function, which spawns off a
+parallel computation to perform the given argument.
+
+
+
+.Pseudocode for PDFS
+[source,{cpp}]
+----
+pdfs_rec (F, G) = 
+  if |F| = 0 then
+    ()
+  else if |F| = 1 then  
+    let v = remove F in (* F is empty after removal. *) 
+      if compare_and_swap (&v.flag, false, true) succeeds then
+        visit v
+        N = out_neighbors (G, v) in
+        pdfs_rec (frontierFromSeq N, G)  
+  else
+    (Fa, Fb) = split F in
+    async pdfs_rec (Fa, G)
+    async pdfs_rec (Fb, G)
+
+pdfs (G, source) =  
+  F = empty frontier
+  F = insert (F, source)
+
+  finish  {
+    pdfs_rec (F, G) 
+  }
+  
+----
+
+==== Work Efficient PDFS
+
+It seems unlikely for this algorithm to be work efficient, because of
+two issues.
+
+. The algorithm creates tiny threads by recursing down to single
+element frontiers.  
+
+. The algorithm relies on a frontier data structure that the serial
+DFS algorithm does not use.  In fact, the serial DFS algorithm uses no
+auxiliary data structures.
+
+The first issue is can be partially ameliorated by changing the base
+case to visit multiple vertices, as shows below.  This algorithm stops
+when it encounters a small frontier consisting of K or fewer vertices
+and visits K vertices until it generates parallelism.
+
+.Pseudocode for granularity-controlled PDFS
+[source,{cpp}]
+----
+pdfs_rec (F, G) = 
+  if |F| = 0 then
+    ()
+  else if |F| <= K then 
+    v = remove F in
+    repeat 
+      if compare_and_swap (&v, false, true) succeeds then
+        (* v is not visited. *)
+        visit v
+        N = frontierFromSeq (out_neighbors (G,v)) 
+        F = F union N
+        v = remove F
+    until 
+      K vertices are visited 
+      or
+      F is empty
+
+      (* PDFS recursively on the remaining frontier *)
+      pdfs_rec (F, G)        
+  else
+    (Fa, Fb) = split F in
+    async pdfs_rec (Fa, G)
+    async pdfs_rec (Fb, G)
+----
+
+===== Frontier Data Structure for PDFS
+
+Since the serial DFS algorithm does not use any data structures to
+represent the frontier, making PDFS work efficient requires designing
+a highly efficient frontier data structure.  This data structure needs
+to support (at least) the following operations:
+
+. `mkEmpty`: return an empty frontier
+. `remove`: remove a vertex from a given frontier
+. `insert`: insert a vertex into a given frontier
+. `union`: union two frontiers
+. `split`: split a given  frontier into two frontiers, preferably evenly
+. `frontierFromSeq`: constructs a frontier from a sequence.
+
+Note that the `union` and `split` operation are destructive, i.e.,
+they may consume their arguments in order to produce their output.
+Note also that the operation `frontierFromSeq` can be implemented by starting with an
+empty frontier and inserting the elements of the sequence one by one
+into it. A more direct implementation can be more efficient, however.
+
+Since the frontier data structure does not have to enforce any
+ordering on the vertices and since a vertex can be inserted into the
+frontier many times (once for each incoming edge), we can think of the
+frontier data structure as implementing a bag, which is a set that
+allows multiplicity. In fact, the interface presented above is a
+fairly general interface for bags, and a data structure implementing
+these operations efficiently can be very useful for many 
+parallel algorithms, not just PDFS. 
+
+In what follows, we first consider a data structure that supports
+all requirered operations in logarithmic time, and then a refined
+version that improves `remove` and `insert` to constant time. 
+We then introduce a "chunking" mechanism for improving the
+constant factors of the latter.
+
+
+===== Bag Data Structures with logarithmic time union and split
+
+For PDFS to be work efficient, we want the operations `insert` and `remove` 
+to execute in constant time, and the operations `union` and `split` 
+to execute in logarithmic time. There exists several tree-based 
+data structures that are able to achieve these bounds. In what follows,
+we present what is probably the simplest tree data structure that
+meets the above requirements.
+
+We store the elements of the bag in a list of trees.
+Each of the trees involved is a complete binary tree,
+with all the elements in the leaves, and all the 
+complete binary trees stored in the list have strictly 
+increasing depths.
+For example, a bag with 13 elements is represented as
+the list made of a complete binary tree of size 1,
+one of size 4, and one of size 8.
+Observe that, because every number has a unique binary decomposition,
+every bag has a unique representation as a list of complete
+binary trees of distinct sizes.
+
+The operations on such bags mimics the operations on binary numbers.
+To insert an element, we insert a complete binary tree of size 1.
+If there was already a tree of size 1 in the list, then we merge the two,
+and obtain a tree of size 2. If there was already a tree of size 2
+then we merge the two, and obtain a tree of size 4, etc... This 
+process is similar to the carry propagation.
+
+To insert an element, one proceeds symmetrically. If there is a tree
+of size 1, we take its single element out. Otherwise, if there is 
+a tree of size 2, we split it, leaving a tree of size 1, and one
+element to be removed. More generally, to implement remove, we 
+take the smallest tree, and split it until extracting a single element.
+
+To compute the union of two bags, we proceed like in the addition of
+two binary numbers. If one of the two bags includes a tree of size 1,
+we keep it. Otherwise, it the two bags include a tree of size 1, we
+merge them and get a tree of size 2 (a carry). Then, we consider trees
+of size 2. We may have up to 3 trees of this size (one per bag, plus
+one from the carry). If we have more than two trees of size 2, we
+merge two of them, making a tree of size 4 (the next carry). We thus 
+leave at most one tree of size 2 in the final bag.
+We continue similarly until all the trees from the two arguments
+have been processed.
+
+Splitting is dual. It matches division by 2 on binary numbers.
+
+.Exercise:
+****
+Give pseudo-code for the splitting operation.
+****   
+
+.Exercise:
+****
+Convince yourself that all operations run in logarithmic time,
+i.e. $O(log n)$ for a bag storing $n$ items.
+****   
+
+For more details, read https://www.cs.cmu.edu/~rwh/theses/okasaki.pdf
+Figure 6.6 (module BinaryRandomAccessList).
+
+
+===== Achieving amortized constant time `insert` and `remove` operations
+  
+When the bag data structure described above is used only for insertions,
+then, even though some insertions may take up to $O(log n)$ worst-case
+time (due to cascading carries), one can show that insertions 
+execute in fact in amortized constant time. 
+However, when both insertions and removal operations may be interleaved,
+this amortization argument is no longer valid. For example, if the
+cardinality of the bag toggles between $2^k$ and $2^(k-1)$, then
+each operation costs $O(log n)$.
+Our goal here is to achieve $O(1)$ cost for `insert` and `remove`
+whatever the interleaving of these operations, while retaining the
+$O(log n)$ bound for `union` and `split`.
+
+To that end, we relax our data structure
+to be a list of complete binary trees where there might be zero,
+one, or two trees of each size. For example,
+we may represent a bag of 13 items using two trees of size 4,
+two trees of size 2, and one tree of size 1. Or, we could represent it
+as before, using one tree of size 8, one tree of size 4, and one tree 
+of size 1. 
+The representation is longer unique for a given cardinality;
+the data structure is called a "redundant numeric representation".
+
+To insert an element in the structure, we create a tree of size 1 and
+add it into the list. If we end up with 3 trees of size 1, then we
+merge two of them, obtaining one additional tree of size 2. If we
+end up with 3 trees of size 2, then we merge two of them, etc...
+To implement implement remove, we consider the smallest tree,
+and we split it as many times as needed in order to extract an element,
+thereby creating a list of trees of strictly decreasing sizes.
+
+What is interesting, is that although insertion and removal may
+cost $O(log n)$ worst-case, their amortized cost is $O(1)$, for
+any interleaving. We prove this as follows. We charge the deconstruction
+of a tree to its construction, so we only need to count the cost
+of constructions. For each pair of trees of the same size, we store
+one dollar (i.e. one unit of potential). An insertion costs two dollars.
+The first dollar is used to create a singleton tree. The second dollar is 
+going to be stored at the place where we create two trees of the same size, if any.
+Through the propagation of the carry, we might need to pair up trees;
+these operations are paid for by the dollars that were stored with the pairs
+of trees of the same size. 
+
+To implement union or split, we first convert the list of trees to a normal
+form, where all trees have distinct sizes. To implement this conversion,
+we simply merge any pairs of trees that have the same size, starting
+with the smaller trees. We then rely on the union and split operations
+from the previous version of the data structure, i.e. following addition 
+and division by 2. The normalization process costs $O(log n)$, and so
+does the union and split operations on a list of trees with distinct sizes.
+
+
+
+===== Optimizing the Constant Factors
+
+Essentially all tree-based data structures suffer from a significant
+limitation: they deliver relatively poor constant factors. Indeed,
+for every element inserted or removed from the structure, the structure
+requires at least the allocation or deallocation of a node, plus several
+read and write operations. Fortunately, it is possible to remedy the
+situation by introducing "chunks".
+
+A chunk consists of a fixed-capacity array, which we will here use like a stack,
+using a variable to keep track of the number of elements stored in the chunk.
+Thereafter, we fix once and for all the capacity, and we write $K$ to denote
+the capacity of the chunks.
+The key benefit of chunks is that they provide a space-efficient storage, 
+whose allocation can be amortized on $K$ insert operations.
+If $K$ is taken sufficiently large (e.g., 64 or 256), it will properly amortize
+the cost of allocation.
+
+How can chunks help us? Instead of representing a bag 
+as a list of complete binary trees of elements, 
+we represent a bag as a list of complete binary trees of full chunks. 
+We keep one partially-filled chunk outside of the tree; we call it the
+"buffer".
+Thus, we only need to perform an expensive tree operation such as tree 
+insertion when the buffer is full, and intuitively this happens at most
+every $K$ insertions.
+We call the resulting data structure a "chunked bag".
+
+To compute the union of two chunked bags, we first merge the two buffers.
+If their elements fit into a single buffer, we are done; otherwise we
+obtain a full chunk which we push in one of the two bags. Then, we compute
+the union of the two bags, that is, the union of the two lists made
+of complete binary trees of full chunks. The total cost is $O(K + log n)$.
+
+Splitting is dual. We first split the bag in two bags of equal cardinality,
+plus possibly one left over full chunk (when the bag contains an odd number of chunks).
+We then split in two halves the elements stored in the buffer and in the
+full chunk left over, if any. We obtain two buffers of equal size, up to one.
+The total cost is, again, $O(K + log n)$.
+
+===== Splittable, Mergeable Bag Data Structures with Efficient Constant Factors Even in Worst-Case Scenarios
+
+The data structure presented above has a catch, however. 
+Consider a situation where the buffer is full.
+Inserting one element triggers a tree operation and the allocation of
+a fresh chunk, to renew the buffer. A subsequent remove operation empties
+the buffer. Another subsequent remove operation now requires a tree
+operation and the deallocation of a chunk. A single insert operation now
+takes us back to the initial situation. In summary, a sequence of 4 operations
+suffices to trigger two tree operations, an allocation, and a deallocation.
+This means that, in very particular circumstances (unlikely for random input data),
+the performance of the data structure may degenerate very significantly.
+
+Fortunately, there is an easy work around. All we need to do is to
+use *two* buffers instead of just *one* buffer,
+outside of the list of complete binary trees of chunks.
+We call the first one the outer buffer, and the second one the inner
+buffer. We maintain the invariant that the inner buffer is always
+either empty or full. 
+
+The insertion transitions are are follows:
+
+   - Initially, both the outer and inner buffers are empty.
+   - To insert an element, we place it into the outer buffer, if there is space.
+   - If, however, the outer buffer is full, then if the inner buffer is empty,
+     we swap the outer and the inner buffer.
+   - At this point, the inner buffer is full and we may continue inserting
+     elements in the outer buffer.
+   - Eventually, both the outer and the inner buffer become full. 
+   - To further insert elements, we insert the inner buffer as a chunk
+     into the bag (i.e. the list of complete binary trees of full chunks),
+     we set the outer
+     buffer as inner buffer, and we allocate a fresh (empty) outer buffer.
+
+The removal transitions are are follows:
+
+   - If the outer buffer is not empty, we remove an element from it.
+   - If the outer buffer is empty, and if the inner buffer is not empty,
+     (in which case it must be full), then we swap the outer buffer with
+     the inner buffer and we may continue removing items from the outer buffer.
+   - Eventually, both the outer and the inner buffer become empty.
+   - To further remove elements, we remove a full chunk from
+     the bag (i.e. the list of complete binary trees of full chunks),
+     and we set this full chunk as outer buffer.
+
+To execute a union or split operation, we first get rid of the inner buffer,
+by inserting the inner buffer into the list of trees if the inner buffer is nonempty;
+then, we proceed as previously, when we had only one buffer.
+
+We can formally prove that for any interleaving of insert and remove operations,
+each chunk allocation and each operation on a list of trees 
+are amortized over at least $K$ operations. Proof sketch:
+
+   - Let C be the cost of a chunk allocation plus a operation on a list of trees.
+     Deallocation operations can be charged to allocation operations,
+     so there is no need to count them; similarly, remove operations on the
+     list of trees can be charged to corresponding insert operations.
+   - Define the "potential" of a structure to be $C/K$ times the the number of elements
+     in its outer buffer when the inner buffer is full, and zero otherwise.
+   - Then, we show that each of the transitions described above alters the 
+     potential by at most one $C/K$ units of potential. Indeed, the number of
+     elements in the outer buffer increases by at most one.
+   - The interesting case is when the buffers are full; at this point,
+     there is $K * C/K = C$  units of potential, which allows to pay for 
+     the expensive operations of cost $C$, and after that the potential is zero.
+
+
+
+===== Deprecated
+
+We can use a finger-search tree, with a finger at the "first element"
+of the frontier to implement these operations efficiently.  When
+maintaining order such an implementation can require linear work for
+the `union` operation.  But since we do not maintain an order, we can
+use simply our Treap-based binary search trees and the `join`
+operation to implement union.
+
+
+.Exercise:
+****
+
+Convince yourself that the we can implement frontiers using treaps
+such that all operations require latexmath:[$O(\lg{n})$] work.  How
+about when using finger trees?
+
+****   
+
+An latexmath:[$O(\log{n})$]-work implementation does not give us a
+work-efficient algorithm, however. At the very least, we would like to
+achieve constant work `insert` and `remove` operations and do so with
+very small constant factors.  We can afford a more expensive `split`
+operation because these operations generate parallelism, which we can
+amortize by granularity control. We now describe how to implement an
+observably efficient frontier data structure.
+
+
+The drawing below illustrates the structure of the frontier data
+structure.  
+
+image::jpgs-620H/frontier.jpg["A frontier data structure illustrated.",width="300pt",align="center"]
+
+
+ARTHUR: describe the operations....
+
+
+==== Lazy Splitting
+
+LEFT FOR FUTURE.  I think we can skip this for this iteration of the
+course.  It can be added later.  Otherwise, it is quite a bit of
+work, especially because the frontier data structure needs to be discussed.
