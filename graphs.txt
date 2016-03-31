@@ -288,7 +288,7 @@ while frontier is not <> do
   if v is not in visited then
     visit v
     foreach out-neighbor u of v do
-      frontier_n = <u, frontier_n>     
+      frontier_n = append frontier_n <u>     
     frontier = frontier_n
 ----
 				   
@@ -334,11 +334,10 @@ set-difference operation.
 Our goal is to implement an observably work-efficient version of this
 algorithm on a hardware-shared memory parallel machine such as a
 modern multicore computer.  The key challenge is implementing the set
-operations performed for computing the next frontier.  Apart from
-maintaining a visited set to prevent a vertex from being visited more
+operations on the `visited`, `frontier`, and `next` sets.  Apart from
+maintaining a visited map to prevent a vertex from being visited more
 than once, the serial algorithm does not have to perform these
 operations.
-
 
 To achieve work efficiently, we will use atomic read-modify-write
 operations, specifically compare-and-swap, to mark visited vertices
@@ -444,6 +443,10 @@ above can cause BFS to visit any given vertex twice.
 
 *********
 
+In the rest of this section, we describe more precisely how to
+implement the parallel BFS algorithm in C++.
+
+
 In C++, we can we can use lightweight atomic memory, as described in
 this <<ch:race-conditions, chapter>> to eliminate race conditions. The
 basic idea is to guard each cell in our "visited" array by an atomic
@@ -504,9 +507,6 @@ was_successful = 1; visited[v] = 1
 was_successful2 = 0; visited[v] = 1
 ----
 
-==== Implementing parallel BFS
-
-
 So far, we have seen pseudocode that describes at a high level the
 idea behind the parallel BFS. We have seen that special care is
 required to eliminate problematic race conditions.  Let's now put
@@ -566,20 +566,21 @@ reachable from 4: { 0, 0, 1, 0, 1, 0, 1 }
 
 ====
 
-
-To complete our implementation, let's assume that we have a function
-called `edge_map` with the following signature the "edge
-map" operation. This operation takes as parameters a graph, an array
-of atomic flag values, and a frontier and returns a new frontier.
+The next challenge is the implementation of the frontiers.  To obtain
+an observably work efficient algorithm, we shall represent frontiers
+as arrays.  Let's assume that we have a function called `edge_map`
+with the following signature the "edge map" operation. This operation
+takes as parameters a graph, an array of atomic flag values, and a
+frontier and returns a new frontier.
 
 [source,{cpp}]
 ----
 sparray edge_map(const adjlist& graph, std::atomic<bool>* visited, const sparray& in_frontier);
 ----
 
-The main loop of BFS is shown below. The algorithm uses the edge-map
-function to advance level by level through the graph. The traversal
-stops when the frontier is empty.
+Using this function, we can implement the main loop of BFS as shown
+below. The algorithm uses the `edge-map` to advance level by level
+through the graph. The traversal stops when the frontier is empty.
 
 [source,{cpp}]
 ----
@@ -639,21 +640,20 @@ Output:
 
 ====
 
-From the perspective of BFS, the edge-map function advances the level
-by one the level-ordered traversal of the graph. More concretely, this
-function takes as argument the frontier at level latexmath:[$i$] in
-the BFS traversal and returns the frontier at level latexmath:[$i+1$].
-
-
-To implement `edge_map`, we shall use the following sentinel value to
-represent empty cells in sparse arrays of vertex identifiers.
+There are several ways to implement `edge_map`.  One way is to
+allocate an array that is large enough to hold the next frontier and
+then allow the next frontier to be computed in parallel. Since we
+don't know the exact size of the next frontier ahead of time, we will
+have to bound it by using the total number of out-going edges
+originating at the vertices in the frontier.  To mark unused vertices
+in this array, we can use a sentinel value.
 
 [source,{cpp}]
 ----
 const vtxid_type not_a_vertexid = -1l;
 ----
 
-.Sparse-array representation of a set of vertex identifiers
+.Array representation of the next frontier
 ====
 
 The following array represents a set of three valid vertex
@@ -666,8 +666,8 @@ identifiers, with two positions in the array being empty.
 
 ====
 
-Let us define two helper functions. The first one takes a sparse array
-of vertex identifiers and copies out the valid vertex identifiers.
+Let us define two helper functions. The first one takes an array of
+vertex identifiers and copies out the valid vertex identifiers.
 
 [source,{cpp}]
 ----
@@ -687,15 +687,29 @@ sparray get_out_degrees_of(const adjlist& graph, const sparray& vs) {
 ----
 
 At a high level, our solution is the following. First, we construct a
-sparse-array representation of the set of vertex ids that are to be
+array representation of the set of vertex ids that are to be
 returned by the edge map. Second, we construct a compact
 representation of the sparse array and return the compacted result
-array. Aside from this sparse-array detail, the algorithm implemented
+array. Aside from this array detail, the algorithm implemented
 here corresponds exactly to the high level description that we
 presented in the previous section. That is, the outer loop processes
 the vertex ids from the frontier of the previous level and the inner
 loop processes the neighbors of each vertex in the frontier of the
 previous level, adding newly visited neighbors to the result set.
+
+/////
+TEACHING NOTES:
+
+The algorithm is the following:
+
+We do a scan over the current frontier summing over out-degrees of all
+the vertices.  The scan values gives the indices into which each
+vertex can write the out-neigbors that they won in the CAS.  We then
+let the vertices that won the CAS's to write the id of the vertex into
+the corresponding slot.  We then compact the frontier.
+
+/////
+
 
 [source,{cpp}]
 ----
