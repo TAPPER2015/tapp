@@ -1,3 +1,4 @@
+[[ch:models]]
 == Models of Parallel Computation
 
 [quote, James Christopher Wyllie, Ph.D. Thesis Cornell University 1979]
@@ -16,7 +17,7 @@ computers varied greatly.
 operations on sequences of data called vectors.
 
 .  ILLIAC IV had 64 processors laid out on a rectangular grid.  Each
-processor had its own memory but could communicate its four neighbors
+processor had its own memory but could communicate with its four neighbors
 on the grid and thus request data from them.  ILLIAC was a synchronous
 machine where each processor would execute the same instruction in
 each step, operating on its own memory.
@@ -73,7 +74,7 @@ The drawing below illustrates a 4-processor PRAM.
 image:jpgs-620H/pram-model.jpg["A 4-processor PRAM.",width="400pt",align="center"]
 ====
 
-The PRAM model abstracts over various connection pattern used by
+The PRAM model abstracts over various connection patterns used by
 parallel architectures by supplying a global memory that is accessible
 to all processors.
 
@@ -81,13 +82,13 @@ A PRAM program is a synchronous program that specifies the computation
 performed by each processor at each step.  Execution of a PRAM program
 proceeds in step.  In each step all active processors execute the
 instruction pointed by their program counter.  The instruction may use
-the id of the processor, which can be though as being stored in the
+the id of the processor, which can be thought as being stored in the
 local memory. For example, each processor latexmath:[$i$] can read the
-latexmath:[$i$] cell of an array stored in global memory.  Each
+latexmath:[$i^{th}$] cell of an array stored in global memory.  Each
 processor can access its own local memory or the global memory but not
-the local memory of another processor.  A processor may choose be not
+the local memory of another processor.  A processor may choose not to
 participate in a step; such a processor would be inactive on that
-step.  An active processor may activate by an inactive processor and
+step.  An active processor may activate an inactive processor and
 direct it to a certain instruction by setting its program counter.
 
 In his formulation of the PRAM model Wyllie did not permit multiple
@@ -96,24 +97,24 @@ different variations of this model, however, been later proposed that
 allow different degrees of "concurrency."  Some notable variants
 include the following.
 
-. EREW (Exclusive-Read-Exclusive-Write) PRAM: concurrent reads from
+. *_EREW (Exclusive-Read-Exclusive-Write) PRAM:_* concurrent reads from
 or writes into the same global memory cell are disallowed.
 
-. CREW (Concurrent-Read-Exclusive-Write) PRAM: concurrent reads from
+. *_CREW (Concurrent-Read-Exclusive-Write) PRAM:_* concurrent reads from
 global memory cells are permitted but concurrent writes into the same
 global memory cell are disallowed.
 
-. CRCW (Concurrent-Read-Concurrent-Write) PRAM: concurrent reads from
+. *_CRCW (Concurrent-Read-Concurrent-Write) PRAM:_* concurrent reads from
 and concurrent writes into the same global memory cells are
 permitted.  It is possible to  distinguish further between different
 CRCW PRAMs.
 
-.. Common CRCW: concurrent writes must all write the same value.
+.. *_Common CRCW:_* concurrent writes must all write the same value.
 
-.. Arbitrary CRCW: concurrent rites can write different values in a
+.. *_Arbitrary CRCW:_* concurrent writes can write different values in a
 step, but only one arbitrary write succeeds.
 
-.. Priority CRCW: concurrent rites can write different values in a
+.. *_Priority CRCW:_ concurrent rites can write different values in a
 step, but only the processor with the highest priority defined as the
 processor with the minimum id succeeds.
 
@@ -127,16 +128,17 @@ Suppose that we are given an array of elements stored in global memory
 and wish to compute the sum of the elements.  We can write a PRAM
 program to find the sum.  Suppose that the array contains
 latexmath:[$n$] elements and we wish to use latexmath:[$n$]
-processors.  Let's assume for simplicity that $n$] is a power of
-latexmath:[$2$]. We can proceed in rounds.  In the first round, each
-processors latexmath:[$P_i$], where latexmath:[$0 \le i n/2$] add up
-the pair of elements at position latexmath:[$2i$] and
-latexmath:[$2i+1$] and place in in position latexmath:[$i$.  In the
-second round, we repeat the same computation but consider only the
-first latexmath:[$n/2$] of the elements and so on.  After
-latexmath:[$\lg{n}$] rounds, the sum is placed in the first position
-of the input array.  The drawing below illustrates this algorithm for
-an input of size latexmath:[$8$].
+processors.  Let's assume for simplicity that latexmath:[$n$] is a power of
+latexmath:[$2$]. 
+
+We can proceed in rounds.  In the first round, each processor
+latexmath:[$P_i$], where latexmath:[$0 \le i  \le n/2$], adds up the pair of
+elements at position latexmath:[$2i$] and latexmath:[$2i+1$] and places
+it in position latexmath:[$i$].  In the second round, we repeat the
+same computation but consider only the first latexmath:[$n/2$] of the
+elements, and so on.  After latexmath:[$\lg{n}$] rounds, the sum is
+placed in the first position of the input array.  The drawing below
+illustrates this algorithm for an input of size latexmath:[$8$].
 
 .Array sum in PRAM
 ====
@@ -167,12 +169,12 @@ array_sum (A, n) =
     }
 ----
 
-Note the role that the synchronous execution of PRAM programs. If the
-processors did not execute each step synchronously at the same time,
-then the execution can mix up results from different rounds and obtain
-an incorrect result.
+Note the role that the synchronous execution of PRAM programs plays in
+the example. If the processors did not execute each step synchronously
+at the same time, then the execution can mix up results from different
+rounds and obtain an incorrect result.
 
-In this algorithm,  no (global) memory cell is read my more than one
+In this algorithm,  no (global) memory cell is read by more than one
 processor at the same step.  Similarly, no (global) memory cell is
 written my more than one processor at the same step.  This algorithm
 is thus a EREW PRAM algorithm.
@@ -208,7 +210,8 @@ processes on the same processors, swapping processes in and out as
 needed.  Furthermore, the programmers write their programs using
 higher level languages which then translate to many individual machine
 instructions. Even if these instruction might be executed on the
-hardware in lock step, the programmer does not have control over these
+hardware in lock step, the programmer does not have control over how
+their high-level parallel programs are translated into low-level
 instructions.
 
 . PRAM programs specify instructions executed by each processor at
@@ -220,8 +223,8 @@ change during execution.
 
 For these reasons, the value of a PRAM algorithm from a practical
 perspective is limited to the ideas of the algorithm.  Such ideas can
-still be valuable but usually new ideas are needed to implement PRAM
-algorithms in practice.
+still be valuable but new ideas may be needed to implement a PRAM
+algorithm in practice.
 
 === Work-Time Framework
 

@@ -23,6 +23,8 @@ Author: {author}
 //include::multithreading.txt[]
 
 //include::fork-join.txt[]
+//include::async-finish.txt[]
+//include::futures.txt[]
 
 //include::mutual-exclusion.txt[]
 
@@ -42,8 +44,9 @@ Author: {author}
 
 // include::trees.txt[]
 
-include::models.txt[]
+// include::models.txt[]
 
+//include::graphs-arthur.txt[]
 include::graphs.txt[]
 
 //include::graphs.txt[]

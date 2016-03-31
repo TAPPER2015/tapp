@@ -150,5 +150,5 @@ that corresponds to the number of instruction in that thread.
 Using async-finish does not alter the asymptotic work and span of the
 computation compared to fork-join, which remain as latexmath:[O(n)]
 work and latexmath:[$O(\log{n})$] span.  In practice, however, the
-async-finish version creates nearly much fewer threads (by about a
-factor of two),  which can make a significant difference.
+async-finish version creates fewer threads (by about a factor of two),
+which can make a difference.

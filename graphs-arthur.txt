@@ -1,4 +1,4 @@
-== Chapter: Graph processing
+== Chapter: GGGGraph processing
 
 In just the past few years, a great deal of interest has grown for
 frameworks that can process very large graphs. Interest comes from a
@@ -1205,3 +1205,4 @@ ARTHUR: describe the operations....
 LEFT FOR FUTURE.  I think we can skip this for this iteration of the
 course.  It can be added later.  Otherwise, it is quite a bit of
 work, especially because the frontier data structure needs to be discussed.
+

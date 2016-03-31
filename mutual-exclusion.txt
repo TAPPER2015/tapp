@@ -1,4 +1,5 @@
 [[ch:mutual-exclusion, Critical Sections and Mutual Exclusion]]
+[[ch:race-conditions, Critical Sections and Mutual Exclusion]]
 Critical Sections and Mutual Exclusion
 --------------------------------------
 
