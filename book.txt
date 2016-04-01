@@ -49,7 +49,6 @@ include::trees.txt[]
 
 include::models.txt[]
 
-include::graphs-arthur.txt[]
 include::graphs.txt[]
 
 include::dedicated.txt[]

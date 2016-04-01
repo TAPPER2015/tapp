@@ -644,9 +644,9 @@ There are several ways to implement `edge_map`.  One way is to
 allocate an array that is large enough to hold the next frontier and
 then allow the next frontier to be computed in parallel. Since we
 don't know the exact size of the next frontier ahead of time, we will
-have to bound it by using the total number of out-going edges
-originating at the vertices in the frontier.  To mark unused vertices
-in this array, we can use a sentinel value.
+bound it by using the total number of out-going edges originating at
+the vertices in the frontier.  To mark unused vertices in this array,
+we can use a sentinel value.
 
 [source,{cpp}]
 ----
@@ -686,16 +686,16 @@ sparray get_out_degrees_of(const adjlist& graph, const sparray& vs) {
 }
 ----
 
-At a high level, our solution is the following. First, we construct a
-array representation of the set of vertex ids that are to be
-returned by the edge map. Second, we construct a compact
-representation of the sparse array and return the compacted result
-array. Aside from this array detail, the algorithm implemented
-here corresponds exactly to the high level description that we
-presented in the previous section. That is, the outer loop processes
-the vertex ids from the frontier of the previous level and the inner
-loop processes the neighbors of each vertex in the frontier of the
-previous level, adding newly visited neighbors to the result set.
+We can implement edge-map as follows.  We first allocate the array for
+the next frontier by upper bounding its size; each element of the
+array is initially set to `not_a_vertexid`.  We then, in parallel,
+visit each vertex in the frontier and attempt, for each neighbor, to
+insert the neighbor into the next frontier by using an atomic
+compare-and-swap operations.  If we succeed, then we write the vertex
+into the next frontier.  If not, we skip.  Once all neigbors are
+visited, we pack the next frontier by removing non-vertices.  This
+packed array becomes our next frontier.
+
 
 /////
 TEACHING NOTES:
@@ -707,6 +707,12 @@ the vertices.  The scan values gives the indices into which each
 vertex can write the out-neigbors that they won in the CAS.  We then
 let the vertices that won the CAS's to write the id of the vertex into
 the corresponding slot.  We then compact the frontier.
+
+An alternative approach that does not require parent pointers is to
+allocate an array of size n for the next frontier.  Now iterate over
+the vertices in the frontier and marks children as members of the next
+frontier, if not visited, using non-cas writes.  Then pack, if desired
+to compute the next frontier.
 
 /////
 
@@ -774,7 +780,31 @@ such an algorithm. Does in perform better?
 *********
 				   
 
+==== Direction Optimization
 
+If the graph has reverse edges for each vertex, we can use an
+alternative implementation for `edge_map`: instead of visiting the
+vertices in the frontier and their neighbors, we can check, for any
+vertex, that the vertex has a parent that is in the current
+frontier. If so, then we add the vertex to the next frontier and pack
+as usual.  The advantage of this approach is that it does not require
+any compare-and-swap operations.  The disadvantage is that it requires
+touching all vertices and thus linear work.  If, however, the next
+frontier is large, e.g., a constant fraction of the vertices, then
+this can be beneficial.  In practice (as of 2015), it turns out that
+if the frontier is larger than 5% of the total number of vertices,
+then this approach is better than the prior approach.
+
+An optimized implementation of PBFS can select between the two
+approaches proposed above based on the size of the current frontier.
+This is called "direction-optimizing" BFS.
+
+.Exercise:
+****
+
+Can you perform direction optimization without using reverse edges?
+
+****
 
 
 
