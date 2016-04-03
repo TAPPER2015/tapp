@@ -783,26 +783,33 @@ such an algorithm. Does in perform better?
 ==== Direction Optimization
 
 If the graph has reverse edges for each vertex, we can use an
-alternative implementation for `edge_map`: instead of visiting the
-vertices in the frontier and their neighbors, we can check, for any
-vertex, that the vertex has a parent that is in the current
-frontier. If so, then we add the vertex to the next frontier and pack
-as usual.  The advantage of this approach is that it does not require
-any compare-and-swap operations.  The disadvantage is that it requires
-touching all vertices and thus linear work.  If, however, the next
-frontier is large, e.g., a constant fraction of the vertices, then
-this can be beneficial.  In practice (as of 2015), it turns out that
-if the frontier is larger than 5% of the total number of vertices,
-then this approach is better than the prior approach.
+alternative "bottom-up" implementation for `edge_map` instead of the
+"top-down" approach described above: instead of scanning the vertices
+in the frontier and visiting their neighbors, we can check, for any
+unvisited vertex, whether that vertex has a parent that is in the
+current frontier. If so, then we add the vertex to the next
+frontier. If the frontier is large, this approach can reduce the total
+number of edges visited because the vertices in the next frontier will
+quickly find a parent.  Furthermore, we don't need use
+compare-and-swap operations.  The disadvantage of the bottom-up
+approach is that it requires linear work in the number of vertices.
+However, if the frontier is already large, the top-down approach
+requires lineal work too. Thus if, the frontier is large, e.g., a
+constant fraction of the vertices, then the bottom-up approach can be
+beneficial.  On current multicore machines, it turns out that if the
+frontier is larger than 5% of the total number of vertices, then the
+bottom-up approach tends to outperform the top-down approach.
 
-An optimized implementation of PBFS can select between the two
-approaches proposed above based on the size of the current frontier.
-This is called "direction-optimizing" BFS.
+An optimized "hybrid" implementation of PBFS can select between the
+top-down and the bottom-up approaches proposed based on the size of
+the current frontier.  This is called "direction-optimizing" BFS.
 
 .Exercise:
 ****
 
-Can you perform direction optimization without using reverse edges?
+Work out the details of the bottom-up algorithm for parallel BFS and
+the hybrid algorithm.  Can you implement and observe the expected
+improvements?
 
 ****
 
@@ -824,7 +831,7 @@ dfs_rec (G, visited, v) =
       visited = visited set-union {v}
       let <v_1, ..., v_m> be out_neighbors(G,v)
       for i = 1 to m do
-        visited = visited set-union dfs (G, visited, v_i) 
+        visited = dfs_rec (G, visited, v_i) 
 
 dfs (G, source) = 
   dfs_rec (G, {}, source)
@@ -833,10 +840,10 @@ dfs (G, source) =
 .DFS 
 ====
 
-A graph, where each vertex is labeled with the order that it was
-visited by a DFS starting an vertex *"a"*. The out-edges of each
-vertex are ordered counterclockwise starting from left.  The edges
-that lead to a successful visit are highlighted.
+DFS on a graph illustrated.  Each vertex is labeled with the order
+that it was visited starting the source vertex *"a"*. We assume that
+the out-edges of each vertex are ordered counterclockwise starting
+from left.  The edges that lead to a successful visit are highlighted.
 
 image::jpgs-620H/directed-graph-dfs.jpg["A graph and DFS traversal.",width="300pt",align="center"]
 				   
@@ -846,7 +853,7 @@ An important property of the DFS algorithm is that it recursively
 explores the out-neighbors of a vertex in order.  This
 "lexicographical" ordering bestows DFS with special powers.  It can be
 used to solve many interesting graph problems, exactly because it
-visit vertices in a specific order.  The DFS problem, however, is a
+visits vertices in a specific order.  The DFS problem, however, is a
 P-complete problem.  This suggests that DFS is difficult to
 parallelize.  There are parallel algorithm for special graphs, such as
 planar graphs, but work-efficient general-purpose algorithms remain
@@ -863,28 +870,25 @@ Before we answer this question, let's convince ourselves that it is
 worth our while.  Considering that we already have a parallel graph
 traversal algorithm, parallel BFS, why is there a need? The main
 reason is that parallel BFS requires global synchronization on every
-level of the graph. This introduces unnecessary synchronization.  In
-some cases, such synchronization can render useless plenty of
-parallelism. 
-
+level of the graph. This can lead to unnecessary synchronization,
+which can reduce parallelism.
 
 We define a *_parallel pseudo DFS_* or *_PDFS_* for short as a
-parallel algorithm in which each processor performs a DFS on the
-portion of the graph that it is traversing at any time but without
-observing any ordering constraints. 
-
+parallel algorithm that explores in parallel the reachable vertices
+from the current set of vertices in depth-first order but without
+observing any ordering constraints.
 
 .BFS versus PDFS in a deep graph
 ====
 
 Consider the following graph that consists of two deep parallel
 branches, the dotted lines indicate a long chain of vertices.  For all
-practical purposes, there is no parallelism in this graph for
-breadth-first search, because each level contains only a very small
-number of vertices.  In fact, even a graph that has hundreds of such
-parallel chains may offer too little parallelism for PBFS.  Using PDFS,
-however, the parallel chains can all be traversed in parallel
-effectively, without any synchronization.
+practical purposes, when using BFS, there is no parallelism in this
+graph, because each level consists of a very small number of vertices.
+In fact, even a graph that has hundreds of such parallel chains may
+offer too little parallelism for PBFS.  Using PDFS, however, the
+parallel chains can all be traversed in parallel effectively, without
+any synchronization.
 
 image::jpgs-620H/directed-graph-deep.jpg["A deep graph with parallel chains.",width="500pt",align="center"]
 
@@ -897,11 +901,13 @@ image::jpgs-620H/directed-graph-deep.jpg["A deep graph with parallel chains.",wi
 .PDFS  
 ====
 
-A graph, where each vertex is labeled with the processors
-and the time at which it is visited when using two processors *P* and
-*Q*.
+A graph, where each vertex is labeled with the time at which it is
+visited assuming that no more that two edges are visited at a time.
 
-image::jpgs-620H/directed-graph-pdfs.jpg["A graph and its two processor PDFS traversal.",width="300pt",align="center"]
+image::jpgs-620H/directed-graph-pdfs-timesteps.jpg["A graph and a PDFS traversal.",width="300pt",align="center"]
+
+Note that there are many different ways in which the vertices could
+have been visited.
 
 ====
 
@@ -913,7 +919,7 @@ pdfs_rec (G, visited, frontier) =
   if frontier = {} then
     ()
   else if {v} = frontier then
-    if compare_and_swap (visited[v], false, true) succeeds then
+    if compare_and_swap (&visited[v], false, true) succeeds then
         visit v
         N = out_neighbors (G, v) in
         pdfs_rec (G, visited, N)    
@@ -937,14 +943,20 @@ pdfs (G, source) =
 
 The function `pdfs` takes as argument the graph and the source vertex
 and calls.  It starts by setting up a `visited` array where all
-vertices are marked as unvisited.  It then calls, nested inside a
+vertices are marked as unvisited and then calls, nested inside a
 `finish` block, the function `pdfs_rec` with a frontier consisting
 only of the source vertex and the graph. The `finish` block waits for
 all the parallel computations spawned off by the function `pdfs_rec`
-to complete.  The function `pdfs_rec` takes as argument a frontier
-`F`, a set of vertices that are to be visited, and a graph `G`. Based
-on the size of the frontier, the algorithm performs the following
-actions.
+to complete.  The function `pdfs_rec` takes as argument the input
+graph, aset `visited` of vertices that are already visited, and a
+set `frontier` of vertices that are to be visited next.
+
+
+
+... 
+
+ `G`. Based on the size of the frontier, the algorithm performs
+the following actions.
 
 . If the frontier is empty, then it returns.  
 
