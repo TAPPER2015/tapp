@@ -11,6 +11,7 @@ struct
   type 'a bag = 'a digit list
 
   exception EmptyBag
+  exception SingletonTree
 
   (* empty bag *)
   fun mkEmpty () = 
@@ -40,6 +41,17 @@ struct
          ")"
       end
 
+  fun treeContentsToString toString t = 
+    case t of 
+      Leaf x =>  toString x 
+    | Node (w, l, r) => 
+      let 
+        val ls = treeContentsToString toString l
+        val rs = treeContentsToString toString r
+      in
+         ls ^ ", " ^ rs
+      end
+
   fun bagToString toString b = 
     case b of 
       nil => ""
@@ -49,14 +61,52 @@ struct
         let 
           val bs' = bagToString toString b'
         in
-          "\n__Zero " ^ " " ^ bs'   
+          "__Zero " ^ " " ^ bs' ^ "\n"
         end
       | One t =>
         let 
           val ts = treeToString toString t
           val bs' = bagToString toString b'
         in
-          "\n__One: " ^ ts ^ " " ^ bs'   
+          "__One: " ^ ts ^ " " ^ bs'  ^ "\n"   
+        end
+
+  fun bagContentsToString toString b = 
+    case b of 
+      nil => ""
+    | d::b' =>
+      case d of
+        Zero => 
+        let 
+          val bs' = bagContentsToString toString b'
+        in
+          bs'
+        end
+      | One t =>
+        let 
+          val ts = treeContentsToString toString t
+          val bs' = bagContentsToString toString b'
+        in
+           ts ^ ", " ^ bs' 
+        end
+
+
+  fun bagToDecimal b = 
+    case b of 
+      nil => 0
+    | d::b' =>
+      case d of
+        Zero => 
+        let 
+          val n' = bagToDecimal b'
+        in
+          2*n'
+        end
+      | One _ =>
+        let 
+          val n' = bagToDecimal b'
+        in
+          2*n'+1
         end
 
   fun printTree toString t = 
@@ -73,10 +123,26 @@ struct
       print ("Bag = \n " ^ s ^ "\n")
     end
 
+  fun printBagContents toString b = 
+    let 
+      val s = bagContentsToString toString b
+    in 
+      print ("Bag Contents = \n " ^ s ^ "\n")
+    end
+
+  fun printBagAsDecimal b = 
+    print ("Decimal value: " ^ Int.toString (bagToDecimal b) ^ "\n")
+
   (* link two trees, constant work *)
   fun link (l, r) = 
     Node (sizeTree l + sizeTree r, l, r)
 
+  (* unlink two trees, constant work *)
+  fun unlink t = 
+    case t of 
+      Leaf _ => raise SingletonTree
+    | Node (_, l, r) => (l,r)
+ 
   (* insert a tree into a bag. Interesting invariant re tree sizes.*)
   fun insertTree (t, b) = 
     case b of
@@ -134,6 +200,40 @@ struct
         Zero::(insertTree (t, bc'))
       end
 
+  fun split b = 
+    let 
+      (* even number of elements, split all trees *)
+      fun split_even b = 
+        case b of 
+          nil => (nil, nil)
+        | Zero::b' => 
+          let
+            val (c,d) = split_even b'
+          in
+            (Zero::c, Zero::d)
+          end
+        | (One t)::b' =>
+          let
+            val (l,r) = unlink t
+            val (c,d) = split_even b'
+          in
+            ((One l)::c, (One r)::d)
+          end
+     in
+       case b of 
+         nil => (nil, nil)
+       | Zero::b' => 
+           (* Even number of elements *)
+           split_even b'
+       | (One t)::b' => 
+         (* Odd number of elements *)
+         let 
+           val (c,d) = split_even b'
+         in 
+           (insertTree (t,c), d)
+         end
+     end
+       
    fun test n = 
      let 
        fun insN (i,n) b = 
@@ -149,13 +249,42 @@ struct
            b
        val empty = mkEmpty ()
        val b = insN (0,n) empty
+       val _ = print "** First bag:\n"
+       val _ = printBagAsDecimal b 
+       val _ = printBagContents Int.toString b 
        val _ = printBag Int.toString b 
-       val c = insN (n,2*n) empty
+
+       val m = if (Int.mod (n,2)) = 0 then 
+                 2*n
+               else 
+                 2*n + 1 
+       val c = insN (n,m) empty
+       val _ = print "** Second bag:\n"
+       val _ = printBagAsDecimal c 
+       val _ = printBagContents Int.toString c 
        val _ = printBag Int.toString c 
+
        val d = union (b,c)      
+       val _ = print "** Their union:\n"
+       val _ = printBagAsDecimal d 
+       val _ = printBagContents Int.toString d 
        val _ = printBag Int.toString d 
+
+       val (e,f) = split d
+       val _ = print "** Their split:\n"
+       val _ = print "First bag:\n"
+       val _ = printBagAsDecimal e 
+       val _ = printBagContents Int.toString e 
+       val _ = printBag Int.toString e 
+       val _ = print "Second bag:\n"
+       val _ = printBagAsDecimal f 
+       val _ = printBagContents Int.toString f 
+       val _ = printBag Int.toString f 
      in 
         ()
      end
+
+
+
         
 end
