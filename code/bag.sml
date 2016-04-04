@@ -31,37 +31,46 @@ struct
       let 
         val ls = treeToString toString l
         val rs = treeToString toString r
+        val ws = Int.toString w
       in
-        ls ^ " " ^ rs 
+         "(" ^ 
+         " Node Weight = " ^ ws ^ 
+         " left = " ^ ls ^ 
+         " right = " ^ rs ^ 
+         ")"
       end
-
 
   fun bagToString toString b = 
     case b of 
       nil => ""
     | d::b' =>
       case d of
-        Zero => "Zero "
+        Zero => 
+        let 
+          val bs' = bagToString toString b'
+        in
+          "\n__Zero " ^ " " ^ bs'   
+        end
       | One t =>
         let 
           val ts = treeToString toString t
           val bs' = bagToString toString b'
         in
-          "One: ts \n " ^ bs'   
+          "\n__One: " ^ ts ^ " " ^ bs'   
         end
 
   fun printTree toString t = 
     let 
       val s = treeToString toString t
     in 
-      print ("Tree = \n  s ^ \n")
+      print ("Tree = \n" ^ s ^ "\n")
     end
 
   fun printBag toString b = 
     let 
       val s = bagToString toString b
     in 
-      print ("Bag = \n  s ^ \n")
+      print ("Bag = \n " ^ s ^ "\n")
     end
 
   (* link two trees, constant work *)
@@ -74,8 +83,11 @@ struct
       nil => [One t]
     | Zero::b' => (One t)::b'
     | One t'::b' => 
-    let val tt' = link (t,t') in
-      Zero::(insertTree (tt', b'))
+    let 
+      val tt' = link (t,t') 
+      val b'' = insertTree (tt', b')
+    in
+      Zero::b''
     end
 
   (* borrow a tree from a bag. Interesting invariant with trees. *)
@@ -95,7 +107,8 @@ struct
   (** Mainline **)
 
   (* insert element into a bag *)
-  fun insert (x, b) = insertTree (Leaf x, b)
+  fun insert (x, b) = 
+    insertTree (Leaf x, b)
 
 
   (* remove an element from a bag *)
@@ -109,34 +122,40 @@ struct
   (* union two bags. *)
   fun union (b, c) =
     case (b,c) of 
-      (_, nil) => nil
+      (_, nil) => b
     | (nil, _) => c
     | (d::b', Zero::c') => d::union(b',c')
     | (Zero::b', d::c') => d::union(b',c')
-    | ((One tb::b'), (One tc)::c') => 
+    | ((One tb)::b', (One tc)::c') => 
       let
         val t = link (tb, tc)
         val bc' = union (b',c')
       in 
-        insertTree (t, bc')
+        Zero::(insertTree (t, bc'))
       end
 
-   fun test () = 
+   fun test n = 
      let 
        fun insN (i,n) b = 
          if i < n then 
            let 
+             val _ = print ("Inserting " ^ (Int.toString i) ^ "\n") 
              val b' = insert (i, b)
+(*             val _ = printBag Int.toString b' *)
            in 
              insN (i+1,n) b'
            end
          else
            b
-       val b = mkEmpty ()
-       val b = insN (0,5) b
-      
+       val empty = mkEmpty ()
+       val b = insN (0,n) empty
+       val _ = printBag Int.toString b 
+       val c = insN (n,2*n) empty
+       val _ = printBag Int.toString c 
+       val d = union (b,c)      
+       val _ = printBag Int.toString d 
      in 
-       printBag Int.toString b 
+        ()
      end
         
 end
