@@ -2,13 +2,15 @@ structure Bag =
 struct
   datatype 'a tree = 
     Leaf of 'a 
-  | Node of int * 'a * 'a tree * 'a tree
+  | Node of int * 'a tree * 'a tree
 
   datatype 'a digit = 
     Zero 
   | One of 'a tree
 
   type 'a bag = 'a digit list
+
+  exception EmptyBag
 
   (* empty bag *)
   fun mkEmpty () = 
@@ -18,9 +20,49 @@ struct
   fun sizeTree t =
     case t of
       Leaf x => 1
-    | Node (w, l, r) =  w
+    | Node (w, l, r) =>  w
 
   (** Utilities **)
+
+  fun treeToString toString t = 
+    case t of 
+      Leaf x => "Leaf: " ^ toString x ^ "" 
+    | Node (w, l, r) => 
+      let 
+        val ls = treeToString toString l
+        val rs = treeToString toString r
+      in
+        ls ^ " " ^ rs 
+      end
+
+
+  fun bagToString toString b = 
+    case b of 
+      nil => ""
+    | d::b' =>
+      case d of
+        Zero => "Zero "
+      | One t =>
+        let 
+          val ts = treeToString toString t
+          val bs' = bagToString toString b'
+        in
+          "One: ts \n " ^ bs'   
+        end
+
+  fun printTree toString t = 
+    let 
+      val s = treeToString toString t
+    in 
+      print ("Tree = \n  s ^ \n")
+    end
+
+  fun printBag toString b = 
+    let 
+      val s = bagToString toString b
+    in 
+      print ("Bag = \n  s ^ \n")
+    end
 
   (* link two trees, constant work *)
   fun link (l, r) = 
@@ -32,7 +74,7 @@ struct
       nil => [One t]
     | Zero::b' => (One t)::b'
     | One t'::b' => 
-    let tt' = link (t,t') in
+    let val tt' = link (t,t') in
       Zero::(insertTree (tt', b'))
     end
 
@@ -49,7 +91,6 @@ struct
       in
         (l, (One r)::b'')
       end
-        
 
   (** Mainline **)
 
@@ -77,10 +118,25 @@ struct
         val t = link (tb, tc)
         val bc' = union (b',c')
       in 
-        insertTree (t, bc')  *** NO I DON'T THINK THAT THIS IS CORRECT ***
+        insertTree (t, bc')
       end
+
+   fun test () = 
+     let 
+       fun insN (i,n) b = 
+         if i < n then 
+           let 
+             val b' = insert (i, b)
+           in 
+             insN (i+1,n) b'
+           end
+         else
+           b
+       val b = mkEmpty ()
+       val b = insN (0,5) b
+      
+     in 
+       printBag Int.toString b 
+     end
         
-    
-  
-     
 end
