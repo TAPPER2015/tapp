@@ -1350,10 +1350,59 @@ buffer.
 
 The `union` and `split` operations follow a similar procedure.
 
+The algorithm amortizes the cost of an insertion because the cost of
+every insertion into the tree list requires the buffer to be full: the
+latexmath:[$K$] items that we insert into the chunk can thus pay for
+the cost of the tree operation.  Similarly, a deletion from the tree
+list is followed by at least latexmath:[$K$] deletions from the
+buffer.
 We can prove that this algorithm achieves the desired factor
 latexmath:[$1/K$] reduction in the cost of insertions and deletions.
 
+
+
+
+/////
+
 INSERT PROOF
+
+UMUT: This analysis is trickier that it appears. First, the size of
+the tree list changes and the cost depends on that so it is difficult
+to account far that.
+
+Second a deletion increases the potential, so we need a more clever
+potential function that actually leads to a decrease in the potential.
+
+A simpler banker's technique might work better.  We put two dollars
+on each inserted item, one to pay for its insertion to the tree list,
+and one for its deletion and we show that this is sufficient.
+
+Analysis attempt below.
+ 
+More precisely, we can use the potential function method to
+present an amortized analysis of this data structure.  Let's define
+the potential of the data structure as latexmath:[$m \cdot
+\log{n}/K$], where latexmath:[$m$] is the number of elements in the
+buffer.  For the analysis, we assume that we start with an empty bag,
+and thus the potential is zero. Note that by definition, the potential
+is never negative, and thus this is a safe potential function. 
+
+An insertion that does not require a tree list operation increases the
+potential by latexmath:[$\log{n}/K$] and thus its amortized cost is
+the desired value. An insertion that requires an insertion to the tree
+list decreases the potential by latexmath:[$\log{n}$], and thus the
+amortized cost of the operation is latexmath:[$0$] (assuming that
+constant factors are all latexmath:[$1$]).
+
+A deletion that does not require a tree list operation decreases the
+potential by latexmath:[$\log{n}/K$] and thus its amortized cost is
+the desired value. A deletion that requires an deletion from the tree
+list increases the potential by latexmath:[$\log{n}$], and thus the
+amortized cost of the operation is latexmath:[$\log{n}$] THIS DOES NOT
+WORK...
+
+/////
+
 
 
 === Chapter Notes
