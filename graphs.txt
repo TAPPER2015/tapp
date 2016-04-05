@@ -893,13 +893,15 @@ observing any ordering constraints.
 ====
 
 Consider the following graph that consists of two deep parallel
-branches, the dotted lines indicate a long chain of vertices.  For all
-practical purposes, when using BFS, there is no parallelism in this
-graph, because each level consists of a very small number of vertices.
-In fact, even a graph that has hundreds of such parallel chains may
-offer too little parallelism for PBFS.  Using PDFS, however, the
-parallel chains can all be traversed in parallel effectively, without
-any synchronization.
+branches, the dotted lines indicate a long chain of vertices.  A BFS
+on this graph visits each level in order, synchronizing after each.
+Since there are only two vertices in each level, there is no practical
+benefit to parallelizing the visits inside a level.  Thus, for all
+practical purposes, there is no parallelism in this graph when using
+BFS.  In fact, even a graph that has hundreds of such parallel chains
+may offer too little parallelism.  Using PDFS, however, the parallel
+chains can all be traversed in parallel effectively, because there is
+no need for synchronization.
 
 image::jpgs-620H/directed-graph-deep.jpg["A deep graph with parallel chains.",width="500pt",align="center"]
 
@@ -922,7 +924,9 @@ have been visited.
 
 ====
 
-We can write the pseudocode for PDFS as follows.  
+We can write the pseudocode for PDFS as follows.  In order to search
+the graph in parallel, we rely on a global `visited` array that keeps
+a flag for each vertex visited.
 
 .Pseudocode for PDFS
 ----
@@ -935,12 +939,16 @@ pdfs_rec (G, visited, frontier) =
         N = out_neighbors (G, v) in
         pdfs_rec (G, visited, N)    
   else
-    (frontier_1, frontier_2) = split frontier
+    let {v_1, ..., v_m} be frontier
+    mm = m/2
+    frontier_1 = {v_1, ..., v_mm}
+    frontier_2 = frontier set-minus frontier_1
+
     async pdfs_rec (G, visited, frontier_1)
     async pdfs_rec (G, visited, frontier_2)
 
 pdfs (G, source) =  
-  frontier = {source}
+  let frontier = {source}
 
   parallel for i = 1 to n do
       visited[i] = false
@@ -980,47 +988,59 @@ spawns off a parallel computation to perform the given argument.  In
 order to achieve a low span, it is important that the `split`
 operations splits the frontier evenly.
 
+Note that all the parallel computations created by a run of `pdfs_rec`
+synchronize exactly at one point, which is the `finish` block at the
+end of the computation.
+
 ==== Work Efficient PDFS
 
-It seems unlikely for this algorithm to be asymptotically and
+The algorithm presented above is neither asymptotically and nor
 observably work efficient, because of two issues.
+
+. The algorithm relies on a frontier data structure that the serial
+DFS algorithm does not use.  In fact, the serial DFS algorithm uses no
+auxiliary data structures, except perhaps a simple stack.
 
 . The algorithm creates tiny threads by recursing down to single
 element frontiers.  
 
-. The algorithm relies on a frontier data structure that the serial
-DFS algorithm does not use.  In fact, the serial DFS algorithm uses no
-auxiliary data structures.
-
-To solve the first problem, we might be tempted to change change the
-base case of the algorithm so that it considers larger frontiers for
-sequential processing.  Such an algorithm, which uses a "frontier"
-data structure (to be discussed soon) is shown below.  The algorithm
-stops when it encounters a small frontier consisting of `K` or fewer
-vertices and visits `K` vertices until it generates parallelism.
+To solve these problems, we shall design a *_frontier data structure_*
+specifically geared towards supporting the efficient operations needed
+by parallel BFS.  This data structure should support various
+operations such as insertion and deletion of vertices, splitting of
+the frontier into two even halves, and unioning of two frontiers. 
+To solve the second problem, we might be tempted to
+change change the base case of the algorithm so that it considers
+larger frontiers for sequential processing.  The pseudo-code for such
+an algorithm is shown below.  The algorithm stops when it encounters a
+small frontier consisting of `K` or fewer vertices and visits `K`
+vertices until it generates parallelism.  In the presentation for the
+algorithm, we treat the frontier data structure, `frontier`, as
+imperative data structure, which gets updated by the operations
+performed on it.
 
 .Pseudocode for granularity-controlled PDFS, Attempt 1
 ----
 pdfs_rec (G, visited, frontier) = 
-  if size(frontier) = 0 then
+  if frontier.size = 0 then
     return ()
-  else if size(frontier) <= K then 
+  else if frontier.size <= K then 
     repeat 
-      (v, frontier') = remove frontier in
+      v =  frontier.remove ()
       if compare_and_swap (&visited[v], false, true) succeeds then
         (* v is not visited. *)
         visit v
-        f = frontierFromSeq (out_neighbors (G,v)) 
-        frontier = frontier' union f
+        f = mkFrontierFromSequnce (out_neighbors (G,v)) 
+        frontier.union f
     until 
       K vertices are visited 
       or
-      size(frontier) = 0
+      frontier.size = 0
 
       (* PDFS recursively on the remaining frontier *)
       pdfs_rec (G, visited, frontier)        
   else
-    (frontier_1, frontier_2) = split F in
+    (frontier_1, frontier_2) = frontier.split 
     async pdfs_rec (G, visited, frontier_1)
     async pdfs_rec (G, visited, frontier_2)
 ----
@@ -1042,21 +1062,21 @@ a singleton frontiers.
 ----
 pdfs_rec (G, visited, frontier) = 
   repeat 
-    if size(frontier) = 0 then
+    if frontier.size = 0 then
       return ()
 
-    (v, frontier') = remove frontier in
+    v = frontier.remove ()
     if compare_and_swap (&visited[v], false, true) succeeds then
       (* v is not visited. *)
       visit v
-      f = frontierFromSeq (out_neighbors (G,v)) 
-      frontier = frontier' union f
+      f = mkFrontierFromSequence (out_neighbors (G,v)) 
+      frontier.union f
   until 
     at least K vertices are visited 
     and 
-    size(frontier) > 1
+    frontier.size > 1
 
-  (frontier_1, frontier_2) = split F in
+  (frontier_1, frontier_2) = frontier.split () in
   async pdfs_rec (G, visited, frontier_1)
   async pdfs_rec (G, visited, frontier_2)
 ----
@@ -1065,20 +1085,24 @@ pdfs_rec (G, visited, frontier) =
 Since the serial DFS algorithm does not use any data structures to
 represent the frontier, making PDFS work efficient requires designing
 an efficient, ideally constant-time, frontier data structure.  This
-data structure needs to support (at least) the following operations:
+data structure needs to support (at least) the following operations.
 
-. `mkEmpty`: return an empty frontier
-. `remove`: remove a vertex from a given frontier
-. `insert`: insert a vertex into given frontier
-. `union`: union two frontiers
-. `split`: split a given  frontier into two frontiers, preferably evenly
-. `frontierFromSeq`: constructs a frontier from a sequence.
+. `mkEmpty`: return an empty frontier.
+. `mkFrontierFromSequence`: constructs a frontier from a sequence.
+. `insert`: insert a vertex into given frontier.
+. `remove`: remove a vertex from a given frontier.
+. `split`: split a given  frontier into two frontiers, preferably evenly.
+. `union`: union two frontiers.
 
-Note that the `union` and `split` operation are destructive, i.e.,
-they may consume their arguments in order to produce their output.
-Note also that the operation `frontierFromSeq` can be implemented by starting with an
-empty frontier and inserting the elements of the sequence one by one
-into it. A more direct implementation can be more efficient, however.
+
+For our purposes, an imperative data structure, where the operations
+`insert`, `remove`, `split`, and `union` destructively update the
+frontier suffices.  Such imperative data structures may consume their
+argument frontier in order to produce their output.  Note also that
+the operation `mkFrontierFromSequence` can be implemented by starting
+with an empty frontier and inserting the elements of the sequence one
+by one into it. A more direct implementation can be more efficient,
+however.
 
 Since the frontier data structure does not have to enforce any
 ordering on the vertices and since a vertex can be inserted into the
@@ -1090,7 +1114,7 @@ these operations efficiently can be very useful for many
 parallel algorithms, not just PDFS. 
 
 In what follows, we first consider a data structure that supports all
-bag operations in qlogarithmic work and span.  We then introduce a
+bag operations in logarithmic work and span.  We then introduce a
 "chunking" mechanism for improving the constant factors, which is
 important for observable work efficiency. It is also possible to
 refine the data structure to reduce the work of `insert` and `delete`
