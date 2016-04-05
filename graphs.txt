@@ -981,19 +981,19 @@ element frontiers.
 DFS algorithm does not use.  In fact, the serial DFS algorithm uses no
 auxiliary data structures.
 
-The first issue is can be partially ameliorated by changing the base
-case to visit multiple vertices.  Such an algorithm is shown below.
-The algorithm also uses a frontier data structure, which we shall
-discuss soon.  The algorithm stops when it encounters a small
-frontier consisting of `K` or fewer vertices and visits `K` vertices until
-it generates parallelism.
+To solve the first problem, we might be tempted to change change the
+base case of the algorithm so that it considers larger frontiers for
+sequential processing.  Such an algorithm, which uses a "frontier"
+data structure (to be discussed soon) is shown below.  The algorithm
+stops when it encounters a small frontier consisting of `K` or fewer
+vertices and visits `K` vertices until it generates parallelism.
 
-.Pseudocode for granularity-controlled PDFS
+.Pseudocode for granularity-controlled PDFS, Attempt 1
 ----
 pdfs_rec (G, visited, frontier) = 
-  if size (frontier) = 0 then
+  if size(frontier) = 0 then
     ()
-  else if size (frontier) <= K then 
+  else if size(frontier) <= K then 
     repeat 
       (v, frontier') = remove frontier in
       if compare_and_swap (&visited[v], false, true) succeeds then
@@ -1004,7 +1004,7 @@ pdfs_rec (G, visited, frontier) =
     until 
       K vertices are visited 
       or
-      size (frontier) = 0
+      size(frontier) = 0
 
       (* PDFS recursively on the remaining frontier *)
       pdfs_rec (G, visited, frontier)        
@@ -1013,6 +1013,45 @@ pdfs_rec (G, visited, frontier) =
     async pdfs_rec (G, visited, frontier_1)
     async pdfs_rec (G, visited, frontier_2)
 ----
+
+This algorithm, however, is not quite correct, because it can explore
+a graph with a small frontier entirely serially.  In other words, the
+algorithm above serializes too aggressively. What we would like to do
+instead is to generate parallelism but amortize the cost of doing so
+by performing a commensurate amount of serial work.  The pseudo-code
+for an algorithm that follows this technique is shown below.  Note
+that the algorithm performs, at each recursive call, a fair amount of
+serial work by visiting latexmath:[$K$] vertices serially.  But after
+it does so, the algorithm splits the frontier and explores the two
+frontiers in parallel.  Note that the algorithm avoids splitting
+a singleton frontiers.
+
+
+.Pseudocode for granularity-controlled PDFS
+----
+pdfs_rec (G, visited, frontier) = 
+  repeat 
+    if size(frontier) = 0 then
+      return ()
+
+    (v, frontier') = remove frontier in
+    if compare_and_swap (&visited[v], false, true) succeeds then
+      (* v is not visited. *)
+      visit v
+      f = frontierFromSeq (out_neighbors (G,v)) 
+      frontier = frontier' union f
+  until 
+    at least K vertices are visited 
+    and 
+    size(frontier) > 1
+
+  (frontier_1, frontier_2) = split F in
+  async pdfs_rec (G, visited, frontier_1)
+  async pdfs_rec (G, visited, frontier_2)
+----
+
+
+
 
 Since the serial DFS algorithm does not use any data structures to
 represent the frontier, making PDFS work efficient requires designing
@@ -1042,16 +1081,280 @@ these operations efficiently can be very useful for many
 parallel algorithms, not just PDFS. 
 
 In what follows, we first consider a data structure that supports all
-required operations in logarithmic work and span.  We then introduce a
-"chunking" mechanism for improving the constant factors to the point
-that for all practical purposes, the operations require constant work.
-It is also possible to refine the data structure to reduce the work of
-`insert` and `delete` operations to be asymptotically constant.
+bag operations in qlogarithmic work and span.  We then introduce a
+"chunking" mechanism for improving the constant factors, which is
+important for observable work efficiency. It is also possible to
+refine the data structure to reduce the work of `insert` and `delete`
+operations to amortized constant but we shall not discuss this here.
 
-** HERE **
+=== Bags
+
+The basic idea behind our bag data structure is to represent the
+contents as a list of complete trees that mimic the binary
+representation of the number elements in the bag.  Recall that a
+complete tree is a tree where all internal nodes have exactly two
+children and all the leaves are at the same level.  For example, we
+shall represent a tree with 3 elements, with two complete trees of
+size 1 and 2, because the binary representation of 3 is 11; we shall
+represent a tree with 13 elements with three complete trees of size 8,
+4, and 1, because the binary representation of 13 is 1011.  The number
+0 will be represented with an empty list.
+
+The complete SML code for this bag data structure is shown below.  The
+operations insert, remove, union, and split follow the arithmetic
+operations increment, decrement, add, and divide on binary numbers.
+
+
+.The SML code for bags.
+----
+structure Bag = 
+struct
+ 
+  (* A tree is either a leaf holding a value
+     or it is a node with a size/weight field and two subtrees.
+     The size/weight field is not necessary. *)
+
+  datatype 'a tree = 
+    Leaf of 'a 
+  | Node of int * 'a tree * 'a tree
+
+  datatype 'a digit = 
+    Zero 
+  | One of 'a tree
+
+  type 'a bag = 'a digit list
+
+  exception EmptyBag
+  exception SingletonTree
+
+  (* empty bag *)
+  fun mkEmpty () = 
+    nil
+  
+  (* size of a tree, constant work *)
+  fun sizeTree t =
+    case t of
+      Leaf x => 1
+    | Node (w, l, r) =>  w
+
+  (** Utilities **)
+
+  (* link two trees, constant work *)
+  fun link (l, r) = 
+    Node (sizeTree l + sizeTree r, l, r)
+
+  (* unlink two trees, constant work *)
+  fun unlink t = 
+    case t of 
+      Leaf _ => raise SingletonTree
+    | Node (_, l, r) => (l,r)
+ 
+  (* insert a tree into a bag. *)
+  fun insertTree (t, b) = 
+    case b of
+      nil => [One t]
+    | Zero::b' => (One t)::b'
+    | One t'::b' => 
+    let 
+      val tt' = link (t,t') 
+      val b'' = insertTree (tt', b')
+    in
+      Zero::b''
+    end
+
+  (* borrow a tree from a bag. *)
+  fun borrowTree b = 
+    case b of
+      nil => raise EmptyBag
+    | (One t)::nil => (t, nil) 
+    | (One t)::b' => (t, Zero::b')
+    | Zero::b' => 
+      let 
+        val (t', b'') = borrowTree b'
+        val Node(_, l, r) = t' 
+      in
+        (l, (One r)::b'')
+      end
+
+  (** Mainline **)
+
+  (* insert element into a bag *)
+  fun insert (x, b) = 
+    insertTree (Leaf x, b)
+
+  (* remove an element from a bag *)
+  fun remove b = 
+    let 
+      val (Leaf x, b') = borrowTree b 
+    in 
+      (x, b')
+    end
+
+  (* union two bags. *)
+  fun union (b, c) =
+    case (b,c) of 
+      (_, nil) => b
+    | (nil, _) => c
+    | (d::b', Zero::c') => d::union(b',c')
+    | (Zero::b', d::c') => d::union(b',c')
+    | ((One tb)::b', (One tc)::c') => 
+      let
+        val t = link (tb, tc)
+        val bc' = union (b',c')
+      in 
+        Zero::(insertTree (t, bc'))
+      end
+
+  fun split b = 
+    let 
+      (* even number of elements, split all trees *)
+      fun split_even b = 
+        case b of 
+          nil => (nil, nil)
+        | Zero::b' => 
+          let
+            val (c,d) = split_even b'
+          in
+            (Zero::c, Zero::d)
+          end
+        | (One t)::b' =>
+          let
+            val (l,r) = unlink t
+            val (c,d) = split_even b'
+          in
+            ((One l)::c, (One r)::d)
+          end
+     in
+       case b of 
+         nil => (nil, nil)
+       | Zero::b' => 
+           (* Even number of elements *)
+           split_even b'
+       | (One t)::b' => 
+         (* Odd number of elements *)
+         let 
+           val (c,d) = split_even b'
+         in 
+           (insertTree (t,c), d)
+         end
+     end
+       
+end
+
+----
+
+Some of this code is taken directly from Chris Okasaki's book on
+Purely Functional Data Structures.  The version presented here extends
+Okasaki's presentation with union and split functions.                                                        
+
+USE BLACKBOARD TO DISCUSS THE DATA STRUCTURE
+
+
+==== Chunking for Observable Efficiency
+
+Logarithmic-work data structures such as trees are reasonably fast
+asymptotic data structures but not when compared to constant-time
+array based data structures that does not require memory allocation
+and deallocation.  On current architectures, such array based
+implementations are on average one-order of magnitude faster in
+practice.  We shall now see a technique that we call *_chunking_* that
+can significantly reduce the cost of some of these operations.
+Specifically, in the case of the bag data structure we shall reduce
+the amortized cost of insertions and deletions to
+latexmath:[$O(\log{n} / K)$], where latexmath:[$K$] is the chunk size.
+This means that if we set the chunk size to be a value such as 512,
+the cost is no more than latexmath:[$ 10 \cdot 64 / 512 = 1.25$],
+which is 25% slower than the array based data structure, an acceptable
+overhead, when the size of the data structure is no more than
+latexmath:[$2^64$].  Note that the size assumption is reasonable
+because on 64-bit architectures we can't store more than
+latexmath:[$2^64$] items in the main memory.  Via chunking we shall
+also reduce the cost of union and split operations to
+latexmath:[$O(\log{(n/K)}$], which is not nearly as significant an
+improvement as with the insert and delete operations.
+ 
+The basic idea behind the chunking technique is to store chunks of
+data items instead of individual data items at the leaves of the
+trees.  Each chunk is a size-latexmath:[$K$] array.  To see how this
+can help let's start with an idea that does not quite work but still
+serves as a good starting point. Let's extend the bag data structure
+with a *_buffer_* that we imagine sitting in front of the list of
+trees.  This buffer is implemented as a chunk that can hold
+latexmath:[$K$] items.  
+
+To insert an element into the bag, we follow the following procedure.
+
+. Check if there is space in the buffer.  If so,  insert the element
+into the buffer.  
+
+. If there is no space in the buffer, then insert the buffer into the
+tree list. Allocate a new buffer and insert the element into the
+buffer.
+
+To remove an element from the bag, we mirror the insertion operation.
+
+. Check if the buffer is not empty.  If not, then remove an element
+from the buffer.  
+
+. If the buffer is empty, then remove a chunk from the tree list, and
+set it as the buffer.  Remove an element from the new buffer.
+
+The `union` and `split` operations on chunked bags follow essentially
+the same algorithm as bags, but operate on chunks instead of
+individual items.  In addition, we take into account the buffers.  In
+the `union` operation, we combine the two buffers.  If the combined
+number of items exceed the capacity of the buffer, we insert a new
+chunk into the tree list.  In the `split` operation, we split the
+buffer into two equally sized buffers.
+
+By using this approach, we make sure that the tree list contains only
+full chunks.  By inserting and removing elements from the buffer
+first, we also reduce the cost of insertions and deletions. 
+
+In the worst case, however, the cost of insertions and deletions can
+still be large.  For example, consider the case of an insertion that
+inserts the buffer into the tree list. Now follow this insertion with
+two deletions, the latter of which remove a chunk from the tree list.
+Another insertion will insert the chunk again into the tree list.
+Thus, we can force an chunk insertion or deletion nearly every other
+operation.  This is far less that what we were aiming for, a factor
+latexmath:[$1/K$] reduction in cost.  
+
+To fix this problem, we extend our approach as follows.  Instead of
+keeping a buffer for latexmath:[$K$] items, we keep a buffer for
+latexmath:[$2 \cdot K$] items. 
+
+To insert an element into the bag, we follow the following procedure.
+
+. Check if there is space in the buffer.  If so,  insert the element
+into the buffer.  
+
+. If there is no space in the buffer, then take latexmath:[$K$] items
+from the buffer and make a chunk.  Insert the chunk into the tree list
+and the item into the buffer.
+
+To remove an element from the bag, we mirror the insertion operation.
+
+. Check if the buffer is not empty.  If not, then remove an item
+from the buffer.  
+
+. If the buffer is empty, then remove a chunk from the tree list, and
+place the items into the buffer.  Remove an item from the new
+buffer.
+
+The `union` and `split` operations follow a similar procedure.
+
+We can prove that this algorithm achieves the desired factor
+latexmath:[$1/K$] reduction in the cost of insertions and deletions.
+
+INSERT PROOF
 
 
 
+
+
+//////////////////////
+// Arthur's text
 
 ===== Bag Data Structures with logarithmic time union and split
 
@@ -1320,4 +1623,4 @@ LEFT FOR FUTURE.  I think we can skip this for this iteration of the
 course.  It can be added later.  Otherwise, it is quite a bit of
 work, especially because the frontier data structure needs to be discussed.
 
-				   
+//////////////////////				   
