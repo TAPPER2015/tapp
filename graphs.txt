@@ -1,3 +1,4 @@
+[[ch:graphs]]
 == Chapter: Graphs
 
 In just the past few years, a great deal of interest has grown for
@@ -824,6 +825,7 @@ improvements?
 
 
 
+[[sec:dfs]]
 === Depth First Search
 
 In Depth First Seach (DFS), we visit vertices of a graph in "depth
