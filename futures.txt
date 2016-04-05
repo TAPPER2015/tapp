@@ -141,8 +141,9 @@ because we can perform one computation at each time step.  But when
 using parallel hardware, we can keep multiple processors busy by
 pipelining.
 
-Suppose as an example, we have a sequence of tasks latexmath:[$T^0, T^1, T^2,
-T^3, T^4, T^5]$ that we wish to compute.  Suppose furthermore that
+Suppose as an example, we have a sequence of tasks 
+latexmath:[$T^0, T^1, T^2, T^3, T^4, T^5$] that we wish to compute.  
+Suppose furthermore that
 these task depend on each other, that is a later task use the results
 of an earlier task.  Thus it might seem that there is no parallelism
 that we can exploit.  Upon further inspection, however, we may realize

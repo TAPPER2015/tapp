@@ -277,19 +277,20 @@ the vertex is visited or not.
 
 .Pseudocode for serial BFS 
 -----
+sequential_bfs (G = (V,E), s) = 
 
-void sequential_bfs (G = (V,E), s)
+  frontier = <s>
+  visited = {}
 
-frontier = <s>
-visited = {}
+  while frontier is not <> do
+    let <v,frontier_n> be frontier
+    if v is not in visited then
+      visit v
+      foreach out-neighbor u of v do
+        frontier_n = append frontier_n <u>     
+      frontier = frontier_n
 
-while frontier is not <> do
-  let <v,frontier_n> be frontier
-  if v is not in visited then
-    visit v
-    foreach out-neighbor u of v do
-      frontier_n = append frontier_n <u>     
-    frontier = frontier_n
+  return visited
 ----
 				   
 
@@ -304,10 +305,12 @@ actually be visited in parallel, as shown in the pseudo-code below.
 
 .Pseudo-code for parallel BFS
 ----
-frontier = {source}
-visited = {}
-level = 0
-while frontier is not {} do  
+parallel_bfs (G=(V,E), source) =
+
+  frontier = {source}
+  visited = {}
+  level = 0
+  while frontier is not {} do  
     next = {}
     let {v_1, ..., v_m} be frontier
     parallel for i = 1 to m do
@@ -317,6 +320,8 @@ while frontier is not {} do
     next = out_neighbors(v_1) set-union ... set-union  out_neighbors(v_m) 
     frontier = next set-difference visited
     level = level + 1
+
+  return visited
 ----
 
 .Exercise
@@ -364,23 +369,27 @@ frontier to be the vertices visited.
 
 .Pseudocode for parallel BFS
 ----
-level = 0
-parallel for i = 1 to n do 
-  visited[i] = false
+parallel_bfs (G=(V,E), source)
 
-visit source
-visited[source] = true
-frontier = {source}
+  level = 0
+  parallel for i = 1 to n do 
+    visited[i] = false
 
-while frontier is not {} do
-   level = level + 1
-   let {v_1, ..., v_m} be frontier
-   parallel for i = 1 to m do
+  visit source
+  visited[source] = true
+  frontier = {source}
+
+  while frontier is not {} do
+     level = level + 1
+     let {v_1, ..., v_m} be frontier
+     parallel for i = 1 to m do
        let {u_1, ..., u_l} be out-neighbors(v_i)
        parallel for j = 1 to l do
          if compare_and_swap (&visited[u_j], false, true) succeeds then
            visit u_j
        frontier = vertices visited at this level
+
+  return visited
 ----
 
 As show in the pseudocode, there are at least two clear opportunities
@@ -825,16 +834,18 @@ write the pseudocode for DFS as follows.
 -------------------
 dfs_rec (G, visited, v) = 
   if v in visited
-    visited
+    return visited
   else
-      visit v
-      visited = visited set-union {v}
-      let <v_1, ..., v_m> be out_neighbors(G,v)
-      for i = 1 to m do
-        visited = dfs_rec (G, visited, v_i) 
+    visit v
+    visited = visited set-union {v}
+    let <v_1, ..., v_m> be out_neighbors(G,v)
+    for i = 1 to m do
+      visited = dfs_rec (G, visited, v_i) 
+    return visited
 
 dfs (G, source) = 
-  dfs_rec (G, {}, source)
+  visited = dfs_rec (G, {}, source)
+  return visited
 -------------------
 
 .DFS 
@@ -917,7 +928,7 @@ We can write the pseudocode for PDFS as follows.
 ----
 pdfs_rec (G, visited, frontier) = 
   if frontier = {} then
-    ()
+    return ()
   else if {v} = frontier then
     if compare_and_swap (&visited[v], false, true) succeeds then
         visit v
@@ -937,9 +948,9 @@ pdfs (G, source) =
   finish  {
     pdfs_rec (G, visited, frontier) 
   }
-  
-----
 
+ return visited 
+----
 
 The function `pdfs` takes as argument the graph and the source vertex
 and calls.  It starts by setting up a `visited` array where all
@@ -992,7 +1003,7 @@ vertices and visits `K` vertices until it generates parallelism.
 ----
 pdfs_rec (G, visited, frontier) = 
   if size(frontier) = 0 then
-    ()
+    return ()
   else if size(frontier) <= K then 
     repeat 
       (v, frontier') = remove frontier in
@@ -1014,7 +1025,7 @@ pdfs_rec (G, visited, frontier) =
     async pdfs_rec (G, visited, frontier_2)
 ----
 
-This algorithm, however, is not quite correct, because it can explore
+This algorithm, however, is not quite what we want, because it can explore
 a graph with a small frontier entirely serially.  In other words, the
 algorithm above serializes too aggressively. What we would like to do
 instead is to generate parallelism but amortize the cost of doing so
@@ -1049,8 +1060,6 @@ pdfs_rec (G, visited, frontier) =
   async pdfs_rec (G, visited, frontier_1)
   async pdfs_rec (G, visited, frontier_2)
 ----
-
-
 
 
 Since the serial DFS algorithm does not use any data structures to

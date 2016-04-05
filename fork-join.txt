@@ -181,7 +181,7 @@ WARNING: Naama: there are also sequential algorithms that can caluclate Fib(n) i
 ////////////////////////
 
 
-[source, {cpp}]
+[source,{cpp}]
 ----
 long fib_seq (long n) {
   long result;
@@ -204,7 +204,7 @@ can therefore perform the recursive calls in parallel.  In general,
 any two independent functions can be run in parallel.  To indicate
 that two functions can be run in parallel, we use `fork2()`.
 
-[source, {cpp}]
+[source,{cpp}]
 ----
 long fib_par(long n) {
   long result;
@@ -302,7 +302,7 @@ written by replacing the call to `fork2()` with a statement that
 performs the two calls (arguments of `fork2()`) sequentially as
 follows.
 
-[source, {cpp}]
+[source,{cpp}]
 ----
 long fib_par(long n) {
   long result;

@@ -156,7 +156,7 @@ local variable `i` denotes the id of the processor.  The computation
 starts by each processor executing this piece of code.
 
 .PRAM code for array sum
-[source,cpp]
+[source,{cpp}]
 ----
 array_sum (A, n) = 
   for j = 1 to lg n  {
@@ -247,7 +247,7 @@ transformation step is usually routine, and is often omitted.
 
 The array-sum algorithm can be written as follows.
 
-[source,cpp]
+[source,{cpp}]
 ----
 array_sum (A, n) = 
   for j = 1 to lg n  {

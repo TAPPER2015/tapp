@@ -27,6 +27,8 @@ book.html: $(SOURCES)
 current.html: $(SOURCES)
 	asciidoc -a toc current.txt
 
+current.pdf: $(SOURCES)
+	asciidoc --backend docbook45 current.txt ; dblatex current.xml 
 
 tapp.html: $(SOURCES)
 	asciidoc -a data-uri  -a toc book.txt

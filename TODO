@@ -10,6 +10,10 @@ OUTLINE
   Designing parallel algorithms: graph search, BFS
   Designing parallel algorithms: graph contraction
 
+o Pseudocode
+ 
+  Use return consistently.
+
 o Preliminaries
   
   process
