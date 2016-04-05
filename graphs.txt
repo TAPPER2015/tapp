@@ -1096,7 +1096,7 @@ important for observable work efficiency. It is also possible to
 refine the data structure to reduce the work of `insert` and `delete`
 operations to amortized constant but we shall not discuss this here.
 
-=== Bags
+==== Bags
 
 The basic idea behind our bag data structure is to represent the
 contents as a list of complete trees that mimic the binary
@@ -1252,14 +1252,11 @@ end
 
 ----
 
-Some of this code is taken directly from Chris Okasaki's book on
-Purely Functional Data Structures.  The version presented here extends
-Okasaki's presentation with union and split functions.                                                        
 
 USE BLACKBOARD TO DISCUSS THE DATA STRUCTURE
 
 
-==== Chunking for Observable Efficiency
+===== Chunking for Observable Efficiency
 
 Logarithmic-work data structures such as trees are reasonably fast
 asymptotic data structures but not when compared to constant-time
@@ -1359,8 +1356,14 @@ latexmath:[$1/K$] reduction in the cost of insertions and deletions.
 INSERT PROOF
 
 
+=== Chapter Notes
 
-
+The bag data structure presented in this chapter is based on the
+random-access list data structure of Chris Okasaki [Chris
+Okasaki. Purely Functional Data Structures. PhD Thesis, Carnegie
+Mellon University].  The version presented here extends Okasaki's
+presentation with union and split functions that can be used to union
+two bags and to split a bag evenly into two bags.
 
 //////////////////////
 // Arthur's text
