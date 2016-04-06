@@ -199,6 +199,45 @@ struct
       in 
         Zero::(insertTree (t, bc'))
       end
+(* Work in progress 
+  (* union two bags with explicity carry. *)
+  fun union (b, c) =
+    let 
+      unionWithCarry carry (b, c) = 
+        case (b,c) of 
+          (_, nil) => 
+            case carry of 
+              NONE => b
+            | Some t => insertTree (t, b)
+        
+        | (nil, _) => 
+            case carry of 
+              NONE => c
+            | SOME t => insertTree (t, c)
+
+        | (d::b', Zero::c') => 
+            case carry of 
+              NONE => d::unionWithCarry NONE (b',c')
+            | SOME t =>
+                case d of 
+                  Zero => (One t)::(unionWithCarry NONE (b',c'))
+                | One tb => Zero::(unionWithCarry (SOME (link (t,tb))) (b',c'))
+
+        | (Zero::b', d::c') => d::union(b',c')
+            SYMMETRIC
+
+        | ((One tb)::b', (One tc)::c') => 
+            SLIGHTLY DIFFERENT
+          let
+            val t = link (tb, tc)
+            val bc' = union (b',c')
+          in 
+            Zero::(insertTree (t, bc'))
+          end
+  in 
+    unionWithCarry NONE (b, c)
+  end
+*)
 
   fun split b = 
     let 
