@@ -1288,10 +1288,10 @@ practice.  We shall now see a technique that we call *_chunking_* that
 can significantly reduce the cost of some of these operations.
 Specifically, in the case of the bag data structure we shall reduce
 the amortized cost of insertions and deletions to
-latexmath:[$O(\lg{n} / K)$], where latexmath:[$K$] is the chunk size.
+latexmath:[$O(\lg{n/K} / K)$], where latexmath:[$K$] is the chunk size.
 This means that if we set the chunk size to be a value such as 512,
-the cost is no more than latexmath:[$ 10 \cdot 64 / 512 = 1.25$],
-which is 25% slower than the array based data structure, an acceptable
+the cost is no more than latexmath:[$ 10 \cdot 55 / 512 = 1.08$],
+which is 8% slower than the array based data structure, an acceptable
 overhead, when the size of the data structure is no more than
 latexmath:[$2^{64}$].  Note that the size assumption is reasonable
 because on 64-bit architectures we can't store more than
@@ -1355,7 +1355,7 @@ Thus, we can force a chunk insertion or deletion nearly every other
 operation.  This is far more frequent than what we were aiming for and
 does not lead to a factor latexmath:[$1/K$] reduction in cost.
 
-REMARK: Even though this algorithm is not provably efficient, variants
+NOTE: Even though this algorithm is not provably efficient, variants
 of it are used in practice.  For example, at the time of writing,
 Standard Template Library's doubly ended queue (deque) data structure
 uses this approach to amortize the cost of insertion and deletion and
@@ -1412,9 +1412,9 @@ that is of the form
 
 [latexmath]
 +++++++++++
-
-\min{\left(0, (\mbox{size of the buffer} - K) \cdot \frac{\lg{n}}{K} \right)}.
-
+$$
+\max{\left(0, (\mbox{number of items in the buffer} - K) \right)} \cdot \frac{\lg{n}}{K}}
+$$
 +++++++++++
 
 Since this potential function is always non-negative, it is a valid
@@ -1438,11 +1438,13 @@ insertions but this requires a bit more care.
 .Exercise
 ****
 
-Show that, using a latexmath:[$2K$] size buffer, insertian and
+Show that, using a latexmath:[$2K$] size buffer, insertion and
 deletions operations require latexmath:[$O(\frac{\lg{n}}{K}$]
 amortized work/span.
 
 ****
+
+
 
  
 /////
@@ -1456,6 +1458,45 @@ option is to "transfer" its credit to another and insert it back.
 
 
 
+Here is an alternative approach using 2 chunks instead of two buffers.
+
+The idea is to use two chunks as buffer.  We call the first chunk the
+outer buffer, and the second one the inner buffer. We maintain the
+invariant that the inner buffer is always either empty or full.
+
+The insertion transitions are are follows.
+
+   - Initially, both the outer and inner buffers are empty.
+   - To insert an element, we place it into the outer buffer, if there is space.
+   - If, however, the outer buffer is full, then if the inner buffer is empty,
+     we swap the outer and the inner buffer.
+   - At this point, the inner buffer is full and we may continue inserting
+     elements in the outer buffer.
+   - Eventually, both the outer and the inner buffer become full. 
+   - To further insert elements, we insert the inner buffer as a chunk
+     into the bag (i.e. the list of complete binary trees of full chunks),
+     we set the outer
+     buffer as inner buffer, and we allocate a fresh (empty) outer buffer.
+
+The removal transitions are follows.
+
+   - If the outer buffer is not empty, we remove an element from it.
+   - If the outer buffer is empty, and if the inner buffer is not empty,
+     (in which case it must be full), then we swap the outer buffer with
+     the inner buffer and we may continue removing items from the outer buffer.
+   - Eventually, both the outer and the inner buffer become empty.
+   - To further remove elements, we remove a full chunk from
+     the bag (i.e. the list of complete binary trees of full chunks),
+     and we set this full chunk as outer buffer.
+
+To execute a union or split operation, we first get rid of the inner buffer,
+by inserting the inner buffer into the list of trees if the inner buffer is nonempty;
+then, we proceed as previously, when we had only one buffer.
+
+
+
+
+
 === Chapter Notes
 
 The bag data structure presented in this chapter is based on the
@@ -1463,7 +1504,10 @@ random-access list data structure of Chris Okasaki [Chris
 Okasaki. Purely Functional Data Structures. PhD Thesis, Carnegie
 Mellon University].  The version presented here extends Okasaki's
 presentation with union and split functions that can be used to union
-two bags and to split a bag evenly into two bags.
+two bags and to split a bag evenly into two bags.  The amortization
+technique based on chunking is adapted from a recent paper on chunked
+sequences. [Umut A. Acar, Arthur Chargueraud, Mike Rainey.  Theory and
+Practice of Chunked Sequences.]
 
 //////////////////////
 // Arthur's text
@@ -1584,6 +1628,9 @@ does the union and split operations on a list of trees with distinct sizes.
 
 
 
+
+
+
 ===== Optimizing the Constant Factors
 
 Essentially all tree-based data structures suffer from a significant
@@ -1636,6 +1683,42 @@ takes us back to the initial situation. In summary, a sequence of 4 operations
 suffices to trigger two tree operations, an allocation, and a deallocation.
 This means that, in very particular circumstances (unlikely for random input data),
 the performance of the data structure may degenerate very significantly.
+
+Fortunately, there is an easy work around. All we need to do is to
+use *two* buffers instead of just *one* buffer,
+outside of the list of complete binary trees of chunks.
+We call the first one the outer buffer, and the second one the inner
+buffer. We maintain the invariant that the inner buffer is always
+either empty or full. 
+
+The insertion transitions are are follows:
+
+   - Initially, both the outer and inner buffers are empty.
+   - To insert an element, we place it into the outer buffer, if there is space.
+   - If, however, the outer buffer is full, then if the inner buffer is empty,
+     we swap the outer and the inner buffer.
+   - At this point, the inner buffer is full and we may continue inserting
+     elements in the outer buffer.
+   - Eventually, both the outer and the inner buffer become full. 
+   - To further insert elements, we insert the inner buffer as a chunk
+     into the bag (i.e. the list of complete binary trees of full chunks),
+     we set the outer
+     buffer as inner buffer, and we allocate a fresh (empty) outer buffer.
+
+The removal transitions are are follows:
+
+   - If the outer buffer is not empty, we remove an element from it.
+   - If the outer buffer is empty, and if the inner buffer is not empty,
+     (in which case it must be full), then we swap the outer buffer with
+     the inner buffer and we may continue removing items from the outer buffer.
+   - Eventually, both the outer and the inner buffer become empty.
+   - To further remove elements, we remove a full chunk from
+     the bag (i.e. the list of complete binary trees of full chunks),
+     and we set this full chunk as outer buffer.
+
+To execute a union or split operation, we first get rid of the inner buffer,
+by inserting the inner buffer into the list of trees if the inner buffer is nonempty;
+then, we proceed as previously, when we had only one buffer.
 
 Fortunately, there is an easy work around. All we need to do is to
 use *two* buffers instead of just *one* buffer,
