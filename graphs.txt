@@ -1414,7 +1414,7 @@ that is of the form
 [latexmath]
 +++++++++++
 
-\min{\left\(0, (\mbox{size of the buffer} - K) \cdot \frac{\lg{n}}{K} \right)}.
+\min{\left(0, (\mbox{size of the buffer} - K) \cdot \frac{\lg{n}}{K} \right)}.
 
 +++++++++++
 
