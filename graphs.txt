@@ -1035,8 +1035,6 @@ pdfs_rec (G, visited, frontier) =
         f = mkFrontierFromSequnce (out_neighbors (G,v)) 
         frontier.union f
     until 
-      K vertices are visited 
-      or
       frontier.size = 0
 
       (* PDFS recursively on the remaining frontier *)
@@ -1282,8 +1280,6 @@ end
 USE BLACKBOARD TO DISCUSS THE DATA STRUCTURE
 
 
-===== Chunking for Observable Efficiency
-
 Logarithmic-work data structures such as trees are reasonably fast
 asymptotic data structures but not when compared to constant-time
 array based data structures that does not require memory allocation
@@ -1293,28 +1289,36 @@ practice.  We shall now see a technique that we call *_chunking_* that
 can significantly reduce the cost of some of these operations.
 Specifically, in the case of the bag data structure we shall reduce
 the amortized cost of insertions and deletions to
-latexmath:[$O(\log{n} / K)$], where latexmath:[$K$] is the chunk size.
+latexmath:[$O(\lg{n} / K)$], where latexmath:[$K$] is the chunk size.
 This means that if we set the chunk size to be a value such as 512,
 the cost is no more than latexmath:[$ 10 \cdot 64 / 512 = 1.25$],
 which is 25% slower than the array based data structure, an acceptable
 overhead, when the size of the data structure is no more than
-latexmath:[$2^64$].  Note that the size assumption is reasonable
+latexmath:[$2^{64}$].  Note that the size assumption is reasonable
 because on 64-bit architectures we can't store more than
-latexmath:[$2^64$] items in the main memory.  Via chunking we shall
+latexmath:[$2^{64}$] items in the main memory.  Via chunking we shall
 also reduce the cost of union and split operations to
-latexmath:[$O(\log{(n/K)}$], which is not nearly as significant an
+latexmath:[$O(\lg{(n/K)})$], which is not nearly as significant an
 improvement as with the insert and delete operations.
  
 The basic idea behind the chunking technique is to store chunks of
 data items instead of individual data items at the leaves of the
-trees.  Each chunk is a size-latexmath:[$K$] array.  To see how this
-can help let's start with an idea that does not quite work but still
-serves as a good starting point. Let's extend the bag data structure
-with a *_buffer_* that we imagine sitting in front of the list of
-trees.  This buffer is implemented as a chunk that can hold
-latexmath:[$K$] items.  
+trees.  Each chunk is a size-latexmath:[$K$] array.  
 
-To insert an element into the bag, we follow the following procedure.
+
+===== Amortization with a latexmath:[$K$]-Size Buffer
+
+Let's start with an approach that is quite common in practice but does
+not actually yield a provable improvement.  The idea is to extend the
+bag data structure with a *_buffer_* that sits in front of the list of
+trees.  This buffer is implemented as a chunk that can hold
+latexmath:[$K$] items.
+
+.A bag data structure with a size latexmath:[$K$] buffer.
+
+image::jpgs-620H/bags-amortized-k.jpg["A bag data structure with a size latexmath:[$K$] buffer.",width="300pt",align="center"]
+
+To insert an element into the bag, we follow the following algorithm.
 
 . Check if there is space in the buffer.  If so,  insert the element
 into the buffer.  
@@ -1348,15 +1352,29 @@ still be large.  For example, consider the case of an insertion that
 inserts the buffer into the tree list. Now follow this insertion with
 two deletions, the latter of which remove a chunk from the tree list.
 Another insertion will insert the chunk again into the tree list.
-Thus, we can force an chunk insertion or deletion nearly every other
-operation.  This is far less that what we were aiming for, a factor
-latexmath:[$1/K$] reduction in cost.  
+Thus, we can force a chunk insertion or deletion nearly every other
+operation.  This is far more frequent than what we were aiming for and
+does not lead to a factor latexmath:[$1/K$] reduction in cost.
 
-To fix this problem, we extend our approach as follows.  Instead of
-keeping a buffer for latexmath:[$K$] items, we keep a buffer for
-latexmath:[$2 \cdot K$] items. 
+REMARK: Even though this algorithm is not provably efficient, variants
+of it are used in practice.  For example, at the time of writing,
+Standard Template Library's doubly ended queue (deque) data structure
+uses this approach to amortize the cost of insertion and deletion and
+does exhibit the aforementioned worst-case behavior.
 
-To insert an element into the bag, we follow the following procedure.
+==== Amortization with latexmath:[$2K$]-Size Buffers
+
+The problem with the amortization approach using a
+latexmath:[$K$]-size buffer is that it is unable to ensure that
+latexmath:[$K$] operations are performed between operations on the
+tree list.  The solution for this actually quite simple.  What need is
+to use a larger capacity buffer so that a removal from the tree list
+does not lead to an insertion into the tree list after a small number
+of operations.  Since we remove latexmath:[$K$] elements from the tree
+list each time, we need additional space for latexmath:[$K$] more
+items,  and thus a buffer that can hold latexmath:[$2K$] items.
+ 
+To insert an element into the bag, we follow the following algorithm.
 
 . Check if there is space in the buffer.  If so,  insert the element
 into the buffer.  
@@ -1380,54 +1398,62 @@ The algorithm amortizes the cost of an insertion because the cost of
 every insertion into the tree list requires the buffer to be full: the
 latexmath:[$K$] items that we insert into the chunk can thus pay for
 the cost of the tree operation.  Similarly, a deletion from the tree
-list is followed by at least latexmath:[$K$] deletions from the
-buffer.
+list must be followed by at least latexmath:[$K$] deletions from the
+buffer to delete the elements that are removed from the tree list.  
+
 We can prove that this algorithm achieves the desired factor
 latexmath:[$1/K$] reduction in the cost of insertions and deletions.
+There are several ways we can go about this proof.  One option is to
+realize that each remove operation can be paired with an insert
+operation and thus we can assign remove operations an amortized cost
+of latexmath:[$0$].  To bound the amortized cost for insertions, we
+can use various techniques.  One technique is to assign to the data
+structure that contains latexmath:[$n$] items a potential function
+that is of the form
+
+[latexmath]
++++++++++++
+
+\min{\left\(0, (\mbox{size of the buffer} - K) \cdot \frac{\lg{n}}{K} \right)}.
+
++++++++++++
+
+Since this potential function is always non-negative, it is a valid
+potential function.  We can now prove that the amortized cost of
+insertion is latexmath:[$O(\frac{\lg{n}}{K})$].  There are two cases
+to consider 
+
+.  There is space in the buffer.  The actual cost of insertion is
+latexmath:[$O(1)$].  The amortized cost is actual cost plus change in
+the potential latexmath:[$O(\frac{1}{\lg{n}}$].
+
+. There is no space in the buffer and we insert latexmath:[$K$] items
+into the middle list.  The actual cost is latexmath:[$O(\lg{n})$].
+The amortized cost is latexmath:[$O(1)$] because the potential
+decreases by latexmath:[$O(\lg{n})$].
+
+We can also account for deletions separately, without charging them to
+insertions but this requires a bit more care.  
 
 
+.Exercise
+****
 
+Show that, using a latexmath:[$2K$] size buffer, insertian and
+deletions operations require latexmath:[$O(\frac{\lg{n}}{K}$]
+amortized work/span.
 
-/////
+****
 
-INSERT PROOF
-
-UMUT: This analysis is trickier that it appears. First, the size of
-the tree list changes and the cost depends on that so it is difficult
-to account far that.
-
-Second a deletion increases the potential, so we need a more clever
-potential function that actually leads to a decrease in the potential.
-
-A simpler banker's technique might work better.  We put two dollars
-on each inserted item, one to pay for its insertion to the tree list,
-and one for its deletion and we show that this is sufficient.
-
-Analysis attempt below.
  
-More precisely, we can use the potential function method to
-present an amortized analysis of this data structure.  Let's define
-the potential of the data structure as latexmath:[$m \cdot
-\log{n}/K$], where latexmath:[$m$] is the number of elements in the
-buffer.  For the analysis, we assume that we start with an empty bag,
-and thus the potential is zero. Note that by definition, the potential
-is never negative, and thus this is a safe potential function. 
-
-An insertion that does not require a tree list operation increases the
-potential by latexmath:[$\log{n}/K$] and thus its amortized cost is
-the desired value. An insertion that requires an insertion to the tree
-list decreases the potential by latexmath:[$\log{n}$], and thus the
-amortized cost of the operation is latexmath:[$0$] (assuming that
-constant factors are all latexmath:[$1$]).
-
-A deletion that does not require a tree list operation decreases the
-potential by latexmath:[$\log{n}/K$] and thus its amortized cost is
-the desired value. A deletion that requires an deletion from the tree
-list increases the potential by latexmath:[$\log{n}$], and thus the
-amortized cost of the operation is latexmath:[$\log{n}$] THIS DOES NOT
-WORK...
-
 /////
+
+One option is to change the algorithm slightly so that once removed
+from the tree list, an item is never inserted back again.  Another
+option is to "transfer" its credit to another and insert it back.
+
+
+////
 
 
 
@@ -1686,7 +1712,7 @@ about when using finger trees?
 
 ****   
 
-An latexmath:[$O(\log{n})$]-work implementation does not give us a
+An latexmath:[$O(\lg{n})$]-work implementation does not give us a
 work-efficient algorithm, however. At the very least, we would like to
 achieve constant work `insert` and `remove` operations and do so with
 very small constant factors.  We can afford a more expensive `split`
