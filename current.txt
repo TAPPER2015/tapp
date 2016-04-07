@@ -46,7 +46,6 @@ Author: {author}
 
 // include::models.txt[]
 
-//include::graphs-arthur.txt[]
 include::graphs.txt[]
 
 //include::graphs.txt[]
