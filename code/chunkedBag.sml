@@ -1,23 +1,44 @@
-structure Bag =
+structure ChunkedBag =
 struct
   datatype 'a tree =
-    Leaf of 'a
+    Leaf of 'a list
   | Node of int * 'a tree * 'a tree
 
   datatype 'a digit =
     Zero
   | One of 'a tree
 
+  type 'a buffer = 'a list
+
   type 'a bag = 'a digit list
+
+  type 'a chunkedbag = 'a buffer * 'a bag
 
   exception EmptyBag
   exception SingletonTree
 
+  val maxLeafSize = 1024
+
   (** Utilities **)
+
+  fun listToString toString l =
+    let
+      fun listToString' toString l' =
+        case l' of
+          [] => "]"
+        | a::ll' => (toString a) ^ "," ^ (listToString' toString ll')
+    in
+      "[" ^ (listToString' toString l)
+    end
+
+  fun listContentToString toString l =
+    case l of
+      [] => ""
+    | a::l' => (toString a) ^ (listContentToString toString l')
 
   fun treeToString toString t =
     case t of
-      Leaf x => "Leaf: " ^ toString x ^ ""
+      Leaf x => "Leaf: " ^ (listToString toString x)
     | Node (w, l, r) =>
       let
         val ls = treeToString toString l
@@ -33,7 +54,7 @@ struct
 
   fun treeContentsToString toString t =
     case t of
-      Leaf x =>  toString x
+      Leaf x => listContentToString toString x
     | Node (w, l, r) =>
       let
         val ls = treeContentsToString toString l
@@ -113,21 +134,45 @@ struct
       print ("Bag = \n" ^ s ^ "\n")
     end
 
+  fun printChunkedBag toString cb =
+    let
+      val (buf, b) = cb
+      val bufs = "Buffer:" ^ "\n" ^ (listToString toString buf) ^ "\n"
+    in
+      print ("ChunkedBag = \n" ^ bufs);
+      printBag toString b
+    end
+
   fun printBagContents toString b =
     let
       val s = bagContentsToString toString b
     in
-      print ("Bag Contents = \n" ^ s ^ "\n")
+      print ("Bag Contents = \n " ^ s ^ "\n")
+    end
+
+  fun printChunkedBagContents toString cb =
+    let
+      val (buf, b) = cb
+      val bufs = "Buffer Contents:" ^ "\n" ^ (listContentToString toString buf) ^ "\n"
+    in
+      print ("ChunkedBag Contents = \n" ^ bufs);
+      printBagContents toString b
     end
 
   fun printBagAsDecimal b =
     print ("Decimal value: " ^ Int.toString (bagToDecimal b) ^ "\n")
 
+  fun printChunkedBagAsDecimal cb =
+    let
+      val (buf, b) = cb
+    in
+      print ("Decimal value: " ^ Int.toString ((bagToDecimal b) * maxLeafSize + List.length buf) ^ "\n")
+    end
 
   (* size of a tree, constant work *)
   fun sizeTree t =
     case t of
-      Leaf x => 1
+      Leaf x => List.length x
     | Node (w, l, r) =>  w
 
   (* link two trees, constant work *)
@@ -141,6 +186,7 @@ struct
     | Node (_, l, r) => (l,r)
 
   (* insert a tree into a bag. Interesting invariant re tree sizes.*)
+  (* implement using chunking *)
   fun insertTree (t, b) =
     case b of
       nil => [One t]
@@ -154,6 +200,7 @@ struct
     end
 
   (* borrow a tree from a bag. Interesting invariant with trees. *)
+  (* implement using chunking *)
   fun borrowTree b =
     case b of
       nil => raise EmptyBag
@@ -167,11 +214,11 @@ struct
         (l, (One r)::b'')
       end
 
-  (** Mainline **)
+(*  (** Mainline **)
 
   (* empty bag *)
   fun mkEmpty () =
-    nil
+    ([], nil)
 
   (* insert element into a bag *)
   fun insert (x, b) =
@@ -199,51 +246,6 @@ struct
       in
         Zero::(insertTree (t, bc'))
       end
-
-  (* union two bags with explicity carry. *)
-  fun union' (b, c) =
-    let
-      fun unionWithCarry carry (b, c) =
-        case (b,c) of
-          (_, nil) =>
-            (case carry of
-               NONE => b
-             | SOME t  => insertTree (t, b))
-
-        | (nil, _) =>
-            (case carry of
-              NONE => c
-             | SOME t => insertTree (t, c))
-
-        | (d::b', Zero::c') =>
-            (case carry of
-               NONE => d::(unionWithCarry NONE (b',c'))
-             | SOME t =>
-                 (case d of
-                    Zero => (One t)::(unionWithCarry NONE (b',c'))
-                  | One tb => Zero::(unionWithCarry (SOME (link (t,tb))) (b',c'))))
-
-        | (Zero::b', d::c') =>
-            (case carry of
-               NONE => d::(unionWithCarry NONE (b',c'))
-             | SOME t =>
-                 (case d of
-                    Zero => (One t)::(unionWithCarry NONE (b',c'))
-                  | One tc => Zero::(unionWithCarry (SOME (link (t,tc))) (b',c'))))
-
-
-        | ((One tb)::b', (One tc)::c') =>
-          let
-            val tbc = link (tb,tc)
-          in
-            case carry of
-              NONE => Zero::(unionWithCarry (SOME tbc) (b',c'))
-            | SOME t => (One t)::(unionWithCarry (SOME tbc) (b',c'))
-          end
-  in
-    unionWithCarry NONE (b, c)
-  end
-
 
   fun split b =
     let
@@ -327,9 +329,6 @@ struct
        val _ = printBag Int.toString f
      in
         ()
-     end
-
-
-
+     end*)
 
 end
