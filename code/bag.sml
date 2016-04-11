@@ -173,6 +173,8 @@ struct
   fun mkEmpty () =
     nil
 
+  fun size b = bagToDecimal b
+
   (* insert element into a bag *)
   fun insert (x, b) =
     insertTree (Leaf x, b)
