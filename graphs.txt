@@ -1132,6 +1132,11 @@ represent a tree with 13 elements with three complete trees of size 8,
 4, and 1, because the binary representation of 13 is 1011.  The number
 0 will be represented with an empty list.
 
+Note that union and split take advantage of the ordered nature of the
+data structure.
+
+
+
 The complete SML code for this bag data structure is shown below.  The
 operations insert, remove, union, and split follow the arithmetic
 operations increment, decrement, add, and divide on binary numbers.
