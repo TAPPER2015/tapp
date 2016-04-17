@@ -1,15 +1,14 @@
 structure Test =
 struct
   structure Bag = Bag
-  structure CBag = ChunkedBag
+  structure CLBag = ChunkedListBag
+  structure BagTest = MkBagTest(structure Bag = Bag)
+  structure CLBagTest = MkBagTest(structure Bag = CLBag)
 
-  val test =
+  fun test n =
     let
-      val e = Bag.mkEmpty ()
-      val za = Bag.insert (0, e)
-      val zta = Bag.insert (1, e)
-      val ce = CBag.mkEmpty ()
-      val zca = CBag.insert (0, ce)
+      val () = BagTest.bulkInsertionTest n
+      val () = CLBagTest.bulkInsertionTest n
     in
       ()
     end

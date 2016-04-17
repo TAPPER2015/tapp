@@ -1,175 +1,126 @@
-structure ChunkedListBag = 
+functor MkChunkedBag (structure Chunk : CHUNK) :> BAG =
 struct
+
+  structure Chunk = Chunk
   structure Bag = Bag
 
-  type 'a chunk = a list
-  datatype 'a chunkedListBag = 
-    Empty 
-  | Full of ('a chunk option * 'a chunk option) Bag.bag
+  type 'a buffer = 'a Chunk.chunk
+  type 'a bag = 'a buffer * 'a buffer * 'a buffer Bag.bag
 
-  (* empty bag *)
-  fun mkEmpty () = Empty
-  
+  (* invariant:
+    1. two buffers act like a stack whose top is the front of bf1,
+      and whose bottom is the back of bf2.
+    2. when the first buffer is nonempty, the second buffer must be full
+    3. when the second buffer is empty, the first buffer must be empty
+  *)
+
+  exception EmptyBag
+  exception IncompleteList
+  exception SingletonTree
+
+  val maxLeafSize = 8
+
   (** Utilities **)
-  fun cbagToString toString b = 
-    ...
-  fun cbagContentsToString toString b = 
-    ..
-  (** Mainline **)
 
-  (* insert element into a bag *)
-  fun insert (x, b) = 
-    case b of 
-    ... 
-       => Bag.insert (chunk)
-
-  (* remove an element from a bag *)
-  fun remove b = 
-    let 
-      val (Leaf x, b') = borrowTree b 
-    in 
-      (x, b')
+  fun printBag toString (cb as (bf1, bf2, b)) =
+    let
+      val bufs = "Buffers:" ^ "\n" ^ (Chunk.toString toString bf1) ^ "\n" ^
+        (Chunk.toString toString bf2) ^ "\n"
+    in
+      print ("ChunkedBag = \n" ^ bufs);
+      Bag.printBag (Chunk.toString toString) b
     end
 
-  (* union two bags. *)
-  fun union (b, c) =
-    case (b,c) of 
-      (_, nil) => b
-    | (nil, _) => c
-    | (d::b', Zero::c') => d::union(b',c')
-    | (Zero::b', d::c') => d::union(b',c')
-    | ((One tb)::b', (One tc)::c') => 
+  fun printBagContents toString (cb as (bf1, bf2, b)) =
+    let
+      val bufs = "Buffer Contents:" ^ "\n" ^ (Chunk.contentToString toString
+        bf1) ^ "\n" ^ (Chunk.contentToString toString bf2) ^ "\n"
+    in
+      print ("ChunkedBag Contents = \n" ^ bufs);
+      Bag.printBagContents (Chunk.toString toString) b
+    end
+
+  fun printBagAsDecimal (cb as (bf1, bf2, b)) =
+    print ("Decimal value: " ^ Int.toString ((Bag.bagToDecimal b)
+    * maxLeafSize + (Chunk.size bf1) + (Chunk.size bf2)) ^ "\n")
+
+  (** Mainline **)
+
+  (* empty bag *)
+  fun mkEmpty () =
+    (Chunk.empty (), Chunk.empty (), Bag.mkEmpty ())
+
+  fun size (cb as (bf1, bf2, b)) =
+    (Chunk.size bf1) + (Chunk.size bf2) + (Bag.size b)
+
+  (* insert element into a bag *)
+  (* insert into the second buffer first, then the first one *)
+  (* when the second one is full, call insertTree on the first buffer *)
+  (* and move the first one forward *)
+  fun insert (x, cb as (bf1, bf2, b)) =
+    if (Chunk.isFull bf2)
+    then
+      if (Chunk.isFull bf1)
+      then (Chunk.empty (), bf1, Bag.insert (bf2, b))
+      else (Chunk.push(x, bf1), bf2, b)
+    else (* bf1 must be nil *)
+      (bf1, Chunk.push(x, bf2), b)
+
+
+  (* remove an element from a bag *)
+  (* remove a full list from tree only when the both list is empty *)
+  (* if the second list is empty, the first one must be *)
+  fun remove (cb as (bf1, bf2, b)) =
+    if (Chunk.isEmpty bf2)
+    then
       let
-        val t = link (tb, tc)
-        val bc' = union (b',c')
-      in 
-        Zero::(insertTree (t, bc'))
+        val (buf, b') = Bag.remove b
+      in
+        if Chunk.isEmpty buf then raise EmptyBag
+        else let val (x, buf') = Chunk.pop buf
+             in (x, (bf1, buf', b')) end
       end
-(* Work in progress 
-  (* union two bags with explicity carry. *)
-  fun union (b, c) =
-    let 
-      unionWithCarry carry (b, c) = 
-        case (b,c) of 
-          (_, nil) => 
-            case carry of 
-              NONE => b
-            | Some t => insertTree (t, b)
-        
-        | (nil, _) => 
-            case carry of 
-              NONE => c
-            | SOME t => insertTree (t, c)
+    else
+      if Chunk.isEmpty bf1
+      then let val (y2, bf2') = Chunk.pop bf2
+           in (y2, (bf1, bf2', b)) end
+      else let val (y1, bf1') = Chunk.pop bf1
+           in (y1, (bf1', bf2, b)) end
 
-        | (d::b', Zero::c') => 
-            case carry of 
-              NONE => d::unionWithCarry NONE (b',c')
-            | SOME t =>
-                case d of 
-                  Zero => (One t)::(unionWithCarry NONE (b',c'))
-                | One tb => Zero::(unionWithCarry (SOME (link (t,tb))) (b',c'))
+  fun union (cb1 as (bfb1, bfb2, b), cb2 as (bfc1, bfc2, c)) =
+    let
+      val bc = Bag.union (b,c)
+      (* Given two list whose total size is greater than axLeafSize *)
+      (* Return two list, one list with exactly maxLeafSize many elems *)
+      fun insertTwoChunkToBag (bf1,bf2) b =
+        let val (nbf1, nbf2) = Chunk.merge (bf1, bf2)
+        in (nbf1, nbf2, b)
+        end
 
-        | (Zero::b', d::c') => d::union(b',c')
-            SYMMETRIC
+    in
+      if Chunk.isEmpty bfc1
+      then if Chunk.isEmpty bfb1
+           then insertTwoChunkToBag (bfb2, bfc2) bc
+           else insertTwoChunkToBag (bfb1, bfc2)
+                    (Bag.insert (bfb2, bc))
+      else if Chunk.isEmpty bfb1
+           then insertTwoChunkToBag (bfc1, bfb2)
+                    (Bag.insert (bfc2, bc))
+          (* Both bfb2 and bfc2 must be full *)
+           else insertTwoChunkToBag (bfb1, bfc1)
+                (Bag.insert (bfb2, (Bag.insert (bfc2, bc))))
+    end
 
-        | ((One tb)::b', (One tc)::c') => 
-            SLIGHTLY DIFFERENT
-          let
-            val t = link (tb, tc)
-            val bc' = union (b',c')
-          in 
-            Zero::(insertTree (t, bc'))
-          end
-  in 
-    unionWithCarry NONE (b, c)
-  end
-*)
+   (* Note: the split is not perfect,
+      when the size of inner bag is not odd
+      one bag will be greater than the other by maxChunkSize *)
+   fun split (cb as (bf1, bf2, b)) =
+     let
+        val (nbf1, nbf1') = Chunk.split bf1
+        val (nbf2, nbf2') = Chunk.split bf2
+        val (nb, nb') = Bag.split b
+      in
+        ((nbf1, nbf2, nb), (nbf1', nbf2', nb'))
+      end
 
-  fun split b = 
-    let 
-      (* even number of elements, split all trees *)
-      fun split_even b = 
-        case b of 
-          nil => (nil, nil)
-        | Zero::b' => 
-          let
-            val (c,d) = split_even b'
-          in
-            (Zero::c, Zero::d)
-          end
-        | (One t)::b' =>
-          let
-            val (l,r) = unlink t
-            val (c,d) = split_even b'
-          in
-            ((One l)::c, (One r)::d)
-          end
-     in
-       case b of 
-         nil => (nil, nil)
-       | Zero::b' => 
-           (* Even number of elements *)
-           split_even b'
-       | (One t)::b' => 
-         (* Odd number of elements *)
-         let 
-           val (c,d) = split_even b'
-         in 
-           (insertTree (t,c), d)
-         end
-     end
-       
-   fun test n = 
-     let 
-       fun insN (i,n) b = 
-         if i < n then 
-           let 
-             val _ = print ("Inserting " ^ (Int.toString i) ^ "\n") 
-             val b' = insert (i, b)
-(*             val _ = printBag Int.toString b' *)
-           in 
-             insN (i+1,n) b'
-           end
-         else
-           b
-       val empty = mkEmpty ()
-       val b = insN (0,n) empty
-       val _ = print "** First bag:\n"
-       val _ = printBagAsDecimal b 
-       val _ = printBagContents Int.toString b 
-       val _ = printBag Int.toString b 
-
-       val m = if (Int.mod (n,2)) = 0 then 
-                 2*n
-               else 
-                 2*n + 1 
-       val c = insN (n,m) empty
-       val _ = print "** Second bag:\n"
-       val _ = printBagAsDecimal c 
-       val _ = printBagContents Int.toString c 
-       val _ = printBag Int.toString c 
-
-       val d = union (b,c)      
-       val _ = print "** Their union:\n"
-       val _ = printBagAsDecimal d 
-       val _ = printBagContents Int.toString d 
-       val _ = printBag Int.toString d 
-
-       val (e,f) = split d
-       val _ = print "** Their split:\n"
-       val _ = print "First bag:\n"
-       val _ = printBagAsDecimal e 
-       val _ = printBagContents Int.toString e 
-       val _ = printBag Int.toString e 
-       val _ = print "Second bag:\n"
-       val _ = printBagAsDecimal f 
-       val _ = printBagContents Int.toString f 
-       val _ = printBag Int.toString f 
-     in 
-        ()
-     end
-
-
-
-        
 end
