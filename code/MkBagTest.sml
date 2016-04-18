@@ -17,8 +17,7 @@ struct
           end
         else
           b
-      val empty = mkEmpty ()
-      val b = insN (0,n) empty
+      val b = insN (0,n) (mkEmpty ())
       val _ = print "** First bag:\n"
       val _ = printBagAsDecimal b
       (*val _ = printBagContents Int.toString b*)
@@ -28,7 +27,7 @@ struct
                 2*n
               else
                 2*n + 1
-      val c = insN (n,m) empty
+      val c = insN (n,m) (mkEmpty ())
       val _ = print "** Second bag:\n"
       val _ = printBagAsDecimal c
       (*val _ = printBagContents Int.toString c*)

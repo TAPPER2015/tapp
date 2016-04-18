@@ -24,6 +24,10 @@ struct
 
   fun printBag toString (cb as (bf1, bf2, b)) =
     let
+      val buf222 = Chunk.toString toString bf1
+      val _ = print "1!!";
+      val buf222 = Chunk.toString toString bf2
+      val _ = print "2!!";
       val bufs = "Buffers:" ^ "\n" ^ (Chunk.toString toString bf1) ^ "\n" ^
         (Chunk.toString toString bf2) ^ "\n"
     in
@@ -87,16 +91,15 @@ struct
       else let val (y1, bf1') = Chunk.pop bf1
            in (y1, (bf1', bf2, b)) end
 
+  (* wrapper for merge that return a chunked Bag *)
+  fun insertTwoChunkToBag (bf1,bf2) b =
+      let val (nbf1, nbf2) = Chunk.merge (bf1, bf2)
+      in (nbf1, nbf2, b)
+      end
+
   fun union (cb1 as (bfb1, bfb2, b), cb2 as (bfc1, bfc2, c)) =
     let
       val bc = Bag.union (b,c)
-      (* Given two list whose total size is greater than axLeafSize *)
-      (* Return two list, one list with exactly maxLeafSize many elems *)
-      fun insertTwoChunkToBag (bf1,bf2) b =
-        let val (nbf1, nbf2) = Chunk.merge (bf1, bf2)
-        in (nbf1, nbf2, b)
-        end
-
     in
       if Chunk.isEmpty bfc1
       then if Chunk.isEmpty bfb1
@@ -120,7 +123,8 @@ struct
         val (nbf2, nbf2') = Chunk.split bf2
         val (nb, nb') = Bag.split b
       in
-        ((nbf1, nbf2, nb), (nbf1', nbf2', nb'))
+        ((insertTwoChunkToBag (nbf1, nbf2) nb),
+         (insertTwoChunkToBag (nbf1', nbf2') nb'))
       end
 
 end

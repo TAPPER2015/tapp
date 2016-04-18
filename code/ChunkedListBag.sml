@@ -6,6 +6,7 @@ struct
 
   exception EmptyChunk
   exception InCompleteChunk
+  exception FullChunk
 
   val maxChunkSize = 8
 
@@ -14,7 +15,7 @@ struct
   fun isFull c = (size c = maxChunkSize)
   fun isEmpty c = (size c = 0)
 
-  fun push (x,c) = x::c
+  fun push (x,c) = if isFull c then raise FullChunk else x::c
   fun pop c = case c of nil => raise EmptyChunk
                       | (x::c') => (x, c')
 
@@ -34,7 +35,6 @@ struct
         merge' r (c1, c2)
       end
 
- (* split the list into half *)
  fun split c =
    let
      val len = size c
@@ -49,21 +49,17 @@ struct
       split' (Int.div (len, 2)) nil c
     end
 
-  fun toString elemToString l =
-    let
-      fun toString' elemToString l' =
-        case l' of
-          [] => "]"
-        | a::ll' => (elemToString a) ^ "," ^ (toString' elemToString ll')
-    in
-      "[" ^ (toString' elemToString l)
-    end
-
-  fun contentToString elemToString l =
-    case l of
+  fun contentToString elemToString c =
+    case c of
       [] => ""
-    | a::l' => (elemToString a) ^ ","
-              ^ (contentToString elemToString l')
+    | a::c' => (elemToString a) ^ ","
+              ^ (contentToString elemToString c')
+
+  fun toString elemToString c =
+      "[" ^ (contentToString elemToString c) ^ "]"
+
+  fun toList c = c
+
 
 end
 

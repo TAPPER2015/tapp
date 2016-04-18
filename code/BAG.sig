@@ -13,5 +13,5 @@ sig
   val remove : 'a bag -> 'a * 'a bag
   val union : 'a bag * 'a bag -> 'a bag
   val split : 'a bag -> 'a bag * 'a bag
-  
+
 end

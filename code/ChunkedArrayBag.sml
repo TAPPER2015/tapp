@@ -1,182 +1,97 @@
-structure ArrayChunk : CHUNK =
+structure ArrayChunk :> CHUNK =
 struct
-  //TODO: implement this.
 
-end
+  (* the last int is the number of not NONE elems in the array *)
+  type 'a t = ('a option) array * int
+  type 'a chunk = 'a t
 
-structure ChunkedListBag =
-  MkChunkedBag(structure Chunk = ArrayChunk)
+  exception EmptyChunk
+  exception InCompleteChunk
+  exception FullChunk
+
+  val maxChunkSize = 8
+
+  fun size (c as (arr, n)) = n
+  fun empty () = (Array.array (maxChunkSize, NONE), 0)
+  fun isFull c = (size c = maxChunkSize)
+  fun isEmpty c = (size c = 0)
+
+  fun push (x, c as (arr, n)) =
+    if isFull c then raise FullChunk
+    else
+      let val () = Array.update (arr, n, SOME(x))
+      in (arr, n+1) end
 
 
-structure ChunkedListBag =
-struct
-  structure Bag = Bag
+  fun pop (c as (arr, n)) =
+    if isEmpty c then raise EmptyChunk
+    else
+      let
+        val x = Option.valOf (Array.sub (arr, n-1))
+        val () = Array.update (arr, n-1, NONE)
+      in
+        (x, (arr, n-1))
+      end
 
-  type 'a chunk = ('a option) Array.array
-  datatype 'a chunkedListBag =
-    Empty
-  | Full of ('a chunk option * 'a chunk option) Bag.bag
-
-  (* empty bag *)
-  fun mkEmpty () = Empty
-
-  (** Utilities **)
-  fun cbagToString toString b =
-    ...
-  fun cbagContentsToString toString b =
-    ..
-  (** Mainline **)
-
-  (* insert element into a bag *)
-  fun insert (x, b) =
-    case b of
-    ...
-       => Bag.insert (chunk)
-
-  (* remove an element from a bag *)
-  fun remove b =
+  fun merge (c1, c2) =
     let
-      val (Leaf x, b') = borrowTree b
+      fun merge' (c1', c2') =
+        if ((isFull c2') orelse (isEmpty c1')) then (c1', c2')
+        else
+           let
+      (*val _  = print ("mmm: " ^ (Int.toString (size c1')) ^ "," ^ (Int.toString (size c2')) ^ "\n")*)
+             val (x, c1'') = pop c1'
+             val c2'' = push (x, c2')
+           in
+             merge' (c1'', c2'')
+           end
     in
-      (x, b')
+      (*print ("Bef mmm: " ^ (Int.toString (size c1)) ^ "," ^ (Int.toString (size c2)) ^ "\n");*)
+      merge' (c1, c2)
     end
 
-  (* union two bags. *)
-  fun union (b, c) =
-    case (b,c) of
-      (_, nil) => b
-    | (nil, _) => c
-    | (d::b', Zero::c') => d::union(b',c')
-    | (Zero::b', d::c') => d::union(b',c')
-    | ((One tb)::b', (One tc)::c') =>
-      let
-        val t = link (tb, tc)
-        val bc' = union (b',c')
-      in
-        Zero::(insertTree (t, bc'))
-      end
-(* Work in progress
-  (* union two bags with explicity carry. *)
-  fun union (b, c) =
+  fun split (c as (arr, n)) =
     let
-      unionWithCarry carry (b, c) =
-        case (b,c) of
-          (_, nil) =>
-            case carry of
-              NONE => b
-            | Some t => insertTree (t, b)
-
-        | (nil, _) =>
-            case carry of
-              NONE => c
-            | SOME t => insertTree (t, c)
-
-        | (d::b', Zero::c') =>
-            case carry of
-              NONE => d::unionWithCarry NONE (b',c')
-            | SOME t =>
-                case d of
-                  Zero => (One t)::(unionWithCarry NONE (b',c'))
-                | One tb => Zero::(unionWithCarry (SOME (link (t,tb))) (b',c'))
-
-        | (Zero::b', d::c') => d::union(b',c')
-            SYMMETRIC
-
-        | ((One tb)::b', (One tc)::c') =>
-            SLIGHTLY DIFFERENT
+      fun split' a (c1, c2) =
+        if (a = 0) then (c1, c2)
+        else
           let
-            val t = link (tb, tc)
-            val bc' = union (b',c')
+            val (x, c2') = pop c2
+            val c1' = push (x, c1)
           in
-            Zero::(insertTree (t, bc'))
+            split' (a-1) (c1', c2')
           end
-  in
-    unionWithCarry NONE (b, c)
-  end
-*)
+    in
+      split' (Int.div (n, 2)) (empty (), c)
+    end
 
-  fun split b =
+  (* in order to simulate a stack, we print the elems in reverse order *)
+  fun contentToString elemToString (c as (arr, n)) =
     let
-      (* even number of elements, split all trees *)
-      fun split_even b =
-        case b of
-          nil => (nil, nil)
-        | Zero::b' =>
-          let
-            val (c,d) = split_even b'
-          in
-            (Zero::c, Zero::d)
-          end
-        | (One t)::b' =>
-          let
-            val (l,r) = unlink t
-            val (c,d) = split_even b'
-          in
-            ((One l)::c, (One r)::d)
-          end
-     in
-       case b of
-         nil => (nil, nil)
-       | Zero::b' =>
-           (* Even number of elements *)
-           split_even b'
-       | (One t)::b' =>
-         (* Odd number of elements *)
-         let
-           val (c,d) = split_even b'
-         in
-           (insertTree (t,c), d)
-         end
-     end
+      fun optionToString x =
+        case x of NONE => "_" | SOME(y) => elemToString y
+      fun contentToString' a =
+        if a = 0 then ""
+        else (optionToString (Array.sub(arr, a-1))) ^ ","
+            ^ contentToString' (a-1)
+    in
+      contentToString' maxChunkSize
+    end
 
-   fun test n =
-     let
-       fun insN (i,n) b =
-         if i < n then
-           let
-             val _ = print ("Inserting " ^ (Int.toString i) ^ "\n")
-             val b' = insert (i, b)
-(*             val _ = printBag Int.toString b' *)
-           in
-             insN (i+1,n) b'
-           end
-         else
-           b
-       val empty = mkEmpty ()
-       val b = insN (0,n) empty
-       val _ = print "** First bag:\n"
-       val _ = printBagAsDecimal b
-       val _ = printBagContents Int.toString b
-       val _ = printBag Int.toString b
+  fun toString elemToString c =
+    "<" ^ (contentToString elemToString c) ^ ">"
 
-       val m = if (Int.mod (n,2)) = 0 then
-                 2*n
-               else
-                 2*n + 1
-       val c = insN (n,m) empty
-       val _ = print "** Second bag:\n"
-       val _ = printBagAsDecimal c
-       val _ = printBagContents Int.toString c
-       val _ = printBag Int.toString c
-
-       val d = union (b,c)
-       val _ = print "** Their union:\n"
-       val _ = printBagAsDecimal d
-       val _ = printBagContents Int.toString d
-       val _ = printBag Int.toString d
-
-       val (e,f) = split d
-       val _ = print "** Their split:\n"
-       val _ = print "First bag:\n"
-       val _ = printBagAsDecimal e
-       val _ = printBagContents Int.toString e
-       val _ = printBag Int.toString e
-       val _ = print "Second bag:\n"
-       val _ = printBagAsDecimal f
-       val _ = printBagContents Int.toString f
-       val _ = printBag Int.toString f
-     in
-        ()
-     end
+  fun toList (c as (arr, n)) =
+    let
+      fun toList' a arr' l =
+        if (a = 0) then l
+        else toList' (a-1) arr'
+            (Option.valOf(Array.sub (arr', (a-1)))::l)
+    in
+      toList' n arr []
+    end
 
 end
+
+structure ChunkedArrayBag =
+  MkChunkedBag(structure Chunk = ArrayChunk)
