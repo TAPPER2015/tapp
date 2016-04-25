@@ -9,12 +9,13 @@ struct
   exception InCompleteChunk
   exception FullChunk
 
-  val maxChunkSize = 8
+  val maxChunkSize = 1024
 
   fun size (c as (arr, n)) = n
   fun empty () = (Array.array (maxChunkSize, NONE), 0)
   fun isFull c = (size c = maxChunkSize)
   fun isEmpty c = (size c = 0)
+
 
   fun push (x, c as (arr, n)) =
     if isFull c then raise FullChunk
@@ -22,6 +23,7 @@ struct
       let val () = Array.update (arr, n, SOME(x))
       in (arr, n+1) end
 
+  fun singleton x = push (x, empty ())
 
   fun pop (c as (arr, n)) =
     if isEmpty c then raise EmptyChunk
@@ -83,15 +85,13 @@ struct
 
   fun toList (c as (arr, n)) =
     let
-      fun toList' a arr' l =
-        if (a = 0) then l
-        else toList' (a-1) arr'
-            (Option.valOf(Array.sub (arr', (a-1)))::l)
+      fun toList' a l =
+        if (a = n) then l
+        else toList' (a+1) (Option.valOf(Array.sub (arr, a))::l)
     in
-      toList' n arr []
+      toList' 0 []
     end
 
 end
 
-structure ChunkedArrayBag =
-  MkChunkedBag(structure Chunk = ArrayChunk)
+structure ChunkedArrayBag = MkChunkedBag(structure Chunk = ArrayChunk)

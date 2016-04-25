@@ -281,4 +281,18 @@ struct
          end
      end
 
+
+   fun treeToList elemToList t =
+     case t of
+       Leaf x => elemToList x
+     | Node (w, l, r) => (treeToList elemToList l) @ (treeToList elemToList r)
+
+   fun toList elemToList b =
+     case b of
+       nil => []
+     | d::b' =>
+        case d of
+          Zero => (toList elemToList b')
+        | One (t) => (treeToList elemToList t) @ (toList elemToList b')
+
 end

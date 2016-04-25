@@ -11,11 +11,12 @@ sig
   val isFull : 'a chunk -> bool
   val isEmpty : 'a chunk -> bool
 
+  val singleton : 'a -> 'a chunk
   val push : 'a * 'a chunk -> 'a chunk
   val pop : 'a chunk -> 'a * 'a chunk
-  (* Return two chunk, fill the second chunk till its full *)
+  (* Return two chunks, fill the second chunk till its full *)
   val merge : 'a chunk * 'a chunk -> 'a chunk * 'a chunk
-  (* split the chunk into two chunks *)
+  (* split the chunk into two chunks with the same size (off by 1) *)
   val split : 'a chunk -> 'a chunk * 'a chunk
 
   val toList : 'a chunk -> 'a list

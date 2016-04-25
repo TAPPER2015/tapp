@@ -14,4 +14,6 @@ sig
   val union : 'a bag * 'a bag -> 'a bag
   val split : 'a bag -> 'a bag * 'a bag
 
+  val toList: ('a -> 'a list) -> 'a bag -> 'a list
+
 end

@@ -65,7 +65,7 @@ struct
     if (Chunk.isFull bf2)
     then
       if (Chunk.isFull bf1)
-      then (Chunk.empty (), bf1, Bag.insert (bf2, b))
+      then (Chunk.singleton x, bf1, Bag.insert (bf2, b))
       else (Chunk.push(x, bf1), bf2, b)
     else (* bf1 must be nil *)
       (bf1, Chunk.push(x, bf2), b)
@@ -114,8 +114,8 @@ struct
                 (Bag.insert (bfb2, (Bag.insert (bfc2, bc))))
     end
 
-   (* Note: the split is not perfect,
-      when the size of inner bag is not odd
+   (* Note: the split is not perfectly balanced,
+      when the size of inner bag is odd
       one bag will be greater than the other by maxChunkSize *)
    fun split (cb as (bf1, bf2, b)) =
      let
@@ -126,5 +126,8 @@ struct
         ((insertTwoChunkToBag (nbf1, nbf2) nb),
          (insertTwoChunkToBag (nbf1', nbf2') nb'))
       end
+
+    fun toList (elemToList : ('a -> 'a list)) (cb as (bf1, bf2, b)) =
+      (Chunk.toList bf1) @ (Chunk.toList bf2) @ (Bag.toList Chunk.toList b)
 
 end

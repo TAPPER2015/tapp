@@ -4,20 +4,44 @@ struct
   structure Bag = Bag
   open Bag
 
-  fun bulkInsertionTest n =
+  fun insNToBag (i,n) b =
+    if i < n then
+      let
+        (*val _ = print ("Inserting " ^ (Int.toString i) ^ "\n")*)
+        val b' = insert (i, b)
+        (*val _ = printBag Int.toString b' *)
+      in
+        insNToBag (i+1,n) b'
+      end
+    else
+      b
+
+  fun insNToList (i,n) l =
+    if i < n then insNToList (i+1, n) (i::l) else l
+
+  fun listCompare cmp l1 l2 =
+    case (l1, l2) of
+      (nil, nil) => true
+    | (nil, _) => false
+    | (_, nil) => false
+    | (x::l1', y::l2') => (cmp (x,y)) andalso (listCompare cmp l1' l2')
+
+  fun listToString elemToString l =
     let
-      fun insN (i,n) b =
-        if i < n then
-          let
-            val _ = print ("Inserting " ^ (Int.toString i) ^ "\n")
-            val b' = insert (i, b)
-(*             val _ = printBag Int.toString b' *)
-          in
-            insN (i+1,n) b'
-          end
-        else
-          b
-      val b = insN (0,n) (mkEmpty ())
+      fun contentToString elemToString c =
+        case c of
+          [] => ""
+        | a::c' => (elemToString a) ^ ","
+                  ^ (contentToString elemToString c')
+    in
+      "[" ^ (contentToString elemToString l) ^ "]\n"
+    end
+
+
+
+  fun mergeAndSplitTest n =
+    let
+      val b = insNToBag (0,n) (mkEmpty ())
       val _ = print "** First bag:\n"
       val _ = printBagAsDecimal b
       (*val _ = printBagContents Int.toString b*)
@@ -27,7 +51,7 @@ struct
                 2*n
               else
                 2*n + 1
-      val c = insN (n,m) (mkEmpty ())
+      val c = insNToBag (n,m) (mkEmpty ())
       val _ = print "** Second bag:\n"
       val _ = printBagAsDecimal c
       (*val _ = printBagContents Int.toString c*)
@@ -52,6 +76,57 @@ struct
     in
        ()
     end
+
+  fun calcTimeHelp f x =
+    let
+      val timeBefore = Time.toMilliseconds(Time.now ())
+      val _ = f x
+      val timeAfter = Time.toMilliseconds(Time.now ())
+    in
+      timeAfter - timeBefore
+    end
+
+  fun printTime n = print ((LargeInt.toString n) ^ "ms\n")
+
+  fun calcTimeSingle f x = printTime (calcTimeHelp f x)
+
+  fun calcTimeAverage f x n =
+    let
+      fun calcTimeAverage' a res =
+        if (a = 0) then res
+        else calcTimeAverage' (a-1) ((calcTimeHelp f x) + res)
+    in
+      printTime (LargeInt.div((calcTimeAverage' n (LargeInt.fromInt 0)), LargeInt.fromInt n))
+    end
+
+  fun remNFromBagTest n b l =
+    if (n = 0) then (b,l,true)
+    else
+      let
+        val (x, b') = remove b
+        val x'::l' = l
+        val true = (x = x')
+      in
+        remNFromBagTest (n-1) b' l'
+      end
+
+  fun stackOrderTest n =
+    let
+      val l = insNToList (0,n) nil
+      val b1 = insNToBag (0,n) (mkEmpty ())
+      val l1 = toList (fn x => [x]) b1
+      (*val _ = print (listToString Int.toString l)*)
+      (*val _ = print (listToString Int.toString l1)*)
+      val true = listCompare (fn (a,b) => a = b) l l1
+      val n2 = Int.div (n, 2)
+      val (b2, l', true) = remNFromBagTest n2 b1 l
+      val l'' = insNToList (n2, n) l'
+      val b3 = insNToBag (n2, n) b2
+      val (_, _, true) = remNFromBagTest n b3 l''
+    in
+      ()
+    end
+
 
 
 end

@@ -15,6 +15,8 @@ struct
   fun isFull c = (size c = maxChunkSize)
   fun isEmpty c = (size c = 0)
 
+  fun singleton x = [x]
+
   fun push (x,c) = if isFull c then raise FullChunk else x::c
   fun pop c = case c of nil => raise EmptyChunk
                       | (x::c') => (x, c')
@@ -63,5 +65,4 @@ struct
 
 end
 
-structure ChunkedListBag =
-  MkChunkedBag(structure Chunk = ListChunk)
+structure ChunkedListBag = MkChunkedBag(structure Chunk = ListChunk)
