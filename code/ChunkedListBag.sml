@@ -26,15 +26,17 @@ struct
     then (empty (), c1 @ c2)
     else
       let
-      (* The second list is expected to be longer the the first one *)
         val r = maxChunkSize - List.length c2
+        (* The second list is expected to be longer the the first one *)
         fun merge' a (c1', c2') =
           if (a = 0) then (c1', c2')
           else case c1' of
                 nil => raise InCompleteChunk
               | (x::c1'') => merge' (a-1) (c1'', x::c2')
       in
-        merge' r (c1, c2)
+        if ((size c1) > (size c2))
+        then merge' r (c2, c1)
+        else merge' r (c1, c2)
       end
 
  fun split c =

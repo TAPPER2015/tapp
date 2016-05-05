@@ -8,6 +8,7 @@ sig
   val printBagAsDecimal : 'a bag -> unit
 
   val mkEmpty : unit -> 'a bag
+  val singleton : 'a -> 'a bag
   val size : 'a bag -> int
   val insert : 'a * 'a bag -> 'a bag
   val remove : 'a bag -> 'a * 'a bag

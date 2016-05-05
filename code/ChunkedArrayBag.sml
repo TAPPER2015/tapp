@@ -41,15 +41,13 @@ struct
         if ((isFull c2') orelse (isEmpty c1')) then (c1', c2')
         else
            let
-      (*val _  = print ("mmm: " ^ (Int.toString (size c1')) ^ "," ^ (Int.toString (size c2')) ^ "\n")*)
              val (x, c1'') = pop c1'
              val c2'' = push (x, c2')
            in
              merge' (c1'', c2'')
            end
     in
-      (*print ("Bef mmm: " ^ (Int.toString (size c1)) ^ "," ^ (Int.toString (size c2)) ^ "\n");*)
-      merge' (c1, c2)
+      if ((size c1) > (size c2)) then merge' (c2, c1) else merge' (c1, c2)
     end
 
   fun split (c as (arr, n)) =

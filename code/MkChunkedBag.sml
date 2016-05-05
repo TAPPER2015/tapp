@@ -60,7 +60,8 @@ struct
   (* insert element into a bag *)
   (* insert into the second buffer first, then the first one *)
   (* when the second one is full, call insertTree on the first buffer *)
-  (* and move the first one forward *)
+  (* when the first one is als full, insert the second into bag
+    and move the first buffer to the place of the second buffer *)
   fun insert (x, cb as (bf1, bf2, b)) =
     if (Chunk.isFull bf2)
     then
@@ -70,6 +71,7 @@ struct
     else (* bf1 must be nil *)
       (bf1, Chunk.push(x, bf2), b)
 
+  fun singleton x = insert (x, mkEmpty ())
 
   (* remove an element from a bag *)
   (* remove a full list from tree only when the both list is empty *)

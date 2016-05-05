@@ -179,6 +179,8 @@ struct
   fun insert (x, b) =
     insertTree (Leaf x, b)
 
+  fun singleton x = insert (x, mkEmpty ())
+
   (* remove an element from a bag *)
   fun remove b =
     let
@@ -202,7 +204,7 @@ struct
         Zero::(insertTree (t, bc'))
       end
 
-  (* union two bags with explicity carry. *)
+  (* union two bags with a explicit carry. *)
   fun union' (b, c) =
     let
       fun unionWithCarry carry (b, c) =

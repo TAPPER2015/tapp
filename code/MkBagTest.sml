@@ -77,6 +77,8 @@ struct
        ()
     end
 
+  fun printTime n = print ((LargeInt.toString n) ^ "ms\n")
+
   fun calcTimeHelp f x =
     let
       val timeBefore = Time.toMilliseconds(Time.now ())
@@ -86,18 +88,21 @@ struct
       timeAfter - timeBefore
     end
 
-  fun printTime n = print ((LargeInt.toString n) ^ "ms\n")
-
   fun calcTimeSingle f x = printTime (calcTimeHelp f x)
 
-  fun calcTimeAverage f x n =
+  fun calcTimeTotalHelp f x n =
     let
-      fun calcTimeAverage' a res =
+      fun calcTimeTotalHelp' a res =
         if (a = 0) then res
-        else calcTimeAverage' (a-1) ((calcTimeHelp f x) + res)
+        else calcTimeTotalHelp' (a-1) ((calcTimeHelp f x) + res)
     in
-      printTime (LargeInt.div((calcTimeAverage' n (LargeInt.fromInt 0)), LargeInt.fromInt n))
+      calcTimeTotalHelp' n (LargeInt.fromInt 0)
     end
+
+  fun calcTimeTotal f x n = printTime (calcTimeTotalHelp f x n)
+
+  fun calcTimeAverage f x n =
+    printTime (LargeInt.div((calcTimeTotalHelp f x n), LargeInt.fromInt n))
 
   fun remNFromBagTest n b l =
     if (n = 0) then (b,l,true)
@@ -126,6 +131,18 @@ struct
     in
       ()
     end
+
+  fun splitTillSingleton b =
+    if (size b) = 1 then ()
+    else
+      let
+        val (b1, b2) = split b
+        val _ = splitTillSingleton b1
+        val _ = splitTillSingleton b2
+      in
+        ()
+      end
+
 
 
 
