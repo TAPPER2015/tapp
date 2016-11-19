@@ -60,15 +60,6 @@ int Stack::pop () {
 }
 
 void Stack::push (int value) {
-  Node* u; 
-  if (top == NULL) {
-    u = new Node (value); 
-  }
-  else {
-    Node* oldTop = top;
-    u = new Node (value,oldTop);
-  } 
-
-  top = u;
+  top = new Node (value,top); 
   return ;  
 }
