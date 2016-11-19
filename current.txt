@@ -20,7 +20,7 @@ Author: {author}
 
 //include::intro.txt[]
 
-//include::multithreading.txt[]
+include::multithreading.txt[]
 
 //include::fork-join.txt[]
 //include::async-finish.txt[]
@@ -46,11 +46,11 @@ Author: {author}
 
 // include::models.txt[]
 
-include::graphs.txt[]
+// include::graphs.txt[]
 
 //include::graphs.txt[]
 
-// include::dedicated.txt[]
+include::dedicated.txt[]
 
 // include::synchronization.txt[]
 				   
