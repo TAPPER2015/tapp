@@ -1,6 +1,6 @@
 #include <iostream>
 #include <cstdlib>
-#include "stack.h"
+#include "stack-int.h"
 
 using namespace std;
 

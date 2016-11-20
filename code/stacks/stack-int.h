@@ -4,32 +4,21 @@
 using namespace std;
 
 class Node {
- private: 
-  int value;
-  Node* next;
 
- public:
-  Node (int v) {
-    value = v;
-    next = NULL;
-  }
+  public:
+    int value;
+    Node* next;
 
-  Node (int v, Node* u) {
-    value = v;
-    next = u;
-  }
 
-  int getValue () {
-    return value;
-  };
-  
-  Node* getNext () {
-    return next; 
-  };
+    Node (int v) {
+      value = v;
+      next = NULL;
+    }
 
-  void setNext (Node u) {
-    *next = u;
-  };
+    Node (int v, Node* u) {
+      value = v;
+      next = u;
+    }
 
 };
 
@@ -53,8 +42,8 @@ int Stack::pop () {
     return -12;
   }
   else {
-    int oldTop = (*top).getValue();   
-    top = (*top).getNext ();
+    int oldTop = top->value;
+    top = top->next;
     return oldTop;
   }
 }
