@@ -6,7 +6,7 @@ using namespace std;
 
 
 int main () {
-  Stack<int>* S = new Stack<int> (); 
+  Stack* S = new Stack (); 
   int i; 
 
   cout << "Stack driver..." << endl;
