@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cstdlib>
+#include <atomic>
 
 using namespace std;
 
@@ -24,7 +25,7 @@ class Node {
 class Stack {
 
  private: 
-  Node* top;
+	std::atomic<Node*> top;
 
  public: 
   Stack () {
@@ -37,16 +38,18 @@ class Stack {
 
 
 int Stack::pop () {
-  if (top == NULL) {
+  if (top.load() == NULL) {
     cout << "Stack is Empty" << endl;
     return -12;
   }
   else {
     while (1) { 
-			int oldTop = top->value;
-			Node* next = top->next;
-			if (__sync_bool_compare_and_swap(&top, top, next)) { 
-				return oldTop;
+			Node* oldTop = top.load();
+			int oldTopValue = oldTop->value;
+			Node* next = oldTop->next;
+			
+			if (top.compare_exchange_strong(oldTop,next)) {
+				return oldTopValue;
 			}
     }
 	}
@@ -56,8 +59,8 @@ void Stack::push(const int value)
 { 
     Node *u = new Node(value); 
     while (1) { 
-			u->next = top;
-			if (__sync_bool_compare_and_swap(&top, u->next, u)) { 
+			u->next = top.load();
+			if (top.compare_exchange_strong(u->next, u)) { 
 				break;
 			}
     }

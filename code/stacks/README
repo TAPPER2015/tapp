@@ -1,8 +1,14 @@
 Generic versions are not in working order.  The rest should be correct.
 
+** FILES
 The main files are
 stack-int.h  (serial)
 nb-stack-int.h (nonblocking)
 
 and 
 main-int.cpp
+
+
+** COMPILING
+
+g++ -std=c++11  nb-stack-int.h
