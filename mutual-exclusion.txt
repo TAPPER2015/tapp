@@ -56,7 +56,7 @@ such sharing safely and efficiently, researchers have proposed various
 forms of locks such as *_semaphores_*, which accepts both a
 busy-waiting and blocking semantics.  Another class of locks, called
 *_condition variables_* enable blocking synchronization by
-conditioning an the value of a variable.
+conditioning or the value of a variable.
 
 
 Parallelism and Mutual Exclusion
@@ -71,6 +71,7 @@ imperative language, however, where memory is always a shared
 resource, even when it is not intended to be so, threads can easily
 share memory objects, even unintentionally, leading to race
 conditions.
+
 .Writing to the same location in parallel.
 ============
 
@@ -137,7 +138,7 @@ This code is not correct because it has a race condition.
 As in the example shows, separate threads are updating the value
 result but it might look like this is not a race condition because the
 update consists of an addition operation, which reads the value and
-then writes to i. The race condition might be easier to see if we
+then writes to it. The race condition might be easier to see if we
 expand out the applications of the `+=` operator.
 
 [source, {cpp}]
@@ -172,7 +173,7 @@ and writes are performed, as shown in the next example.
 The following table takes us through one possible execution trace of
 the call `fib_par_racy(2)`. The number to the left of each instruction
 describes the time at which the instruction is executed.  Note that
-since this is a parallel program, multiple instructions can be
+since this is a multithreaded program, multiple instructions can be
 executed at the same time. The particular execution that we have in
 this example gives us a bogus result: the result is 0, not 1 as it
 should be.
@@ -207,7 +208,6 @@ perhaps by swapping it with another word.  Such operations are
 sometimes called atomic *_read-modify-write_* or *_RMW_*, for short,
 operations.
 
-
 A handful of different RMW operations have been proposed.  They
 include operations such as *_load-link/store-conditional_*,
 *_fetch-and-add_*, and *_compare-and-swap_*. They typically take the
@@ -218,14 +218,14 @@ the value at that location by the specified amount, i.e., `f(x,v) = *x
 + v`.  
 
 The compare-and-swap operation takes the location `x` and takes a pair
-of values `(a,b)` as the second argument, and stores `b` into `x` if
-the value in `x` is `a`, i.e., `f(x,(a,b)) = if *x = a then b else a`;
-the operation returns a Boolean indicating whether the operation
-successfully stored a new value in `x`.  The operation
-"compare-and-swap" is a reasonably powerful synchronization operation:
-it can be used by arbitrarily many threads to agree (reach consensus)
-on a value.  This instruction therefore is frequently provided by
-modern parallel architectures such as Intel's X86. 
+of values `(a,b)`, and stores `b` into `x` if the value in `x` is `a`,
+i.e., `f(x,(a,b)) = if *x = a then b else a`; the operation returns a
+Boolean indicating whether the operation successfully stored a new
+value in `x`. The operation "compare-and-swap" is a reasonably
+powerful synchronization operation: it can be used by arbitrarily many
+threads to agree (reach consensus) on a value.  This instruction
+therefore is frequently provided by modern parallel architectures such
+as Intel's X86.  
 
 In Clatexmath:[$++$], the `atomic` class can be used to perform synchronization.
 Objects of this type are guarantee to be free of race conditions; and
@@ -264,7 +264,7 @@ Output:
 The key operation that help with race conditions is the
 compare-and-exchange operation.
 
-.Definition: compare and swap
+.Definition: compare and exchange
 ************
 
 When executed with a `target` atomic object and an `expected` cell and
@@ -274,7 +274,8 @@ atomically:
 . Read the contents of `target`.
 . If the contents equals the contents of `expected`,
 then writes `new` into the `target` and returns `true`.
-. Otherwise, returns `false`.
+. Otherwise, returns `false` after updating the contents of the cell
+`expected` with the contents of the target (exchange).
 ************
 
 .Reading and writing atomic objects
@@ -286,18 +287,24 @@ std::atomic<bool> flag;
 flag.store(false);
 bool expected = false;
 bool was_successful = flag.compare_exchange_strong(expected, true);
-std::cout << "was_successful = " << was_successful << "; flag = " << flag.load() << std::endl;
+std::cout << "was_successful = " << was_successful
+  				<< "; flag = " << flag.load()
+					<< "; expected = " << expected
+					<< std::endl;
+
 bool expected2 = false;
 bool was_successful2 = flag.compare_exchange_strong(expected2, true);
-std::cout << "was_successful2 = " << was_successful2 << "; flag = " <<
-flag.load() << std::endl;
+std::cout << "was_successful2 = " << was_successful2
+					<< "; flag = " <<	flag.load()
+					<< "; expected = " << expected2
+					<< std::endl;
 ----
 
 Output:
 
 ----
-was_successful = 1; flag = 1
-was_successful2 = 0; flag = 1
+was_successful = 1; flag = 1; expected = 0
+was_successful2 = 0; flag = 1; expected2 = 1
 ----
 
 ==========================
@@ -381,6 +388,185 @@ The example above illustrates a typical use of the compare-and-swap
 operation.  In this particular example, we can probably prove our code
 is correct.  But this is not always as easy due to a problem called
 the "ABA problem."
+
+
+
+
+.Spin Locks with Compare-And-Exchange
+====
+
+We can implement a spin lock using compare-and-exchange.  Spin locks
+can ensure exclusive access to a shared resource such as a memory cell
+or a file. For example, suppose that multiple threads wants to print
+to the Standard IO. We could write such a program as follows.
+
+
+[source, {cpp}]
+----
+std::atomic<bool> BigLock;
+
+struct args {
+  int tid;
+};
+
+void *hello(void *a)
+{  
+  args* myargs = (args*) a;
+	int tid = myargs->tid;
+
+  cout << "Hello world! It is me, Thread " << tid << endl;
+
+  pthread_exit(NULL);
+}
+
+int main ()
+{
+  pthread_t threads[NTHREADS];
+	
+  for(int i=0; i < NTHREADS; i++ ){
+		args* a = new args;
+		a->tid = i;
+		
+    cout << "main: creating thread 00" << i << endl;
+
+    int error = pthread_create(&threads[i], NULL, hello, (void *) a);
+    if (error) {
+      cout << "Error: unable to create thread," << error << endl;
+      exit(-1);
+    }
+  }
+  pthread_exit(NULL);
+}
+----
+
+Since the Standard IO is a shared resource, the multiple threads can
+write to it at the same time, resulting in garbled output.  The
+example run below uses just two processors.
+
+----
+bash-3.2$ g++ -std=c++11  biglock-driver.cpp
+bash-3.2$ ./a.out
+main: creating thread 000
+main: creating thread 001
+main: creating thread 002
+Hello world! It imsHHa eeimllnell:,oo    cTwwrhooerrraelltaddid!!n   g0II 
+ttt  hiirsse  ammdee ,,0  0TT3hh
+rreeaadmdH a e1i2l
+n
+l:o  cwroeraltdi!n gI tt hirse amde ,0 0T4h
+read 3
+Hmealilno:  wcorreladt!i nIgt  tihsr emaed,  0T0h5r
+ead 4
+Hello world! It is me, Thread 5
+main: creating thread 006
+main: creating thread 007
+Hello world! It is me, Thread 6
+Hello world! It is me, Thread 7
+bash-3.2$ 
+----
+
+To ensure that each thread gets exclusive access to the standard IO,
+we can use a spin lock, where each thread waits for other threads to
+exit the critical section, where they access the Standard IO.  To
+wait, a thread simply "spins" while checking the lock.  Before
+entering its critical section, each thread takes the lock and upon
+exiting it releases the lock. 
+
+
+[source, {cpp}]
+----
+std::atomic<bool> BigLock;
+
+
+/* Take BigLock */
+void takeBigLock () {
+  while (1) {
+    bool flag = false;
+    if (BigLock.compare_exchange_strong(flag,true)) {
+		  return;
+		}		
+	}
+}
+
+/* ReleaseBig BigLock */
+void releaseBigLock () {
+  while (1) {
+    bool flag = true;
+    if (BigLock.compare_exchange_strong(flag,false)) {
+		  return;
+		}		
+	}
+}
+
+void *hello(void *a)
+{  
+  args* myargs = (args*) a;
+	int tid = myargs->tid;
+
+	takeBigLock ();
+  cout << "Hello world! It is me, Thread " << tid << endl;
+	releaseBigLock ();
+
+  pthread_exit(NULL);
+}
+
+int main ()
+{
+  pthread_t threads[NTHREADS];
+  BigLock.store(false);
+	
+  for(int i=0; i < NTHREADS; i++ ){
+		args* a = new args;
+		a->tid = i;
+		
+  	takeBigLock ();
+    cout << "main: creating thread 00" << i << endl;
+    releaseBigLock ();
+    int error = pthread_create(&threads[i], NULL, hello, (void *) a);
+    if (error) {
+      cout << "Error: unable to create thread," << error << endl;
+      exit(-1);
+    }
+  }
+  pthread_exit(NULL);
+}
+----
+
+Here is an example run of the program.
+
+[source, {cpp}]
+----
+
+bash-3.2$ g++ -std=c++11  biglock-driver.cpp
+bash-3.2$ ./a.out
+main: creating thread 000
+main: creating thread 001
+main: creating thread 002
+Hello world! It is me, Thread 0
+main: creating thread 003
+Hello world! It is me, Thread 1
+main: creating thread 004
+Hello world! It is me, Thread 3
+Hello world! It is me, Thread 2
+main: creating thread 005
+Hello world! It is me, Thread 4
+main: creating thread 006
+Hello world! It is me, Thread 5
+main: creating thread 007
+Hello world! It is me, Thread 6
+Hello world! It is me, Thread 7
+
+----
+Note that the threads do not necessarily run in order even on to cores
+but their messages are printed correctly, without being garbled.
+
+
+//////////////////////////////////////////////////////////////////////
+WARNING: Naama: Is fetch-and-add a hardware primitive? If so, fetch-and-add would solve the problem in the fib example without the busy-wait loop; F&A always succeeds.
+/////////////////////////////////////////////////////////////////////
+
+====
+
 
 
 ABA problem 
