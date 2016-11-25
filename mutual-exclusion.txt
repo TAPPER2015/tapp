@@ -603,6 +603,141 @@ per-thread progress can also be guaranteed.
 A non-blocking stack data structure
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+Suppose that we wish to implement a concurrent stack data structure
+that can be shared my multiple threads.  The code below shows the code
+for a standard serial "integer" stack that can hold integer values in
+its nodes.
+
+----
+#include <iostream>
+#include <cstdlib>
+
+using namespace std;
+
+class Node {
+public:
+  int value;
+  Node* next;
+
+  Node (int v) {
+    value = v;
+    next = NULL;
+  }
+};
+
+class Stack {
+public:
+  Node* top;
+
+  Stack () {
+    top = NULL;
+  };
+
+  int pop ();
+  void push (int v);
+};
+
+int Stack::pop () {
+  if (top == NULL) {
+    cout << "Stack is Empty" << endl;
+    return -12;
+  }
+  else {
+    int oldTop = top->value;
+    top = top->next;
+    return oldTop;
+  }
+}
+
+void Stack::push (int value) {
+  top = new Node (value,top); 
+  return ;  
+}
+----
+
+Allowing such a data structure by multiple threads leads to race
+conditions and thus accesses must be protected by enforcing mutual
+exclusion.  An example where multiple threads are operating on a
+shared stack is shown below.
+
+----
+#include <iostream>
+#include <cstdlib>
+#include <pthread.h>
+#include <atomic>
+#include "nb-stack-int.h"
+
+using namespace std;
+
+#define NTHREADS 8
+#define NPUSHPOP 2
+
+struct args {
+  int tid;
+  Stack* s;
+};
+
+
+void *pushPop(void *a)
+{  
+  args* myargs = (args*) a;
+  int tid = myargs->tid;
+  Stack* sharedStack = myargs->s;
+
+  cout << "Hello world! It is me, 00" << tid << endl;
+  
+  for (int i = 0; i < NPUSHPOP; ++i) {
+    int j = NPUSHPOP * tid + i;
+    sharedStack->push (NPUSHPOP * tid + i);
+    sleep (1);
+    int k = sharedStack->pop ();
+    sleep (1);
+  }
+
+  pthread_exit(NULL);
+}
+
+int main ()
+{
+  pthread_t threads[NTHREADS];
+  Stack* sharedStack = new Stack (); 
+  
+  int rc;
+  for(int i=0; i < NTHREADS; i++ ){
+    args* a = new args;
+    a->tid = i;
+    a->s = sharedStack;
+
+    int error = pthread_create(&threads[i], NULL, pushPop, (void *) a);
+    if (error) {
+      cout << "Error: unable to create thread," << error << endl;
+      exit(-1);
+    }
+  }
+  pthread_exit(NULL);
+}
+----
+
+The easiest way to ensure mutual exclusion is to use a lock to guard
+accesses to the shared data structure, as in our Standard IO example
+discussed earlier.  Such a lock, however, serializes all accesses to
+the data structure, turning the data structure into a bottleneck.
+Instead, we would like to allow the threads to operate concurrently
+but without breaking the correctness of the stack. 
+
+We can use the compare-and-exchange operation that we saw earlier to
+achieve this.  The idea is to identify the parts of the code that
+require mutually exclusive access to certain data and make sure that
+such data are updated atomically.  The code below show an
+implementation of stacks that attempts to guarantee mutual exclusion.
+In function `push`, we first set up the new node, `u`, that we want to
+add by using the current value of `top`.  We then update `top`, only
+if it has not changed since we have read it by using
+`compare_exchange_strong`.  Similarly, in function `pop`, we read the
+current value of `top` into a variable `oldTop` and then create the
+new value for top, `next`.  We then replace `top` with `next` by using
+a `compare_exchange_strong` only if `top` has not changed since we
+last read it.
 
 ----
 #include <iostream>
@@ -612,29 +747,21 @@ A non-blocking stack data structure
 using namespace std;
 
 class Node {
-
- public:
-
+public:
   int value;
   Node* next;
 
-	Node (int v) {
+  Node (int v) {
     value = v;
     next = NULL;
   }
 
-  Node (int v, Node* u) {
-    value = v;
-    next = u;
-  }
 };
 
 class Stack {
+public:
+  std::atomic<Node*> top;
 
- private: 
-	std::atomic<Node*> top;
-
- public: 
   Stack () {
     top = NULL;
   };
@@ -651,28 +778,124 @@ int Stack::pop () {
   }
   else {
     while (1) { 
-			Node* oldTop = top.load();
-			int oldTopValue = oldTop->value;
-			Node* next = oldTop->next;
-			
-			if (top.compare_exchange_strong(oldTop,next)) {
-				return oldTopValue;
-			}
+      Node* oldTop = top.load();
+      int oldTopValue = oldTop->value;
+      Node* next = oldTop->next;
+      
+      if (top.compare_exchange_strong(oldTop,next)) {
+        return oldTopValue;
+      }
     }
-	}
+  }
 }
 
 void Stack::push(const int value) 
 { 
-    Node *u = new Node(value); 
-    while (1) { 
-			u->next = top.load();
-			if (top.compare_exchange_strong(u->next, u)) { 
-				break;
-			}
+  Node *u = new Node(value); 
+  while (1) { 
+    u->next = top.load();
+    if (top.compare_exchange_strong(u->next, u)) { 
+      break;
     }
+  }
 }
 ---- 
+
+
+
+ABA problem
+
+
+
+----
+#include <iostream>
+#include <cstdlib>
+#include <atomic>
+
+using namespace std;
+
+class Node {
+public:
+
+  int value;
+  Node* next;
+
+  Node (int v) {
+    value = v;
+    next = NULL;
+  }
+
+  Node (int v, Node* u) {
+    value = v;
+    next = u;
+  }
+};
+
+class Stack {
+public: 
+  struct state_t {
+    Node* top;
+    int64_t nPops;
+  };
+
+  std::atomic<state_t> state;
+
+  Stack () {
+    state_t s;
+    s.top = NULL;
+    s.nPops = 0;      
+    state.store (s);
+  };
+  
+  int pop ();
+  void push (int v);
+};
+
+int Stack::pop () {
+  state_t oldState = state.load();
+
+  if (oldState.top == NULL) {
+    cout << "Stack is Empty" << endl;
+    return -12;
+  }
+  else {
+    while (1) { 
+      oldState = state.load ();
+      Node* oldTop = oldState.top;
+      int oldTopValue = oldTop->value;
+      Node* next = oldTop->next;
+
+      /* new state */
+      state_t newState;
+      newState.top = next;
+      newState.nPops = oldState.nPops+1;
+      
+      if (state.compare_exchange_strong(oldState,newState)) {       
+        return oldTopValue;
+      }
+    }
+  }
+}
+
+void Stack::push(const int value) 
+{ 
+  Node *u = new Node(value); 
+
+  while (1) { 
+    state_t oldState = state.load ();
+    u->next = oldState.top;
+    
+    /* new state */
+    state_t newState;
+    newState.top = u;
+    newState.nPops = oldState.nPops;      
+    if (state.compare_exchange_strong(oldState, newState)) { 
+      break;
+    }
+  }
+}
+
+----
 
 
 ABA problem 

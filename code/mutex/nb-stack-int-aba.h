@@ -5,29 +5,21 @@
 using namespace std;
 
 class Node {
-
- public:
-
+public:
   int value;
   Node* next;
 
-	Node (int v) {
+  Node (int v) {
     value = v;
     next = NULL;
   }
 
-  Node (int v, Node* u) {
-    value = v;
-    next = u;
-  }
 };
 
 class Stack {
+public:
+  std::atomic<Node*> top;
 
- private: 
-	std::atomic<Node*> top;
-
- public: 
   Stack () {
     top = NULL;
   };
@@ -45,23 +37,23 @@ int Stack::pop () {
   else {
     while (1) { 
       Node* oldTop = top.load();
-		  int oldTopValue = oldTop->value;
-			Node* next = oldTop->next;
-			
-			if (top.compare_exchange_strong(oldTop,next)) {
-				return oldTopValue;
-			}
+      int oldTopValue = oldTop->value;
+      Node* next = oldTop->next;
+      
+      if (top.compare_exchange_strong(oldTop,next)) {
+        return oldTopValue;
+      }
     }
-	}
+  }
 }
 
 void Stack::push(const int value) 
 { 
-    Node *u = new Node(value); 
-    while (1) { 
-			u->next = top.load();
-			if (top.compare_exchange_strong(u->next, u)) { 
-				break;
-			}
+  Node *u = new Node(value); 
+  while (1) { 
+    u->next = top.load();
+    if (top.compare_exchange_strong(u->next, u)) { 
+      break;
     }
+  }
 }

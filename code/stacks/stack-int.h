@@ -4,30 +4,19 @@
 using namespace std;
 
 class Node {
+  int value;
+  Node* next;
 
-  public:
-    int value;
-    Node* next;
-
-
-    Node (int v) {
-      value = v;
-      next = NULL;
-    }
-
-    Node (int v, Node* u) {
-      value = v;
-      next = u;
-    }
-
+  Node (int v) {
+    value = v;
+    next = NULL;
+  }
 };
 
 class Stack {
 
- private: 
   Node* top;
 
- public: 
   Stack () {
     top = NULL;
   };

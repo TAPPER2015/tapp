@@ -22,6 +22,10 @@ write performant parallel programs at a relatively high level
 too much about lower level details such as machine specific
 optimizations, which might otherwise be necessary.
 
+The Clatexmath:[++] examples given in this book are written to favor
+simplicity of reading and therefore do not constitute good coding
+examples in that language. 
+
 All code that discussed in this book can be found at the Github
 repository linked by the following URL:
 

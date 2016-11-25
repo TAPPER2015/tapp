@@ -2,12 +2,12 @@
 #include <cstdlib>
 #include <pthread.h>
 #include <atomic>
-#include "nb-stack-int.h"
+#include "nb-stack-int-aba.h"
 
 using namespace std;
 
-#define NTHREADS 8
-#define NPUSHPOP 2
+#define NTHREADS 16
+#define NPUSHPOP 1
 
 std::atomic<bool> BigLock;
 

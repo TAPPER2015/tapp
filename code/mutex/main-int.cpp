@@ -1,6 +1,6 @@
 #include <iostream>
 #include <cstdlib>
-#include "nb-stack-int-aba.h"
+#include "stack-int.h"
 
 using namespace std;
 
