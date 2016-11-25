@@ -568,6 +568,112 @@ WARNING: Naama: Is fetch-and-add a hardware primitive? If so, fetch-and-add woul
 ====
 
 
+Nonblocking Concurrent Data Structures 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In some cases, we have multiple threads operating on a shared data
+structure such that the updates of one thread become visible to
+others.  We refer to such data structures as *_concurred data
+structures_*.  For example, we may have multiple threads using a stack
+or a queue data structure to send and receive items between each
+other.
+
+The crux of the problem of designing a concurrent data structure is
+ensuring correctness without penalizing performance.  Indeed, if we
+don't care about performance, it is trivial to implement a concurrent
+data structure by using a lock for the data structure such that any
+thread that wants to use the data structure takes a lock for it before
+using it, using it, and releases the lock afterwards.  In some cases,
+this is all we can do, e.g., the accesses to the Standard IO in our
+prior example cannot be handled differently without using a different,
+perhaps a more "finer grain" interface for IO,  But in many cases,
+there is a lot that can be done to ensure good performance.  
+
+One the most commonly used techniques is to use non-blocking atomic
+read-modify-write operations such as compare-and-exchange to implement
+concurrent data structures.  In this approach, since threads never
+block when using locks, a thread cannot prevent another thread from
+making progress by taking a lock and blocking on the lock, hence the
+name "non-blocking".  A non-blocking data structures is called *_lock
+free_* if system-wide progress can be guaranteed, even as threads are
+suspended.  A non-blocking data structure is called *_wait free_* if
+per-thread progress can also be guaranteed.
+
+
+A non-blocking stack data structure
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+----
+#include <iostream>
+#include <cstdlib>
+#include <atomic>
+
+using namespace std;
+
+class Node {
+
+ public:
+
+  int value;
+  Node* next;
+
+	Node (int v) {
+    value = v;
+    next = NULL;
+  }
+
+  Node (int v, Node* u) {
+    value = v;
+    next = u;
+  }
+};
+
+class Stack {
+
+ private: 
+	std::atomic<Node*> top;
+
+ public: 
+  Stack () {
+    top = NULL;
+  };
+
+  int pop ();
+  void push (int v);
+};
+
+
+int Stack::pop () {
+  if (top.load() == NULL) {
+    cout << "Stack is Empty" << endl;
+    return -12;
+  }
+  else {
+    while (1) { 
+			Node* oldTop = top.load();
+			int oldTopValue = oldTop->value;
+			Node* next = oldTop->next;
+			
+			if (top.compare_exchange_strong(oldTop,next)) {
+				return oldTopValue;
+			}
+    }
+	}
+}
+
+void Stack::push(const int value) 
+{ 
+    Node *u = new Node(value); 
+    while (1) { 
+			u->next = top.load();
+			if (top.compare_exchange_strong(u->next, u)) { 
+				break;
+			}
+    }
+}
+---- 
+
 
 ABA problem 
 ~~~~~~~~~~~

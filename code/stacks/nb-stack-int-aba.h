@@ -44,8 +44,8 @@ int Stack::pop () {
   }
   else {
     while (1) { 
-			Node* oldTop = top.load();
-			int oldTopValue = oldTop->value;
+      Node* oldTop = top.load();
+		  int oldTopValue = oldTop->value;
 			Node* next = oldTop->next;
 			
 			if (top.compare_exchange_strong(oldTop,next)) {
