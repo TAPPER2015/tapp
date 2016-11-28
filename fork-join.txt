@@ -340,6 +340,8 @@ overheads that are introduced by parallelism. By isolating these
 costs, we can more effectively pinpoint inefficiencies in our code.
 
 
+//////////////////////////////////////////////////////////////////////
+// Redundant
 ===  Executing fork-join algorithms
 
 We defined fork-join programs as a subclass case of multithreaded
@@ -500,3 +502,4 @@ image::jpgs-620H/centralized-scheduler.jpg["Centralized scheduler illustrated",w
 [[multithreading::distributed-scheduler, distributed scheduler illustrated]]
 image::jpgs-620H/distributed-scheduler.jpg["Distributed scheduler illustrated",width="500pt",align="center"]
 ====
+//////////////////////////////////////////////////////////////////////

@@ -264,7 +264,6 @@ protocols".
 
 -------------
 
-
 $ ./example.opt -example concurrent_counter_atomic -n 1000 -proc 16
 Concurrent-counter-atomic:n = 1000 result = 1000
 exectime 0.000
