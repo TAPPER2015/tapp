@@ -1,0 +1,243 @@
+An Introduction to Parallel Computing in C++ 
+============================================
+Umut A. Acar and Arthur Chargueraud and Mike Rainey
+v1.2 2016-03
+
+:doctype: book
+:imagesdir: ../originals
+:toc:
+:cpp: {basebackend@docbook:c++:cpp}
+:numbered:
+
+Chapter: Teaching Notes
+-----------------------
+
+What follows is an outline of the 4 lectures on PASL. 
+
+Lecture 1
+~~~~~~~~~
+
+Introduction
+^^^^^^^^^^^^
+
+. Broader perspective: so far, focused on design of parallel
+algorithms.  Implementation in SML, could execute some programs in
+parallel.  There are many other programming languages or extensions
+for parallel programming.  Unlike SML, many of these languages are
+based on imperative languages such as C/Clatexmath:[++] and Java.  In the next two
+weeks, we shall see one such approach based on C++.  
+
+As you will see, programming parallel algorithms in imperative
+languages requires paying attention to many more implementation
+details to ensure correctness.  We shall examples of this.  As you
+will see many of these are not germane to algorithm design and can be
+viewed as distractions.  
+
+. We will use the Clatexmath:[++] language and a library, called PASL,
+for writing parallel code in Clatexmath:[++].
+
+. Ask students if they are familiar with  Clatexmath:[++] and
+recommend them to learn it if they are not.  They don't need to be
+using anything deep from this language but they will definitely
+need some familiarity.
+
+
+. Empirical concerns: This being an algorithms class, we paid little
+attention to empirical concerns and practical performance.  While we
+hope you to see to learn more about these in your later courses, we
+don't want you to walk away with the false impression that practical
+issues are trivial.  They are not.  Especially in parallel algorithms,
+practical efficiency is very important and can require careful
+algorithm engineering. In the next two weeks, we will cover the basic
+vocabulary of empirical efficiency and see how we might write good
+code in practice.  
+
+. Concurrency: So far we only covered parallelism.  An important
+related topic in computer science is concurrency.  While concurrency
+is a largely a separate topic, it can be very useful in the design of
+"parallel" algorithms.  We shall cover some basic concepts of
+concurrency and how they can be used to implement parallel
+algorithms.
+
+. Lab: There will be a lab called "PASL Lab" based on the material here.
+Based on the feedback that we got from last years, we can say that
+this is one of the labs that the students enjoyed.  It is challenging
+but you will learn a lot.  So it is a highly recommended lab.
+
+
+
+Templates
+^^^^^^^^^
+
+. One of features of Clatexmath:[++] that we shall use a lot is
+templates.  Templates correspond to parametric polymorhism in SML.  
+
+. Give the latexmath:[$\alpha$]  `array` example and show how this
+corresponds to the `array<T>`.
+
+. Give the identity function in SML with type latexmath:[$\alpha
+\rightarrow \alpha$] and how this corresponds to the function given i
+the notes.
+
+Fork-Join Parallelism
+^^^^^^^^^^^^^^^^^^^^^
+
+. In this class, what you have learned is the fork-join parallelism.  
+
+. There are two other approaches: async-finish and
+futures. Async-finish is very simplar to fork-join.  Futures is a bit
+different because it makes parallel computations first-class values.
+Futures can be more powerful. 
+
+. Draw some DAG's to illustrate these.
+
+. A more general notion of multithreading also exists but this is
+really like programming with GOTO's.
+
+.  Talk about PASL's `fork2`.  Mention that the argument are unit
+arrow unit functions.  This means that there is no return value.
+Returns must be written to memory.
+
+
+Race Conditions
+^^^^^^^^^^^^^^^
+
+.  Talk about the examples.  For the first example, ask what
+happens if you printed the values from other branch inside each
+branch.  Highlight the nondeterministic behavior.  Talk about how
+these two can really be executed in any order.  THIS IS NOT IN THE
+NOTES.
+
+. For the `result +=` example, ask them to find the race after
+claiming that there is no race because they are both writing.  Point
+out that you lied aftewards.
+
+. Talk about compare and swap and other atomic operations.
+
+. Ask them as a puzzle how to fix the `result +=` example using
+compare and swap.
+
+. Talk about atomic memory.
+
+Benchmarking
+^^^^^^^^^^^^
+
+Follow the <<ch:benchmarking, this chapter>>
+
+Work efficiency
+^^^^^^^^^^^^^^^
+
+. Asymptotic work efficiency
+. Observed work efficiency 
+
+				  
+Lecture 2
+~~~~~~~~~
+
+Introduction
+^^^^^^^^^^^^
+
+. We shall cover the following topics
+  .. Executing parallel programs
+  .. Using C++ and the PASL library to write and evaluate parallel code.
+  .. Granularity control.
+  .. Graphs and BFS
+
+Executing parallel programs
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+SKIP THIS SECTION. WE SHALL COVER THIS MATERIAL LATER IN MULTITHREADED
+PROGRAMMING.
+
+. Example program: array increment.
+
+. The basic idea: partition computation into "units", each of which
+execute sequentially and map those that can be run in parallel. 
+  
+. A thread is a sequence of instructions that execute serially.  This
+means that they don't include a `fork2`.
+
+. Scheduling: map threads to processors/cores.
+
+. When doing this, we have to observe dependencies.  So use DAG's.
+Show example DAG.
+
+
+. Offline scheduling: you are given a DAG and want to map the DAG to
+processors.  
+
+. Give the example schedule.
+
+. Theorem: Any greedy schudule is good.
+
+. Scheduler: computes this schedule.  Challenges:
+
+  .. You don't know the DAG, it unfolds as it executes.
+
+  .. It takes time to create threads, find work, and distribute.  This
+  we call *_scheduling friction_*.
+
+. Example scheduler: centralized scheduler.  Does not scale.
+
+. Example scheduler: work stealing.  Works well. Minimal friction.
+ 
+
+
+Automatic Granularity Control
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Follow the notes
+
+
+
+Simple Parallel Arrays and Sorting
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Follow the notes. For 15210, this lecture can be combined with the
+next one and delivered as a single lecture.  
+
+
+Graphs and BFS
+^^^^^^^^^^^^^^
+
+. Motivation for Graphs
+. Graph Representation
+
+  .. Compressed Arrays
+  .. Space: n+m
+  .. Time: Puzzle. 
+     ... find neighbors: O(1)
+     ... outdegree: O(1) 
+           
+  .. Show code for adjlist
+
+. Graph creation and examples.
+
+. BFS 
+  .. Pseudocode for 210 Version of BFS
+     ... Key point: no vertex is visited more than once.
+  .. How to implement this efficiently on a Multicore?
+
+     By efficiently what we mean is that it should be observably work
+     efficient.  So there is one operation here that we don't use at
+     all in serial BFS.  What is it? It is the unions and reduces.
+    
+  .. Give the proposed pseudocode.  The key point is that the frontier
+  now is the most recently visited set of vertices.
+
+  .. Is this algorithm parallel?
+     ... Puzzle: How do we prevent multiple visits via outedges?
+     ... Compare and Swap
+
+  .. Edge Map
+
+  .. Exercise: It is possible to represent the frontier somewhat more
+  loosely to also allow vertices that are already visited but marked
+  with a sentinel value as described in the text. Can this be
+  adventageous?
+   
+
+
+[index]
+Index
+-----
+

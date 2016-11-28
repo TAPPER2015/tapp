@@ -1,0 +1,52 @@
+http://tldp.org/HOWTO/DocBook-Demystification-HOWTO/
+
+To make:
+
+- asciidoc -a asciimath --backend html5 lec.txt
+or
+- asciidoc -a asciimath --backend docbook45 lec.txt
+or 
+- asciidoc  --backend docbook45 lec.txt
+
+once you have a docbook output you can use xmlto toolchain.
+
+to embed images into html
+- asciidoc -a data-uri lec.txt
+
+
+- xmlto html-nochunks lec.xml 
+
+This creates separated pages for each section:
+- xmlto html lec.xml 
+
+You can use dblatex to convert to pdf
+dblatex lec.xml 
+
+
+o  There is a problem with docbook syntax highlighter.  You have define this:
+
+:cpp: {basebackend@docbook:c++:cpp}
+
+o MathJax
+put this inside the head.  
+
+Use latexmath: 
+and this works with dblatex.
+it also works with html5 via mathjax for that place this into the header.
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'],['\\(','\\)']]}});
+</script>
+
+<script type="text/javascript"
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+
+
+What follows is not secure
+
+<script type="text/javascript"
+  src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+

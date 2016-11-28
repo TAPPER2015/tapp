@@ -1,0 +1,30 @@
+o graphs: present the graph library and the operations possible.
+o graphs: point out the compressed adjacency list representation.
+o sorting: observed work efficiency factor terminology.
+o parallel arrays: show destructors/deallocation, and the move operator.
+
+
+
+---------------
+
+After the lectures:
+
+o Work efficiency: rewrite that section to use only array increment as
+an example.  Fib is confusing.
+
+o Since Fib is a bogus example, it would be nice to eliminate it (as
+much as possible, starting with section 3.)
+
+
+---------
+
+
+o Do we plan to finish "work efficiency" at the end of Day 1?  If so,
+then we probably definitely need to do the first item above.
+
+o Move the homework 1 exercise to the end of Day 1.
+
+o Should "parallel arrays and data parallelism" be under the same title?
+
+
+o use map_incr as example for granularity control (not fib)

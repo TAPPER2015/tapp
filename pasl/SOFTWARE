@@ -1,0 +1,52 @@
+
+2015-03-26 04:42:43 PM EDT - David Winters	Customer Visible Communications
+Umut,
+ 
+A few hours ago I scheduled the installation of the needed packages on the rest of the systems. The installs should complete as the systems "check in" with the control server. If anyone reports missing applications please let me know, both the date and the machine ('hostname').
+ 
+Please note, I'll be out of the office this upcoming Monday and Tuesday, March 30th and 31st.
+ 
+D.
+2015-03-19 12:53:09 PM EDT - David Winters	Customer Visible Communications
+Umut,
+ 
+Whenever it meets the needs of the user I prefer to install software using the machines' package management system. This includes benefits like updates in case vulnerabilities are found. I've installed the following four packages,
+ 
+hwloc.i686
+hwloc.x86_64
+hwloc-devel.i686
+hwloc-devel.x86_64
+ 
+on unix1, unix2, and unix3. Please give the installs a workout and let me know if everything checks out for pushing everything to the rest of the machines.
+ 
+D.
+2015-03-17 04:06:45 PM EDT - David Winters	Customer Visible Communications
+Currently installed for testing on,
+ 
+unix1.andrew.cmu.edu
+unix2.andrew.cmu.edu
+unix3.andrew.cmu.edu
+ 
+Root of gcc installation is /opt/rh/devtoolset-3/root/
+ 
+In each new bash session, to set up environment variables run the following command:
+ 
+source /opt/rh/devtoolset-3/enable
+ 
+After running it, "echo $PATH" should show its bin directory as the first in the PATH, like so:
+ 
+/opt/rh/devtoolset-3/root/usr/bin:/usr/lib64/ccache:/usr/local/sbin:/sbin:/bin:/usr/sbin:/usr/bin:/root/bin
+ 
+Let me know how the testing goes.
+ 
+David Winters for it-help@andrew
+ 
+Please reply to this message if you have questions or comments.
+ 
+Thank you,
+ 
+Computing Services
+Carnegie Mellon University
+www.cmu.edu/computing/
+412-268-HELP(4357)
+ 

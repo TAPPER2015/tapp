@@ -1,0 +1,48 @@
+An Introduction to Parallel Computing in C++ 
+============================================
+Umut A. Acar and Arthur Chargueraud and Mike Rainey
+v1.2 2016-03
+
+:doctype: book
+:imagesdir: ../originals
+:toc:
+:cpp: {basebackend@docbook:c++:cpp}
+:numbered:
+
+// TEACHING NOTES, COMMENT OUT
+
+include::./teach.txt[]
+
+include::./preface-15210.txt[]
+
+include::../background.txt[]
+
+include::../fork-join.txt[]
+
+include::../race-conditions.txt[]
+
+
+////
+// left for multithreading
+include::../scheduling.txt[]
+////
+
+include::../benchmarking.txt[]
+
+include::../work-efficiency.txt[]
+
+include::../granularity-control.txt[]
+
+include::../parallel-arrays.txt[]
+
+include::../sorting.txt[]
+
+include::../synchronization.txt[]
+
+include::../graphs.txt[]
+				   
+
+[index]
+Index
+-----
+

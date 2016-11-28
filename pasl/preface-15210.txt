@@ -1,0 +1,41 @@
+[[ch:preface]]
+Preface
+-------
+
+The goal of these notes is to introduce the reader to the following.
+
+. Parallel computing in imperative programming languages and
+Clatexmath:[++] in particular, and 
+. Real-world performance and efficiency concerns in writing parallel
+software and techniques for dealing with them.
+
+For parallel programming in Clatexmath:[++], we use a library, called
+*PASL*, that we have been developing over the past 5 years.  The
+implementation of the library uses advanced scheduling techniques to
+run parallel programs efficiently on modern multicores and provides a
+range of utilities for understanding the behavior of parallel
+programs.
+
+PASL stands for Parallel Algorithm Scheduling Library. It also sounds
+a bit like the French phrase "pas seul" (pronounced "pa-sole"),
+meaning "not alone".
+
+We expect that the instructions in this book and PASL to allow the
+reader to write performant parallel programs at a relatively high
+level (essentially at the same level of C++ code) without having to
+worry too much about lower level details such as machine specific
+optimizations, which might otherwise be necessary.
+
+All code that associated with this book can be found at the Github
+repository linked by the following URL:
+
+https://github.com/deepsea-inria/pasl/tree/edu[https://github.com/deepsea-inria/pasl/tree/edu]
+
+This code-base includes the examples presented in the book,  see file
+`minicourse/examples.hpp`.
+
+This book does not focus on the design and analysis of parallel
+algorithms.  The interested reader can find more details this topic in
+http://www.parallel-algorithms-book.com/[this book.]
+
+
