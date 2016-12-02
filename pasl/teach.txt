@@ -9,16 +9,15 @@ v1.2 2016-03
 :cpp: {basebackend@docbook:c++:cpp}
 :numbered:
 
-Chapter: Teaching Notes
------------------------
+= Chapter: Teaching Notes
 
 What follows is an outline of the 4 lectures on PASL. 
 
-Lecture 1
-~~~~~~~~~
+== Lecture 1
 
-Introduction
-^^^^^^^^^^^^
+
+=== Introduction
+
 
 . Broader perspective: so far, focused on design of parallel
 algorithms.  Implementation in SML, could execute some programs in
@@ -66,8 +65,8 @@ but you will learn a lot.  So it is a highly recommended lab.
 
 
 
-Templates
-^^^^^^^^^
+=== Templates
+
 
 . One of features of Clatexmath:[++] that we shall use a lot is
 templates.  Templates correspond to parametric polymorhism in SML.  
@@ -79,15 +78,16 @@ corresponds to the `array<T>`.
 \rightarrow \alpha$] and how this corresponds to the function given i
 the notes.
 
-Fork-Join Parallelism
-^^^^^^^^^^^^^^^^^^^^^
+=== Concurrency and Fork-Join Parallelism
 
 . In this class, what you have learned is the fork-join parallelism.  
 
 . There are two other approaches: async-finish and
-futures. Async-finish is very simplar to fork-join.  Futures is a bit
+futures. Async-finish is very similar to fork-join.  Futures is a bit
 different because it makes parallel computations first-class values.
-Futures can be more powerful. 
+Futures can be more powerful.
+
+. Draw a spectrum from fork join to general concurrency.
 
 . Draw some DAG's to illustrate these.
 
@@ -99,8 +99,7 @@ arrow unit functions.  This means that there is no return value.
 Returns must be written to memory.
 
 
-Race Conditions
-^^^^^^^^^^^^^^^
+=== Race Conditions
 
 .  Talk about the examples.  For the first example, ask what
 happens if you printed the values from other branch inside each
@@ -130,19 +129,127 @@ Work efficiency
 . Asymptotic work efficiency
 . Observed work efficiency 
 
-				  
-Lecture 2
-~~~~~~~~~
 
-Introduction
-^^^^^^^^^^^^
+=== Automatic Granularity Control
+Follow the notes
+
+See the review below for a nice outline of this section.
+
+				  
+== Lecture 2
+
+=== Review
+
+. Show the code for and run sequential array increment . Show the code
+for and run parallel array increment, proc 1, full parallel.
+
+. Highlight the difference in run-time and ask why this is due.
+
+. Draw a spectrum, sequential algorithm on one end, parallel on the on
+other and talk about the gap.  One reason for the gap could be
+asymptotic. This does not exist here.  They are both linear. Recall that we called parallel
+algorithms that have the same asymptotic complexity as sequential
+*_asymptotically work efficient_*.    Another
+reason could be constant factors. We can see this by comparing the
+elision and the parallel and the sequential and the elision.  Talk
+about these.  
+
+. What is the reason for the gap between parallel and
+elision.  It is due to the cost of fork2.  The point is that fork2 is
+expensive.  It does not have to be this expensive.  The expense can be
+reduced but not by much.  
+
+. What can we do? We talked about how granularity control can help.
+The C++ library that you will be using, PASL, has built-in support for
+automatic granularity control.  There is some syntactic overhead for
+doing this, but as a result you get provable performance.
+
+. Let's see the code for this, using pfor.  This is a nice piece of
+code that does everything for us.  
+
+  .. Run the pfor code and see that it is really close to the serial.
+
+  .. Run also a speedup experiment to make sure that it does not over
+  sequentialize.
+
+. We call programs like this *_observably work efficient_*.  We
+distinguish between these two because not all parallel algorithms are
+observably work efficient, even if they may be asymptotically work
+efficient. We will see examples of this.  Sometimes, it requires quite
+a bit of engineering work to design an observably work efficient
+parallel algorithm.
+
+
+=== Outline
 
 . We shall cover the following topics
-  .. Executing parallel programs
-  .. Using C++ and the PASL library to write and evaluate parallel code.
-  .. Granularity control.
+  .. A sequence library based on arrays
+  .. An application: parallel sorting
   .. Graphs and BFS
 
+
+=== Simple Parallel Arrays and Sorting
+
+. Run quicksort as they have seen in the class
+. Run the baseline, highly optimized implementation of in place
+quicksort.  
+. Asymptotically work efficient but not observably so.  The reason:
+the many different arrays being created, left, right, equal and the
+many passes over the data.  Whereas in place quicksort does one pass,
+ours does 3 for each filter and plus 1 for the concat.  We can see
+this by the difference, which approximately factor 3.
+
+
+.  We might thus ask, well what if we do the filters sequentially in
+place and perform the two calls in parallel.  This is a feasible
+approach certainly. SHow the code.  Run the code.  See speedups.
+Lesson learned: work efficiency seems to be important especially in
+small scale.
+
+. How about other algorithms?  Let's see merge sort.
+  .. Show code for parallel merge sort
+  .. Analyze sequential merge nlgn work n span
+  .. Run experiments 100 million
+
+=== Graphs and BFS
+
+. Motivation for Graphs
+. Graph Representation
+
+  .. Compressed Arrays: edge array and vertex array
+  .. Space: n+m
+  .. Time: Puzzle. 
+     ... find neighbors: O(1)
+     ... outdegree: O(1), check the difference between the vertex and
+  the next. 
+           
+  .. Show code for adjlist
+
+. Graph creation and examples.
+
+. BFS 
+  .. Pseudocode for 210 Version of BFS
+     ... Key point: no vertex is visited more than once.
+  .. How to implement this efficiently on a Multicore?
+
+     By efficiently what we mean is that it should be observably work
+     efficient.  So there is one operation here that we don't use at
+     all in serial BFS.  What is it? It is the unions and reduces.
+    
+  .. Give the proposed pseudocode.  The key point is that the frontier
+  now is the most recently visited set of vertices.
+
+  .. Is this algorithm parallel?
+     ... Puzzle: How do we prevent multiple visits via outedges?
+     ... Compare and Swap
+
+  .. Edge Map
+
+  .. Exercise: It is possible to represent the frontier somewhat more
+  loosely to also allow vertices that are already visited but marked
+  with a sentinel value as described in the text. Can this be
+  adventageous?
+   
 Executing parallel programs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -182,59 +289,6 @@ processors.
 . Example scheduler: work stealing.  Works well. Minimal friction.
  
 
-
-Automatic Granularity Control
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Follow the notes
-
-
-
-Simple Parallel Arrays and Sorting
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Follow the notes. For 15210, this lecture can be combined with the
-next one and delivered as a single lecture.  
-
-
-Graphs and BFS
-^^^^^^^^^^^^^^
-
-. Motivation for Graphs
-. Graph Representation
-
-  .. Compressed Arrays
-  .. Space: n+m
-  .. Time: Puzzle. 
-     ... find neighbors: O(1)
-     ... outdegree: O(1) 
-           
-  .. Show code for adjlist
-
-. Graph creation and examples.
-
-. BFS 
-  .. Pseudocode for 210 Version of BFS
-     ... Key point: no vertex is visited more than once.
-  .. How to implement this efficiently on a Multicore?
-
-     By efficiently what we mean is that it should be observably work
-     efficient.  So there is one operation here that we don't use at
-     all in serial BFS.  What is it? It is the unions and reduces.
-    
-  .. Give the proposed pseudocode.  The key point is that the frontier
-  now is the most recently visited set of vertices.
-
-  .. Is this algorithm parallel?
-     ... Puzzle: How do we prevent multiple visits via outedges?
-     ... Compare and Swap
-
-  .. Edge Map
-
-  .. Exercise: It is possible to represent the frontier somewhat more
-  loosely to also allow vertices that are already visited but marked
-  with a sentinel value as described in the text. Can this be
-  adventageous?
-   
 
 
 [index]

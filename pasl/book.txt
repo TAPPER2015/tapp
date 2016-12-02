@@ -4,14 +4,10 @@ Umut A. Acar and Arthur Chargueraud and Mike Rainey
 v1.2 2016-03
 
 :doctype: book
-:imagesdir: ../originals
+:imagesdir: ./originals
 :toc:
 :cpp: {basebackend@docbook:c++:cpp}
 :numbered:
-
-// TEACHING NOTES, COMMENT OUT
-
-include::./teach.txt[]
 
 include::./preface-15210.txt[]
 
@@ -37,7 +33,7 @@ include::../parallel-arrays.txt[]
 
 include::../sorting.txt[]
 
-include::../synchronization.txt[]
+// include::../synchronization.txt[]
 
 include::../graphs.txt[]
 				   

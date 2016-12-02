@@ -26,6 +26,14 @@ that a dag represents a partial order.  Thus the dag of the
 computation represents the partial ordering of the dependencies
 between the instructions in the computation.
 
+NOTE: Multithreaded computing can be viewed as a natural
+generalization of sequential computing in the following sense: in
+sequential computing, an computation can be defined as a totally
+ordered set of instructions, where the ordering corresponds to the
+sequential execution order.  In contrast, in multithreaded computing,
+a computation can be viewed as a partially ordered set of instructions
+(as specified by the dag), where the instructions may be executed in
+any order compatible with the specified partial order.
 
 [[multithreading::general-threads, Figure ?]]
 .A multithreaded computation.
@@ -73,20 +81,14 @@ is a function from processes and (time) *_steps_* to instructions of
 the dag such  that
 
 . if a vertex latexmath:[$u$] is ordered before another
-latexmath:[$v$] in latexmath:[$G$], then latexmath:[$v$] is not
-executed at a time step before  latexmath:[$u$], and
+vertex latexmath:[$v$] in latexmath:[$G$], then latexmath:[$u$] is
+executed before  latexmath:[$u$], and
 
 . each vertex in latexmath:[$G$]  is executed exactly once.
 
 The *_length_* of a schedule is the number of steps in the schedule.
 
 ****
-
-////////////
-
-WARNING: Naama: doesn’t v have to be scheduled strictly after u if u is before it in the dag order? The statement of the definition seems to allow u and v to be executed at the same time step. Is that right?
-
-///////////
 
 The first condition ensures that a schedule observes the dependencies
 in the dag.  Specifically, for each arc latexmath:[$(u,v)$] in the
@@ -566,19 +568,40 @@ Hello world! It is me, 007
 
 === Writing Multithreaded Programs: Structured or Implicit Multithreading
 
-
 Interface such as Pthreads enable the programmer to create a wide
 variety of multithreaded computations that can be structured in many
-different ways. Large classes of interesting multithreaded
-computations, however, can be expcessed using a more structured
-approach, where threads are restricted in the way that they
-synchronize with other threads.  One such interesting class of
-computations is fork-join computations where a thread can spawn or
-"fork" another thread or "join" with another existing thread.  Joining
-a thread is the only mechanism through which threads synchronize.  The
-figure below illustrates a fork-join computation.  The main threads
-forks thread A, which then spaws thread B.  Thread B then joins thread
-A, which then joins Thread M.
+different ways. Multithreaded programs, however, can be extremely
+difficult to reason about, and get correct and efficient, because they
+require reasoning about exponentially many interleavings of code.  For
+example, to reason about the correctness of a program consisting of 16
+threads, each of which runs a 100 line program, we might have to
+reason about at least latexmath:[$16^100$] different interleavings.
+This is a huge number, larger than the number of atoms in the known
+universe. Indeed, it is for this reason, multithreaded programs are
+known to be notoriously difficult to get right.  Common problem
+include 
+
+
+
+. reasoning about the correctness and efficiency of concurrent data
+structures,
+
+. reasoning about correctness of memory management in non-GC'ed
+programming languages, and 
+
+. more generally, establishing absence of race conditions and the
+correctness of code,
+
+
+Fortunately, large classes of interesting multithreaded computations,
+can be written using a more structured approach, where threads are
+restricted in the way that they synchronize with other threads.  One
+such interesting class of computations is fork-join computations where
+a thread can spawn or "fork" another thread or "join" with another
+existing thread.  Joining a thread is the only mechanism through which
+threads synchronize.  The figure below illustrates a fork-join
+computation.  The main threads forks thread A, which then spaws thread
+B.  Thread B then joins thread A, which then joins Thread M.
 
 
 [[multithreading:general, Figure ?]]

@@ -379,7 +379,11 @@ another thread) since it was loaded.  This guarantees that the
 missing an update from another thread.
 
 //////////////////////////////////////////////////////////////////////
-WARNING: Naama: Is fetch-and-add a hardware primitive? If so, fetch-and-add would solve the problem in the fib example without the busy-wait loop; F&A always succeeds.
+
+WARNING: Naama: Is fetch-and-add a hardware primitive? If so,
+fetch-and-add would solve the problem in the fib example without the
+busy-wait loop; F&A always succeeds.
+
 /////////////////////////////////////////////////////////////////////
 
 ================
@@ -568,8 +572,8 @@ WARNING: Naama: Is fetch-and-add a hardware primitive? If so, fetch-and-add woul
 ====
 
 
-Nonblocking Concurrent Data Structures 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+=== Nonblocking Concurrent Data Structures 
+
 
 In some cases, we have multiple threads operating on a shared data
 structure such that the updates of one thread become visible to
@@ -600,8 +604,7 @@ suspended.  A non-blocking data structure is called *_wait free_* if
 per-thread progress can also be guaranteed.
 
 
-A non-blocking stack data structure
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+==== A non-blocking stack data structure
 
 Suppose that we wish to implement a concurrent stack data structure
 that can be shared my multiple threads.  The code below shows the code
@@ -803,9 +806,83 @@ void Stack::push(const int value)
 
 
 
-ABA problem
 
 
+
+
+
+==== ABA problem 
+
+
+While reasonably powerful, compare-and-swap operation suffers from the
+so-called *_ABA_* problem.  To see this consider the following
+scenario where a shared variable `top` is updated by multiple threads
+in parallel.
+
+. Thread latexmath:[$T_1$], reads the `top` and stores its current
+value, say node `M`, in `oldTop`. It then continues to compute `next`
+as the next node in the stack, lets say `N`. Before latexmath:[$T_1$]
+can complete, however, another thread steps in.
+
+. Immediately after this, another thread latexmath:[$T_2$] reads
+`top` and performs a `pop` operation to remove node `M` and pushes a
+new node `O` onto the stack.  At this point, the stack looks like
+`O::N` with the top of the stack pointing to node `O`, which points to
+node `N`.  At this point, thread latexmath:[$T_2$] pushes `M` back
+onto the stack, the stack now looks like `M::0::N`.
+
+. Thread latexmath:[$T_1$] now steps in to continue its `pop`
+operation by attempting to rum `compare_exchange_strong`.  The
+operation succeeds because node `M` is the at the top of the stack,
+which matches `oldTop` of latexmath:[$T_1$]. The pop operation thus
+completes setting `top` to `next`, which is `N`.  This is, however,
+incorrect because the node `O` has disappeared from the stack.
+
+In summary, compare-and-swap was not able to detect the change in the
+stack structure, because it only relies on a simple "shallow" notion
+of equality. The fact that `top` and `oldTop` has the same node as
+their values does not mean that the stack has not been modified!
+
+This problem is called the *_ABA_* problem, because it involves
+cycling the atomic memory cell between the three values
+latexmath:[$A$], latexmath:[$B$], and again latexmath:[$A$]).  The ABA
+problem is an important limitation of compare-and-swap.  It shows that
+the operation itself is not atomic in a true sense of the world but
+tries to imitate atomicity by relying on a shallow equality test. If
+it can be ensured that the shallow equality test of the subject memory
+cell suffices for correctness, the imitation can be useful, if not,
+then the operation cannot be considered atomic.
+
+The *_ABA_* problem can lead to seemingly correct implementations that
+are in fact incorrect.  To reduce the changes of bugs due to the ABA
+problem, memory objects subject to compare-and-swap are usually tagged
+with an additional field that counts the number of updates.  This
+solves the basic problem but only up to a point because the counter
+itself can also wrap around.  The load-link/store-conditional, a.k.a.,
+*_LL/SC_*, operation solves this problem in principle by performing
+the write only if the memory location has not been updated since the
+last read (load).  Unfortunately, practical implementations of LL/SC
+that actually meet its specifications are hard to come by.  
+
+//////////////////////////////////////////////////////////////////
+WARNING: Naama: LL/SC behaves exactly like compare-and-swap, but does
+not suffer from the ABA problem (will fail if the value has been
+changed between a load-link and a store-conditional operation). Worth
+mentioning? Also, LL/SC can be implemented from CAS operations in
+constant time (maybe about 20 CAS operations), but this implementation
+is complicated and is not generally used in practice as far as I know.
+///////////////////////////////////////////////////////////////////
+
+
+Here is a refinement of our non-blocking stack code with the ABA
+problem.  The main difference between these two pieces of code is that
+the refined version keeps a counter with the `top` of the stack and
+counts the number of times that the stack is popped.  This makes it
+possible to determine whether the stack has been modified since it has
+been read by a thread.  The approach, however does not fully solve the
+ABA problem because the counter may overflow and wrap-up.  This is
+however, considered to be highly unlikely and this solution can be
+seen used quite frequently in practice.
 
 ----
 #include <iostream>
@@ -898,54 +975,27 @@ void Stack::push(const int value)
 ----
 
 
-ABA problem 
-~~~~~~~~~~~
 
-While reasonably powerful, compare-and-swap suffers from the so-called
-*_ABA_* problem.  To see this consider the following scenario where a
-shared variable `result` is update by multiple threads in parallel: a
-thread, say latexmath:[$T$], reads the `result` and stores its current
-value, say `2`, in `current`.  In the mean time some other thread also
-reads `result` and performs some operations on it, setting it back to
-`2` after it is done.  Now, thread latexmath:[$T$] takes its turn
-again and attempts to store a new value into `result` by using `2` as
-the old value and being successful in doing so, because the value
-stored in `result` appears to have not changed. The trouble is that
-the value has actually changed and has been changed back to the value
-that it used to be.  Thus, compare-and-swap was not able to detect
-this change because it only relies on a simple shallow notion of
-equality.  If for example, the value stored in `result` was a pointer,
-the fact that the pointer remains the same does not mean that values
-accessible from the pointer has not been modified; if for example, the
-pointer led to a tree structure, an update deep in the tree could
-leave the pointer unchanged, even though the tree has changed.
 
-This problem is called the *_ABA_* problem, because it involves
-cycling the atomic memory between the three values latexmath:[$A$],
-latexmath:[$B$], and again latexmath:[$A$]).  The ABA problem is an
-important limitation of compare-and-swap: the operation itself is not
-atomic but is able to behave as if it is atomic if it can be ensured
-that the equality test of the subject memory cell suffices for
-correctness.
+=== Memory Management
 
-In the example below, ABA problem may happen (if the counter is
-incremented and decremented again in between a load and a store) but
-it is impossible to observe because it is harmless.  If however, the
-compare-and-swap was on a memory object with references, the ABA
-problem could have had observable effects.
+Another difficulty in concurrent data structures, and more generally,
+in multithreaded programs is ensuring correct usage of dynamically
+allocated memory.  The challenge is to make sure that there are no
+"dangling references" to objects that  are manually freed.  This can
+be difficult, because in a multithreaded program there can be many
+different points to an object, making it difficult to find the "safe
+points" at which an object may be freed.  
 
-The *_ABA_* problem can be exploited to give seemingly correct
-implementations that are in fact incorrect.  To reduce the changes of
-bugs due to the ABA problem, memory objects subject to
-compare-and-swap are usually tagged with an additional field that
-counts the number of updates.  This solves the basic problem but only
-up to a point because the counter itself can also wrap around.  The
-load-link/store-conditional operation solves this problem by
-performing the write only if the memory location has not been updated
-since the last read (load) but its practical implementations are hard
-to come by.
+As a concrute example, imagine a shared stack data structure and
+suppose that a thread is in the middle of a `pop` operation and has
+read the top node `M~ but has not completed it yet.  Now, some other
+threads comes and pops the node `M`, and returns the value after
+freeing the node `M`. At this poin, there is a dangling reference to
+freed node `M`, because the first thread is still holding the value in
+its variable `oldTop`.  
 
-//////////////////////////////////////////////////////////////////
-WARNING: Naama: LL/SC behaves exactly like compare-and-swap, but does not suffer from the ABA problem (will fail if the value has been changed between a load-link and a store-conditional operation). Worth mentioning? Also, LL/SC can be implemented from CAS operations in constant time (maybe about 20 CAS operations), but this implementation is complicated and is not generally used in practice as far as I know.
-///////////////////////////////////////////////////////////////////
 
+=== Lock-Free and Wait-Free Concurrent Data Structures
+
+Non-blocking data structures ....

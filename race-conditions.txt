@@ -150,6 +150,10 @@ lost by being overwritten by the second thread.
 
 ==========================
 
+To prevent such race conditions, we usually want to give threads
+*_mutually exclusive_* access to shared objects.
+
+
 Synchronization Hardware
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
