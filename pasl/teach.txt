@@ -288,8 +288,8 @@ small scale.
        pthread_mutex_trylock: mutex -> status (non-blocking)
        pthread_mutex_unlock: mutex -> mutex
        
-
     .. Approach 2: lock-free approach
+        
 
 Executing parallel programs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^

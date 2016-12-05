@@ -14,11 +14,6 @@ public:
     value = v;
     next = NULL;
   }
-
-  Node (int v, Node* u) {
-    value = v;
-    next = u;
-  }
 };
 
 class Stack {
@@ -49,8 +44,14 @@ int Stack::pop () {
     return -12;
   }
   else {
+
+    // This should also work
+		// oldState = state.load ();
+
     while (1) { 
-      oldState = state.load ();
+
+   	  oldState = state.load ();
+			 
       Node* oldTop = oldState.top;
       int oldTopValue = oldTop->value;
       Node* next = oldTop->next;

@@ -2,7 +2,7 @@
 #include <cstdlib>
 #include <pthread.h>
 #include <atomic>
-#include "stack.h"
+#include "nb-stack.h"
 
 using namespace std;
 
@@ -49,14 +49,15 @@ void *pushPop(void *a)
 	
   for (int i = 0; i < NPUSHPOP; ++i) {
     int j = NPUSHPOP * tid + i;
-    sharedStack->push (NPUSHPOP * tid + i);
+
     takeLock ();
+    sharedStack->push (NPUSHPOP * tid + i);
     cout << "Thread " << tid << " pushed " << j << "+" << endl;
     releaseLock ();
 		sleep (1);
 
-    int k = sharedStack->pop ();
     takeLock ();
+    int k = sharedStack->pop ();
     cout << "Thread " << tid << " popped " << k << "-" << endl;
     releaseLock ();
 		sleep (1);

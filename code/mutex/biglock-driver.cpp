@@ -40,9 +40,9 @@ void *hello(void *a)
   args* myargs = (args*) a;
 	int tid = myargs->tid;
 
-	//takeBigLock ();
+	takeBigLock ();
   cout << "Hello world! It is me, Thread " << tid << endl;
-	//releaseBigLock ();
+	releaseBigLock ();
 
   pthread_exit(NULL);
 }
@@ -57,9 +57,9 @@ int main ()
 		args* a = new args;
 		a->tid = i;
 		
-  	// takeBigLock ();
+  	takeBigLock ();
     cout << "main: creating thread 00" << i << endl;
-    // releaseBigLock ();
+    releaseBigLock ();
     int error = pthread_create(&threads[i], NULL, hello, (void *) a);
     if (error) {
       cout << "Error: unable to create thread," << error << endl;

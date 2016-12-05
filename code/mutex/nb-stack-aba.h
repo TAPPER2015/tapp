@@ -30,21 +30,29 @@ public:
 
 
 int Stack::pop () {
-  if (top.load() == NULL) {
+
+		
+	if (top.load() == NULL) {
     cout << "Stack is Empty" << endl;
     return -12;
   }
   else {
     while (1) { 
+
+      (* take picture *)
       Node* oldTop = top.load();
       int oldTopValue = oldTop->value;
-      Node* next = oldTop->next;
+
+      (* local change *)
+			Node* next = oldTop->next;
       
+      (* compare and commit *)
       if (top.compare_exchange_strong(oldTop,next)) {
         return oldTopValue;
       }
     }
   }
+
 }
 
 void Stack::push(const int value) 
