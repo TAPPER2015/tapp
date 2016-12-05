@@ -775,7 +775,7 @@ points" at which an object may be freed.
 
 As a concrute example, imagine a shared stack data structure and
 suppose that a thread is in the middle of a `pop` operation and has
-read the top node `M~ but has not completed it yet.  Now, some other
+ read the top node `M` but has not completed it yet.  Now, some other
 threads comes and pops the node `M`, and returns the value after
 freeing the node `M`. At this poin, there is a dangling reference to
 freed node `M`, because the first thread is still holding the value in
