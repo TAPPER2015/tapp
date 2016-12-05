@@ -2,7 +2,7 @@
 #include <cstdlib>
 #include <pthread.h>
 #include <atomic>
-#include "nb-stack-int-aba.h"
+#include "stack.h"
 
 using namespace std;
 

@@ -2,7 +2,6 @@
 #include <cstdlib>
 #include <pthread.h>
 #include <atomic>
-#include "nb-stack-int.h"
 
 using namespace std;
 
@@ -51,7 +50,6 @@ void *hello(void *a)
 int main ()
 {
   pthread_t threads[NTHREADS];
-  Stack* sharedStack = new Stack (); 
   BigLock.store(false);
 	
  	int rc;
@@ -59,9 +57,9 @@ int main ()
 		args* a = new args;
 		a->tid = i;
 		
-  	//takeBigLock ();
+  	// takeBigLock ();
     cout << "main: creating thread 00" << i << endl;
-    //releaseBigLock ();
+    // releaseBigLock ();
     int error = pthread_create(&threads[i], NULL, hello, (void *) a);
     if (error) {
       cout << "Error: unable to create thread," << error << endl;

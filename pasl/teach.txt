@@ -190,9 +190,14 @@ parallel algorithm.
 
 === Simple Parallel Arrays and Sorting
 
+. A brief summary of sparrays.  An implementation of their array
+sequence structure.
+
 . Run quicksort as they have seen in the class
+
 . Run the baseline, highly optimized implementation of in place
 quicksort.  
+
 . Asymptotically work efficient but not observably so.  The reason:
 the many different arrays being created, left, right, equal and the
 many passes over the data.  Whereas in place quicksort does one pass,
@@ -250,6 +255,42 @@ small scale.
   with a sentinel value as described in the text. Can this be
   adventageous?
    
+== Lecture 3: Multithreading and Concurrency
+
+. Multithreaded program, definition as dag
+. Work and span
+. Execution via scheduling: Example
+. Scheduling lower bounds
+. Scheduling upper bounds: offline scheduling
+. Scheduling upper bounds: online scheduling
+  .. Global queue
+  .. Work stealing
+. Writing multithreaded programs: PThreads
+  .. Example
+  .. Synchronization: join, mutex, condition variables
+. Writing multithreaded programs: structured threading
+  .. Fork join, async-finish, futures: Parallel ML, PASL, Cilk, X10
+. Critical Sections and Mutual Exclusion
+  . Define critical section: no more than one thread at a time
+  . Requires mutual exclusion, if not, a race condition can occur
+  . How to ensure mutual exclusion? 
+    .. Approach 1: lock based approaches
+       ... spin locks
+       ... blocking locks
+      
+       Blocking or not, locks are implemented as part of the language
+       system.  For example, in pThreads, there are functions such as
+
+       pthread_mutex_t my_mutex
+       pthread_mutex_init ()
+       pthread_mutex_destroy ()
+       pthread_mutex_lock: mutex -> mutex (blocking)
+       pthread_mutex_trylock: mutex -> status (non-blocking)
+       pthread_mutex_unlock: mutex -> mutex
+       
+
+    .. Approach 2: lock-free approach
+
 Executing parallel programs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 

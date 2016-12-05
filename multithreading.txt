@@ -3,13 +3,14 @@
 
 
 The term *_multithreading_* refers to computing with multiple threads
-of control. Once created, a thread performs a computation by executing
-a sequence of instructions, as specified by the program, until it
-terminates.  A multithreaded computation starts by executing a *_main
-thread_*, which is the thread at which the execution starts.  A thread
-can create or *_spawn_* another thread and *_synchronize_* with other
-threads by using a variety of synchronization constructs such as locks,
-mutex's, synchronization variables, and semaphores.
+of control where all threads share the same memory. Once created, a thread
+performs a computation by executing a sequence of instructions, as
+specified by the program, until it terminates.  A multithreaded
+computation starts by executing a *_main thread_*, which is the thread
+at which the execution starts.  A thread can create or *_spawn_*
+another thread and *_synchronize_* with other threads by using a
+variety of synchronization constructs such as locks, mutex's,
+synchronization variables, and semaphores.
 
 === DAG Representation
 
@@ -21,10 +22,12 @@ addition, a multiplication, a memory operation, a (thread) spawn
 operation, or a synchronization operation.  A vertex representing a
 spawn operation has outdegree two.  A synchronization operation waits
 for an operation belonging to a thread to complete, and thus a vertex
-representing a synchronization operation has indegree two.  Recall
-that a dag represents a partial order.  Thus the dag of the
+representing a synchronization operation has indegree at least two.
+Recall that a dag represents a partial order.  Thus the dag of the
 computation represents the partial ordering of the dependencies
-between the instructions in the computation.
+between the instructions in the computation.  Perhaps the simplest
+multithreaded program is a sequential program, which can be
+represented as a chain of (totally ordered) vertices.
 
 NOTE: Multithreaded computing can be viewed as a natural
 generalization of sequential computing in the following sense: in
@@ -190,7 +193,7 @@ schedulers: *_level-by-level scheduler_* and *_greedy scheduler_*.
 
 A *_level-by-level schedule_* is a schedule that executes the
 instructions in a given dag level order, where the *_level_* of a
-vertex is the longest distance from the root of the dag to the vertex.
+vertex is the _longest_ distance from the root of the dag to the vertex.
 More specifically, the vertices in level 0 are executed first,
 followed by the vertices in level 1 and so on.
 
@@ -310,7 +313,9 @@ processes.  For example, if only one processor is available, a
 scheduler can map all threads to that one processor.  If two
 processors are available, then the scheduler can divide the threads
 between the two processors as evenly as possible in an attempt to keep
-the two processors as busy as possible by *_load balancing_*.
+the two processors as busy as possible by *_load balancing_*, which
+involves migrating pieces of work between processors so as to minimize
+idle time.
 
 There are many different online-scheduling algorithms but these
 algorithms all operate similarly. We can outline a typical scheduling
@@ -319,12 +324,13 @@ algorithm as follows.
 [[multithreading::scheduler-typical]]
 .Typical Online Scheduling Algorithm 
 ****
-The algorithm maintains a *_work pool_* of work,
-consisting of ready threads, and executes them. Execution starts with
-the root thread in the pool.  It ends when the final vertex is
-executed.  In order to minimize the cost of computing the schedule,
-the algorithm executes a thread until there is a need for
-synchronization with other threads.
+
+The algorithm maintains a *_work pool_*, consisting of ready threads,
+and executes them. Execution starts with the root thread in the pool.
+It ends when the final vertex is executed.  The algorithm executes a
+thread without pre-emption, i.e., until the thread terminates or
+blocks to synchronize with other threads.
+
 
 To obtain work, a process removes a thread from the pool and executes
 its ready vertex. We refer to the thread executed by a process as the
@@ -446,7 +452,7 @@ work-stealing in greater detail in a <<ch:work-stealing, future chapter.>>
 
 Multithreaded programs can be written using a variety of language
 abstractions interfaces. One of the most widely used interfaces is the
-*_POSIX Threads*_ or *_Pthreads_* interface, which specifies a
+*_POSIX Threads_* or *_Pthreads_* interface, which specifies a
 programming interface for a standardized C language in the IEEE POSIX
 1003.1c standard. Pthreads provide a rich interface that enable the
 programmer to create multiple threads of control that can synchronize
@@ -543,7 +549,7 @@ Hello world! It is me, 007
 
 ----
 
-And may even look like this 
+Or may look like this 
 ----
 main: creating thread 000
 main: creating thread 001
@@ -564,6 +570,18 @@ Hello world! It is me, 007
 
 ----
 
+The pThreads library provides a rich interface for synchronizing
+between threads, e.g.,
+
+. a thread latexmath:[$t_1$] can *_join_* with another thread
+latexmath:[$t_2$] by blocking its execution until latexmath:[$t_2$]
+terminates,
+
+.  threads can synchronize via *_mutex_* variables, e.g., a thread can
+ lock a mutex , which if already locked, causes the thread to block,
+
+. threads can synchronize via *_condition variables_*, which are
+closely related to locks.
 
 
 === Writing Multithreaded Programs: Structured or Implicit Multithreading
@@ -600,9 +618,8 @@ such interesting class of computations is fork-join computations where
 a thread can spawn or "fork" another thread or "join" with another
 existing thread.  Joining a thread is the only mechanism through which
 threads synchronize.  The figure below illustrates a fork-join
-computation.  The main threads forks thread A, which then spaws thread
+computation.  The main threads forks thread A, which then spawns thread
 B.  Thread B then joins thread A, which then joins Thread M.
-
 
 [[multithreading:general, Figure ?]]
 .A multithreaded fork-join computation.
@@ -622,9 +639,9 @@ https://www.google.com/search?q=Haskell+language&gws_rd=ssl[Haskell
 language] provides support for fork-join and futures as well as
 others;
 https://www.google.com/search?q=Parallel+ML&gws_rd=ssl[Parallel ML]
-language as implemented by the Manticore project is primarily based on
-fork-join parallelism.
-Such languages are sometimes called *_implicitly parallel_*.
+language as implemented by the Manticore project and by the Steel
+project at CMU is primarily based on fork-join parallelism.  Such
+languages are sometimes called *_implicitly parallel_*.
 
 
 The class computations that can be expressed as fork-join and
@@ -706,7 +723,7 @@ all applications.  Some applications are concurrent, some are not.
 Many concurrent applications can benefit from parallelism.  For
 example, a browser, which is a concurrent application itself as it may
 use a parallel algorithm to perform certain tasks.  On the other hand,
-there is often no need to add concurrency to a parallel application,
+there is usually no need to add concurrency to a parallel application,
 because this unnecessarily complicates software.  It can, however,
 lead to improvements in efficiency.
 
@@ -715,8 +732,8 @@ making parallelism just a matter of execution (not one of semantics),
 which is the goal of the much of the work on the development of
 programming languages today. Note that in this particular quote,
 Dijkstra does not mention that parallel algorithm design requires
-thinking carefully about parallelism, which is one aspect where
-parallel and serial computations differ.
+thinking carefully about work and span, as opposed to just work as is
+sequential computing.
 
 /////
 Note that Dijkstra uses the term "concurrency" to refer to

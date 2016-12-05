@@ -5,6 +5,8 @@ Use C++11
 
 g++ -std=c++11  nb-stack-int.h
 
+
+
 ** STACKS
 Generic versions are not in working order.  The rest should be correct.
 
@@ -18,3 +20,12 @@ and
 main-int.cpp
 stack-driver.cpp
 
+
+** TEACH
+
+*** Big Lock example for the screen 
+g++ -std=c++11  biglock-driver.cpp 
+
+
+** stack-driver
+g++ -std=c++11  stack-driver.cpp 

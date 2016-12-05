@@ -3,67 +3,45 @@
 
 using namespace std;
 
-template <typename T>
 class Node {
- private: 
-  T value;
+public:
+  int value;
   Node* next;
 
- public:
-  Node (T v) {
+  Node (int v) {
     value = v;
     next = NULL;
   }
-
-  Node (T v, Node* u) {
-    value = v;
-    next = u;
-  }
-
-  T getValue () {
-    return value;
-  };
-  
-  Node* getNext () {
-    return next; 
-  };
-
-  void setNext (Node u) {
-    *next = u;
-  };
-
 };
 
-template <typename T>
 class Stack {
+public:
+  Node* top;
 
- private: 
-  Node<T>* top;
-
- public: 
   Stack () {
     top = NULL;
   };
 
-  T pop ();
-  void push (T v);
+  int pop ();
+  void push (int v);
 };
 
-template <typename T>
-T Stack<T>::pop () {
+int Stack::pop () {
   if (top == NULL) {
     cout << "Stack is Empty" << endl;
     return -12;
   }
   else {
-    int oldTop = (*top).getValue();   
-    top = (*top).getNext ();
+    int oldTop = top->value;
+    top = top->next;
     return oldTop;
   }
 }
 
-template <typename T>
-void Stack<T>::push (T value) {
-  top = new Node<T> (value,top); 
+void Stack::push (int value) {
+
+  Node* u = new Node (value); 
+  u -> next = top;
+	top = u;
   return ;  
 }
