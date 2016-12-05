@@ -34,6 +34,9 @@ tapp.html: $(SOURCES)
 	asciidoc -a data-uri  -a toc book.txt
 	cp book.html tapp.html
 
+concurrency.html: $(SOURCES)
+	asciidoc -a data-uri  -a toc concurrency.txt
+
 tapp.pdf: $(SOURCES)
 	asciidoc --backend docbook45 book.txt ; dblatex book.xml 
 	cp book.pdf tapp.pdf
