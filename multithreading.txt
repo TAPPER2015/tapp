@@ -447,17 +447,17 @@ work-stealing in greater detail in a <<ch:work-stealing, future chapter.>>
 
 
 
-=== Writing Multithreaded Programs: Pthreads
-
+=== Writing Multithreaded Programs
 
 Multithreaded programs can be written using a variety of language
-abstractions interfaces. One of the most widely used interfaces is the
-*_POSIX Threads_* or *_Pthreads_* interface, which specifies a
-programming interface for a standardized C language in the IEEE POSIX
-1003.1c standard. Pthreads provide a rich interface that enable the
-programmer to create multiple threads of control that can synchronize
-by using the nearly the whole range of the synchronization facilities
-mentioned above.
+abstractions interfaces. In this section, we briefly outline one of
+the most widely used interfaces, the *_POSIX Threads_* or *_Pthreads_*
+interface, which specifies a programming interface for a standardized
+C language in the IEEE POSIX 1003.1c standard. Pthreads provide a rich
+interface that enable the programmer to create multiple threads of
+control that can synchronize by using the nearly the whole range of
+the synchronization facilities mentioned above.  There are many other
+threading libraries, all of which provide similar facilities.
 
 .Hello world with Pthreads
 
@@ -582,180 +582,5 @@ terminates,
 
 . threads can synchronize via *_condition variables_*, which are
 closely related to locks.
-
-
-=== Writing Multithreaded Programs: Structured or Implicit Multithreading
-
-Interface such as Pthreads enable the programmer to create a wide
-variety of multithreaded computations that can be structured in many
-different ways. Multithreaded programs, however, can be extremely
-difficult to reason about, and get correct and efficient, because they
-require reasoning about exponentially many interleavings of code.  For
-example, to reason about the correctness of a program consisting of 16
-threads, each of which runs a 100 line program, we might have to
-reason about at least latexmath:[$16^100$] different interleavings.
-This is a huge number, larger than the number of atoms in the known
-universe. Indeed, it is for this reason, multithreaded programs are
-known to be notoriously difficult to get right.  Common problem
-include 
-
-
-
-. reasoning about the correctness and efficiency of concurrent data
-structures,
-
-. reasoning about correctness of memory management in non-GC'ed
-programming languages, and 
-
-. more generally, establishing absence of race conditions and the
-correctness of code,
-
-
-Fortunately, large classes of interesting multithreaded computations,
-can be written using a more structured approach, where threads are
-restricted in the way that they synchronize with other threads.  One
-such interesting class of computations is fork-join computations where
-a thread can spawn or "fork" another thread or "join" with another
-existing thread.  Joining a thread is the only mechanism through which
-threads synchronize.  The figure below illustrates a fork-join
-computation.  The main threads forks thread A, which then spawns thread
-B.  Thread B then joins thread A, which then joins Thread M.
-
-[[multithreading:general, Figure ?]]
-.A multithreaded fork-join computation.
-image::fork-join-threads.png["A multithreaded, fork-join computation.",width="500pt",align="center"]
-
-
-In addition to fork-join, there are other interfaces for structured
-multithreading such as async-finish, and futures.  These interfaces
-are adopted in many programming languages: the
-https://www.google.com/search?q=Cilk+language&gws_rd=ssl[Cilk
-language] is primarily based on fork-join but also has some limited
-support for async-finish;
-https://www.google.com/search?q=X10&gws_rd=ssl[X10 language] is
-primarily based on async-finish but also supports futures; the Haskell
-language
-https://www.google.com/search?q=Haskell+language&gws_rd=ssl[Haskell
-language] provides support for fork-join and futures as well as
-others;
-https://www.google.com/search?q=Parallel+ML&gws_rd=ssl[Parallel ML]
-language as implemented by the Manticore project and by the Steel
-project at CMU is primarily based on fork-join parallelism.  Such
-languages are sometimes called *_implicitly parallel_*.
-
-
-The class computations that can be expressed as fork-join and
-async-finish programs are sometimes called *_nested parallel_*.  The
-term "nested" refers to the fact that a parallel computation can be
-nested within another parallel computation.  This is as opposed to
-*_flat parallelism_* where a parallel computation can only perform
-sequential computations in parallel.  Flat parallelism used to be
-common technique in the past but becoming increasingly less prominent.
-
-/////
-WHERE DOES NESL FIT IN THIS?  
-
-WAS NESL THE INVENTOR OF DATA PARALLELISM? 
-
-HOW DOES IT COMPARE TO MULTILISP?
-
-////
-
-
-=== Parallelism versus concurrency
-
-	
-Structured multithreading offers important benefits both in terms of
-efficiency and expressiveness.  Using programming constructs such as
-fork-join and futures, it is usually possible to write parallel
-programs such that the program accepts a "sequential semantics" but
-executes in parallel.  The sequential semantics enables the programmer
-to treat the program as a serial program for the purposes of
-correctness.  A run-time system then creates threads as necessary to
-execute the program in parallel.  This approach offers is some ways
-the best of both worlds: the programmer can reason about correctness
-sequentially but the program executes in parallel.  The benefit of
-structured multithreading in terms of efficiency stems from the fact
-that threads are restricted in the way that they communicate.  This
-makes it possible to implement an efficient run-time system.
-
-More precisely, consider some sequential language such as the untyped
-(pure) lambda calculus and its sequential dynamic semantics specified as a
-strict, small step transition relation.  We can extend this language
-with the structured multithreading by enriching the syntax language
-with "fork-join" and "futures" constructs.  We can now extend the
-dynamic semantics of the language in two ways: 1) trivially ignore
-these constructs and execute serially as usual, and 2) execute in
-parallel by creating parallel threads.  We can then show that these
-two semantics are in fact identical, i.e., that they produce the same
-value for the same expressions.  In other words, we can extend a rich
-programming language with fork-join and futures and still give the
-language a sequential semantics.  This shows that structured
-multithreading is nothing but an efficiency and performance concern;
-it can be ignored from the perspective of correctness.
-
-We use the term *_parallelism_* to refer to the idea of computing in
-parallel by using such structured multithreading constructs.  As we
-shall see, we can write parallel algorithms for many interesting
-problems. 
-While parallel algorithms or applications constitute a large class,
-they don't cover all applications.  Specifically applications that can
-be expressed by using richer forms of multithreading such as the one
-offered by Pthreads do not always accept a sequential semantics. In
-such *_concurrent_* applications, threads can communicate and
-coordinate in complex ways to accomplish the intended result.  A
-classic concurrency example is the "producer-consumer problem", where
-a consumer and a producer thread coordinate by using a fixed size
-buffer of items.  The producer fills the buffer with items and the
-consumer removes items from the buffer and they coordinate to make
-sure that the buffer is never filled more than it can take.  We can
-use operating-system level processes instead of threads to implement
-similar concurrent applications.
-
-In summary, parallelism is a property of the hardware or the software
-platform where the computation takes place, whereas concurrency is a
-property of the application.  Pure parallelism can be ignored for the
-purposes of correctness; concurrency cannot be ignored for
-understanding the behavior of the program. 
-
-Parallelism and concurrency are orthogonal dimensions in the space of
-all applications.  Some applications are concurrent, some are not.
-Many concurrent applications can benefit from parallelism.  For
-example, a browser, which is a concurrent application itself as it may
-use a parallel algorithm to perform certain tasks.  On the other hand,
-there is usually no need to add concurrency to a parallel application,
-because this unnecessarily complicates software.  It can, however,
-lead to improvements in efficiency.
-
-The following quote from Dijkstra suggest pursuing the approach of
-making parallelism just a matter of execution (not one of semantics),
-which is the goal of the much of the work on the development of
-programming languages today. Note that in this particular quote,
-Dijkstra does not mention that parallel algorithm design requires
-thinking carefully about work and span, as opposed to just work as is
-sequential computing.
-
-/////
-Note that Dijkstra uses the term "concurrency" to refer to
-simultaneous execution of instructions by the machine. 
-/////
-
-[quote, Edsger W. Dijkstra, Selected Writings on Computing: A Personal Perspective (EWD 508)]
-From the past terms such as "sequential programming" and "parallel
-programming" are still with us, and we should try to get rid of them,
-for they are a great source of confusion.  They date from the period
-that it was the purpose of our programs to instruct our machines, now
-it is the purpose of the machines to execute our programs.  Whether
-the machine does so sequentially, one thing at a time, or with
-considerable amount of concurrency, is a matter of implementation, and
-should _not_ be regarded as a property of the programming language.  
-
-
-
-
-
-
-
-
 
 

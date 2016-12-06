@@ -23,6 +23,8 @@ include::intro.txt[]
 
 include::multithreading.txt[]
 
+include::structured-multithreading.txt[]
+
 include::fork-join.txt[]
 
 include::async-finish.txt[]

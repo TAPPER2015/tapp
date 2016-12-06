@@ -1,5 +1,5 @@
 [[ch:work-stealing]]
-== Chapter: Work Stealing in Dedicated Environments
+== Chapter: Scheduling Multithreaded Programs with Work Stealing
 
 The work-stealing algorithm is a solution to the *_online scheduling
 problem_*, where we are given a latexmath:[$P$] processes and a

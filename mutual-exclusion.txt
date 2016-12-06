@@ -398,6 +398,7 @@ that can be shared my multiple threads.  The code below shows the code
 for a standard serial "integer" stack that can hold integer values in
 its nodes.
 
+[source,{cpp}]
 ----
 #include <iostream>
 #include <cstdlib>
@@ -529,6 +530,7 @@ new value for top, `next`.  We then replace `top` with `next` by using
 a `compare_exchange_strong` only if `top` has not changed since we
 last read it.
 
+[source,{cpp}]
 ----
 #include <iostream>
 #include <cstdlib>
@@ -670,6 +672,7 @@ ABA problem because the counter may overflow and wrap-up.  This is
 however, considered to be highly unlikely and this solution can be
 seen used quite frequently in practice.
 
+[source,{cpp}]
 ----
 #include <iostream>
 #include <cstdlib>
@@ -781,217 +784,4 @@ freeing the node `M`. At this poin, there is a dangling reference to
 freed node `M`, because the first thread is still holding the value in
 its variable `oldTop`.  
 
-
-Parallelism and Mutual Exclusion
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-In parallel programming, mutual exclusion problems do not have to
-arise.  For example, if we program in a purely functional language
-extended with structured multithreading primitives such as fork-join
-and futures, programs remain purely functional and mutual-exclusion
-problems, and hence race conditions, do not arise.  If we program in an
-imperative language, however, where memory is always a shared
-resource, even when it is not intended to be so, threads can easily
-share memory objects, even unintentionally, leading to race
-conditions.
-
-.Writing to the same location in parallel.
-============
-
-In the code below, both branches of `fork2` are writing into `b`.
-What should then the output of this program be?
-
-[source, {cpp}]
-----
-long b = 0;
-
-fork2([&] {
-  b = 1;
-}, [&] {
-  b = 2;
-});
-
-std::cout << "b = " << std::endl;
-----
-
-At the time of the print, the contents of `b` is determined by the
-last write.  Thus depending on which of the two branches perform the
-write, we can see both possibilities:
-
-Output:
-----
-b = 1
-----
-
-Output:
-----
-b = 2
-----
-=============
-
-
-.Fibonacci
-============
-
-Consider the following alternative implementation of the Fibonacci
-function.  By "inlining" the plus operation in both branches, the
-programmer got rid of the addition operation after the `fork2`.
-
-[source, {cpp}]
-----
-long fib_par_racy(long n) {
-  long result = 0;
-  if (n < 2) {
-    result = n;
-  } else {
-    fork2([&] {
-      result += fib_par_racy(n-1);
-    },[&] {
-      result += fib_par_racy(n-2);
-    });
-  }
-  return result;
-}
-----
-
-This code is not correct because it has a race condition.
-
-================
-
-As in the example shows, separate threads are updating the value
-result but it might look like this is not a race condition because the
-update consists of an addition operation, which reads the value and
-then writes to it. The race condition might be easier to see if we
-expand out the applications of the `+=` operator.
-
-[source, {cpp}]
-----
-long fib_par_racy(long n) {
-  long result = 0;
-  if (n < 2) {
-    result = n;
-  } else {
-    fork2([&] {
-      long a1 = fib_par_racy(n-1);
-      long a2 = result;
-      result = a1 + a2;
-    },[&] {
-      long b1 = fib_par_racy(n-2);
-      long b2 = result;      
-      result = b1 + b2;
-    });
-  }
-  return result;
-}
-----
-
-When written in this way, it is clear that these two parallel threads
-are not independent: they both read `result` and write to
-`result`. Thus the outcome depends on the order in which these reads
-and writes are performed, as shown in the next example.
-
-.Execution trace of a race condition
-====================================
-
-The following table takes us through one possible execution trace of
-the call `fib_par_racy(2)`. The number to the left of each instruction
-describes the time at which the instruction is executed.  Note that
-since this is a multithreaded program, multiple instructions can be
-executed at the same time. The particular execution that we have in
-this example gives us a bogus result: the result is 0, not 1 as it
-should be.
-
-[width="100%",options="header"]
-|==========
-| Time step  | Thread 1     | Thread 2
-|1 | a1 = fib_par_racy(1)   | b2 = fib_par_racy(0)
-|2 | a2 = result            | b3 = result
-|3 | result = a1 + a2       | _
-|4 | _                      | result = b1 + b2
-|==========
-
-The reason we get a bogus result is that both threads read the initial
-value of result at the same time and thus do not see each others
-write.  In this example, the second thread "wins the race" and writes
-into `result`. The value 1 written by the first thread is effectively
-lost by being overwritten by the second thread.
-
-==========================
-
-In the example, race condition arises because of concurrent writes to
-the `result` variable.  We can eliminate this kind of race condition
-by using different memory locations, or by using an atomic class and
-using a `compare_exchange_strong` operation.
-
-.Fibonacci
-============
-
-The following implementation of Fibonacci is not safe because the
-variable `result` is shared and updated by multiple threads.
-
-[source, {cpp}]
-----
-long fib_par_racy(long n) {
-  long result = 0;
-  if (n < 2) {
-    result = n;
-  } else {
-    fork2([&] {
-      result += fib_par_racy(n-1);
-    },[&] {
-      result += fib_par_racy(n-2);
-    });
-  }
-  return result;
-}
-----
-
-We can solve this problem by declaring `result` to be an atomic type
-and using a standard busy-waiting protocol based on compare-and-swap.
-
-[source, {cpp}]
-----
-
-long fib_par_atomic(long n) {
-  atomic<long> result = 0;
-  if (n < 2) {
-    result.store(n);
-  } else {
-    fork2([&] {
-      long r = fib_par_racy(n-1);
-      // Atomically update result.
-      while (true) {
-        long exp = result.load();
-        bool flag = result.compare_exchange_strong(exp,exp+r)
-        if (flag) {break;}
-      }
-    },[&] {
-      long r = fib_par_racy(n-2);
-      // Atomically update result.
-      while (true) {
-        long exp = result.load();
-        bool flag = result.compare_exchange_strong(exp,exp+r)
-        if (flag) {break;}
-      }
-    });
-  }
-  return result;
-}
-----
-
-The idea behind the solution is to load the current value of `result`
-and atomically update `result` only if it has not been modified (by
-another thread) since it was loaded.  This guarantees that the
-`result` is always updated (read and modified) correctly without
-missing an update from another thread.
-
-//////////////////////////////////////////////////////////////////////
-
-WARNING: Naama: Is fetch-and-add a hardware primitive? If so,
-fetch-and-add would solve the problem in the fib example without the
-busy-wait loop; F&A always succeeds.
-
-/////////////////////////////////////////////////////////////////////
-
-================
 

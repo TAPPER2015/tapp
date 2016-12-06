@@ -28,35 +28,9 @@ include::multithreading.txt[]
 
 include::mutual-exclusion.txt[]
 
-//include::benchmarking.txt[]
-
-// include::scheduling.txt[]
-
-//include::work-efficiency.txt[]
-
-//include::granularity-control.txt[]
-
-//include::parallel-arrays.txt[]
-
-//include::sorting.txt[]
-
-// include::graph-theory.txt[]
-
-// include::trees.txt[]
-
-// include::models.txt[]
-
-// include::graphs.txt[]
-
-//include::graphs.txt[]
+include::structured-multithreading.txt[]
 
 include::dedicated.txt[]
-
-// include::synchronization.txt[]
-				   
-// include::concurrency.txt[]
-
-// include::multiprogrammed.txt[]
 
 
 
