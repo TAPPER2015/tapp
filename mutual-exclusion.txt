@@ -451,12 +451,14 @@ conditions and thus accesses must be protected by enforcing mutual
 exclusion.  An example where multiple threads are operating on a
 shared stack is shown below.
 
+
+[source,{cpp}]
 ----
 #include <iostream>
 #include <cstdlib>
 #include <pthread.h>
 #include <atomic>
-#include "nb-stack-int.h"
+#include "nb-stack.h"
 
 using namespace std;
 
