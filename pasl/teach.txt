@@ -275,21 +275,80 @@ small scale.
   . Requires mutual exclusion, if not, a race condition can occur
   . How to ensure mutual exclusion? 
     .. Approach 1: lock based approaches
+
        ... spin locks
-       ... blocking locks
-      
+       ... blocking locks      
+
        Blocking or not, locks are implemented as part of the language
        system.  For example, in pThreads, there are functions such as
 
+       ----
        pthread_mutex_t my_mutex
        pthread_mutex_init ()
        pthread_mutex_destroy ()
        pthread_mutex_lock: mutex -> mutex (blocking)
        pthread_mutex_trylock: mutex -> status (non-blocking)
        pthread_mutex_unlock: mutex -> mutex
-       
+       ----       
+
     .. Approach 2: lock-free approach
+
+       ... Nonblocking: the idea is to "take a picture" of the world,
+       change the world locally, and use a compare and swap to commit  the
+       changes to the world.  
         
+== Structured Multithreading
+
+==== Review
+
+  . Multithreading: threads, each of which are sequential communicate.
+    Can be represented as a dag. 
+    Work and Span apply.
+
+    Scheduling lower and upper bounds.
+
+  . Writing multithreaded programs pthreads
+  . Race conditions, writing to the screen example
+  . Solved by using a BigLock
+  . Implemented the BigLock with compare and swap
+  
+==== Today
+
+   . Such complexity is not always necessary: many interesting
+   multithreaded programs can be written by using more structured
+   multithreading primitives.
+
+   . Structured Multithreading = restrict the manner in which threads
+   can communicate.  For example, threads can only synchronize through
+   "join" rather than in arbitrary ways.
+
+    This means that a thread can wait for another to complete and that
+    is the only way for two threads to synchronize.
+
+    There are other ways, for example async-finish and futures.  They
+    all can be viewed as a restricted form of synchronization.
+
+   . One way to run such programs is to "compile" them to
+   pThreads. Grossly inefficent. pThreads coarse grained
+   parallelism. Not suitable to millions of threads.      
+
+   . Specific support developed in many languages such as C, X10,
+   Java, ML, Haskell
+
+   . Structured multithreading combines the best of both worlds. We
+   can give sequential semantics and also make sure to execute
+   efficiently.  
+
+    . Somewhat informally we think of structured multithreading and
+    parallelism to be the same thing. 
+
+   . Parallelism = sequential semantics
+
+   . Not all programs. Multithreaded stack example. Such programs are
+   concurrent.
+
+   . Parallelism = property of execution/hardware
+   . Concurrency = property of application.
 
 Executing parallel programs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
