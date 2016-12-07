@@ -10,6 +10,10 @@ OUTLINE
   Designing parallel algorithms: graph search, BFS
   Designing parallel algorithms: graph contraction
 
+o Do not use the term "process" to refer to workers.  Processes in OS
+have their own adress space.  Workers share an address space.
+
+
 o Pseudocode
  
   Use return consistently.

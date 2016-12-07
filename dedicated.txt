@@ -2,10 +2,11 @@
 == Chapter: Scheduling Multithreaded Programs with Work Stealing
 
 The work-stealing algorithm is a solution to the *_online scheduling
-problem_*, where we are given a latexmath:[$P$] processes and a
-computation dag that unfolds dynamically during execution, and asked
-to construct an execution schedule with minimal length, while spending
-as little work and time for scheduling itself.
+problem_*, where we are given a latexmath:[$P$] workers (a.k.a.,
+processors or processes) and a computation dag that unfolds
+dynamically during execution, and asked to construct an execution
+schedule with minimal length, while spending as little work and time
+for scheduling itself.
 
 We consider multithreaded computations represented as dags as
 described in <<ch:multithreading, an earlier chapter>>.  To streamline the
@@ -16,22 +17,22 @@ from the analysis.
 === Work-Stealing Algorithm
 
 
-In work stealing, each process maintains a *_deque_*, doubly ended
-queue, of vertices.  Each process tries to work on its local deque as
+In work stealing, each worker maintains a *_deque_*, doubly ended
+queue, of vertices.  Each worker tries to work on its local deque as
 much as possible. Execution starts with the root vertex in the deque
-of one of the processes.  It ends when the final vertex is executed.  
+of one of the workers.  It ends when the final vertex is executed.  
 
 A work stealing scheduler operates as described by our
 <<multithreading::scheduler-typical, generic scheduling algorithm>>
 but instead of operating on threads, it operates on vertices of the
-dag. To obtain work, a process pops the vertex at the bottom of its
+dag. To obtain work, a worker pops the vertex at the bottom of its
 deque and executes it. We refer to the vertex being executed by a
-process as the *_assigned vertex_*.  When executed, the ready vertex
+worker as the *_assigned vertex_*.  When executed, the ready vertex
 can make the other vertices ready, which are then pushed onto the
-bottom end of the deque in an arbitrary order.  If a process finds its
-deque empty, then the process becomes a *_thief_*.  A thief picks a
-*_victim_* process at random and attempts to steals a thread from
-another it by popping a thread off the top of the victim's deque.  The
+bottom end of the deque in an arbitrary order.  If a worker finds its
+deque empty, then the worker becomes a *_thief_*.  A thief picks a
+*_victim_* worker at random and attempts to steals a thread from
+another by popping a thread off the top of the victim's deque.  The
 thief performs steal attempts until it successfully steals a thread,
 at which point, the thief goes back to work and the stolen thread
 becomes its assigned thread.
@@ -39,11 +40,11 @@ becomes its assigned thread.
 
 
 The pseudo-code for the algorithm is shown below.  All deques are
-initially empty and the root vertex is assigned to the process zero.
-The algorithm operates in *_rounds_*.  In each round, a process
+initially empty and the root vertex is assigned to the worker zero.
+The algorithm operates in *_rounds_*.  In each round, a worker
 executes the assigned vertex if any, pushes the newly enabled vertices
 to its deque, and obtains a new assigned vertex from its deque.  If
-the round starts with no assigned vertex then the process becomes a
+the round starts with no assigned vertex then the worker becomes a
 thief performs a steal attempt. Note that a steal attempt start and
 completes in the same round.
 
@@ -51,8 +52,8 @@ Such a *_steal attempt_* can fail if
 
 . the victim's deque is empty, or
 
-. contention between processes occurs and the vertex targeted by the
-thief is executed by the process that own the dequer or stolen by
+. contention between workers occurs and the vertex targeted by the
+thief is executed by the worker that own the dequer or stolen by
 another thief.
 
 
@@ -63,9 +64,9 @@ in constant steps.
 
 [source,{cpp}]
 ----
-// Assign root to process zero.
+// Assign root to worker zero.
 assignedVertex = NULL
-if (self == ProcessZero) {
+if (self == WorkerZero) {
   assignedVertex = rootVertex
 }
 
@@ -88,7 +89,7 @@ while (computationDone == false) {
   } 
   else {  
     // Make steal attempt.
-    victim = randomProcess ()
+    victim = randomWorker ()
     assignedVertex = victim.popTop ()
   }
 }
@@ -136,28 +137,28 @@ implementation.  This relaxed version suffices for our purposes.
 //
 
 
-==== Work sequence of a process
+==== Work sequence of a worker
 
 Consider the execution of the work stealing algorithm and let
-latexmath:[$q$] be any process.  We define the *_work sequence_* of
+latexmath:[$q$] be any worker.  We define the *_work sequence_* of
 latexmath:[$q$] as the sequence of vertices defined by the assigned
 vertex of latexmath:[$q$] followed by the vertices in its deque
 ordered from bottom to top. If a vertex is in the work sequence of a
-process, then we say that it *_belongs_* to that process.
+worker, then we say that it *_belongs_* to that worker.
 
 
 .Work sequence
 ====
 
-Consider the deque for a process shows below along with the assigned
-vertex.  The work sequence for this process is latexmath:[$\langle
+Consider the deque for a worker shows below along with the assigned
+vertex.  The work sequence for this worker is latexmath:[$\langle
 v_0, v_1, v_2, v_3 \rangle$].
 
 image:jpgs-620H/deque-example-1.jpg["",width="50pt",align="center"]
 
-Now, if the process completes executing $v_0$, which enables no new
+Now, if the worker completes executing $v_0$, which enables no new
 children, then the work sequence consist of the vertices in the deque,
-i.e., latexmath:[$\langle v_1, v_2, v_3 \rangle$].  If the process,
+i.e., latexmath:[$\langle v_1, v_2, v_3 \rangle$].  If the worker,
 later removes latexmath:[$v_1$] from its deque and starts working on
 it, i.e., latexmath:[$v_1$] becomes the assigned vertex, then the work
 sequence remains the same, i.e., latexmath:[$\langle v_1, v_2, v_3
@@ -168,14 +169,16 @@ sequence remains the same, i.e., latexmath:[$\langle v_1, v_2, v_3
 				   
 ==== Enabling Tree
 
-Let's recall first the notion of an enabling three.  If execution of
-latexmath:[$u$] enables latexmath:[$v$], then we call the edge
-latexmath:[$(u,v)$] an *_enabling edge_* and call latexmath:[$u$] the
-*_designated parent_* of latexmath:[$v$].  Every vertex except for the
-root has a designated parent.  Therefore the subgraph of the dag
-consisting of the enabling edges form a rooted tree, called the
-*_enabling tree_*.  Note each execution can have a different enabling
-tree.
+At any step in an execution, we say that a vertex is *_ready_* if all
+the ancestors of the vertex in the dag are executed prior to that
+step.  If execution of a vertex latexmath:[$u$] makes ready another
+vertex latexmath:[$v$], then we say that latexmath:[$u$] *_enables_*
+latexmath:[$v$], and call the edge latexmath:[$(u,v)$] an *_enabling
+edge._*  We call latexmath:[$u$] the *_designated parent_* of
+latexmath:[$v.$] Every vertex except for the root has a designated
+parent.  Therefore the subgraph of the dag consisting of the enabling
+edges form a rooted tree, called the *_enabling tree_*.  Note each
+execution can have a different enabling tree.
 
 
 ==== An Example Run with Work Stealing
@@ -184,7 +187,7 @@ Consider the following computation dag.
 
 image:jpgs-620H/dag-example-1.jpg["",width="300pt",align="center"]
 
-The following drawings illustrate a 2-process execution of this dag
+The following drawings illustrate a 2-worker execution of this dag
 using work stealing. Time flows left to right and top to bottom.
 
 {nbsp}{nbsp}{nbsp}{nbsp}{nbsp}
@@ -219,7 +222,7 @@ image:jpgs-620H/enabling-tree-example-1.jpg["",width="300pt",align="center"]
 
 Consider any time in an execution of the work-stealing algorithm after
 the execution of the root vertex. Let latexmath:[$v_0, v_1, \ldots,
-v_k$] denote the work sequence of any process. Let latexmath:[$u_0,
+v_k$] denote the work sequence of any worker. Let latexmath:[$u_0,
 u_1, \ldots, u_k$] be the sequence consisting of the designated
 parents of the vertices in the work sequence in the same order.  Then
 latexmath:[$u_i$] is an ancestor of latexmath:[$u_{i-1}$] in the
@@ -244,12 +247,12 @@ rounds of the execution.
 
 Consider the first round.  At the initialization and before the
 beginning of the first round, all deques are empty, root vertex is
-assigned to process zero but has not been executed.  The root vertex
+assigned to worker zero but has not been executed.  The root vertex
 is then executed. By assumption, the root vertex has a single child
 latexmath:[$v$], which becomes enabled and pushed onto the deque and
 popped again becoming the assigned vertex at the beginning of the
 second round.  At any of point in time after the execution of the
-root, process zero's work sequence consist of latexmath:[$v$].  The
+root, worker zero's work sequence consist of latexmath:[$v$].  The
 designated parent of latexmath:[$v$] is the root vertex and the lemma
 holds trivially.
 
@@ -258,7 +261,7 @@ some later round.  We will show that it holds at any point during the
 round and also after the completion of the round.
 
 
-Consider any process and its deque.  We have two cases to consider.
+Consider any worker and its deque.  We have two cases to consider.
 
 *Case 1:* There is an assigned vertex, latexmath:[$v_0$], which is executed. 
 
@@ -269,7 +272,7 @@ latexmath:[$u_i$] is an ancestor of latexmath:[$u_{i-1}$] in the
 enabling tree and the ancestor relationship is proper except for
 latexmath:[$i = 1$], where it is possible that latexmath:[$u_0 =
 u_1$].  Immediately after the execution of the assigned node, the work
-sequence of the process consists of all the vertices in the deque and
+sequence of the worker consists of all the vertices in the deque and
 the lemma follows.
 
 
@@ -309,21 +312,21 @@ In this case, latexmath:[$v_0$] becomes the parent of latexmath:[$x$]
 image:jpgs-620H/deques-and-enabling-tree-two-children.jpg["",width="100pt",align="center"]
 
 After the execution of the assigned vertex completes and the children
-are pushed, the process pops the vertex at the bottom of the
+are pushed, the worker pops the vertex at the bottom of the
 deque. There are two cases to consider.
 
-. If the deque is empty, then the process finds no vertex in its deque
+. If the deque is empty, then the worker finds no vertex in its deque
 and there is no assigned vertex at the end of the round, thus the work
 sequence is empty and the lemma holds trivially.
 
 . If the deque is not empty, then the vertex at the bottom of the
 deque becomes the new assigned vertex. The lemma holds trivially
 because making the bottom vertex the assigned vertex has no impact on
-the work sequence of the process and thus the correctness of the
+the work sequence of the worker and thus the correctness of the
 lemma.
 
 *Case 2:* A successful steal takes place and removes the top vertex in
-  the deque.  In this case, the victim process loses its top vertex,
+  the deque.  In this case, the victim worker loses its top vertex,
   which becomes the assigned vertex of the thief.  The work sequence
   of the victim loses its rightmost element. It is easy to see that
   the lemma continues to hold for the victim.  When the stolen vertex
@@ -355,7 +358,7 @@ of the vertices decrease from top to bottom.
 .Corrollary
 ***********
 
-Consider the work sequence of a process latexmath:[$v_0, v_1, v_2
+Consider the work sequence of a worker latexmath:[$v_0, v_1, v_2
 \ldots v_k$]. We have latexmath:[$w(v_0) \le w(v_1) < w(v_2) \ldots
 w(k-1) < w(v_k)$].
 
@@ -479,7 +482,7 @@ probability at least latexmath:[$0.25$]
 *******************
 
 Consider any multithreaded computation with work latexmath:[$W$].  The
-latexmath:[$P$]-process execution time is latexmath:[$O(W/P + A/P)$]
+latexmath:[$P$]-worker execution time is latexmath:[$O(W/P + A/P)$]
 steps where latexmath:[$A$] is the number of steal attempts.
 
 *******************
@@ -490,17 +493,17 @@ steps where latexmath:[$A$] is the number of steal attempts.
 
 Consider the execution in terms of rounds
 
-. If a vertex is executed in that round, then the processor places a
+. If a vertex is executed in that round, then the workeror places a
 token into the work bucket.
 
-. If a steal attempt takes place in that round, then the process
+. If a steal attempt takes place in that round, then the worker
 places a token into the steal-attempt bucket.
 
 There are exactly latexmath:[$A$] tokens in the steal-attempt bucket
 and exactly latexmath:[$W$] tokens is the work bucket.  Thus the total
 number of tokens is at most latexmath:[$W + A$].  Since in each round
-a process either executes a vertex or attempts a steal, and since each
-round is a constant number of steps, the latexmath:[$P$]-process
+a worker either executes a vertex or attempts a steal, and since each
+round is a constant number of steps, the latexmath:[$P$]-worker
 execution time is latexmath:[$T_P = O(\frac{W + A}{P})$].
 
 ****
@@ -526,11 +529,11 @@ We start with a few definitions.  Consider some round latexmath:[$i$].
 . Let latexmath:[$R_i$] denote the set of *_ready vertices_* in the
 beginning of that round.  
 
-. A vertex is latexmath:[$R_i$] is either assigned to a process or is
+. A vertex is latexmath:[$R_i$] is either assigned to a worker or is
 in a deque.  Let latexmath:[$R_i(q)$] denote the set of *_ready
-vertices belonging to a process latexmath:[$q$]_* at the beginning of
+vertices belonging to a worker latexmath:[$q$]_* at the beginning of
 round latexmath:[$i$]; these are exactly the vertices in the work
-sequence of that process.
+sequence of that worker.
 
 . For each vertex latexmath:[$v \in R_i$], we define its *_potential_*
 as
@@ -542,17 +545,17 @@ assigned, or
 
 Note that potential of a vertex is always a natural number.
 
-. The *_potential of process latexmath:[$q$]_* is
+. The *_potential of worker latexmath:[$q$]_* is
 latexmath:[$\Phi_i(q) = \sum_{v \in R_i(q)}{\phi_i(v)}.$]
 
 .  We write latexmath:[$H_i$] (mnemonic for "Hood") for the set of
-processes whose deques are empty at the beginning of round
+workers whose deques are empty at the beginning of round
 latexmath:[$i$].  We write latexmath:[$\Phi_i(H_i)$] for *_the total
-potential of the processes latexmath:[$H_i$]_*,
+potential of the workers latexmath:[$H_i$]_*,
 latexmath:[$\Phi_i(H_i) = \sum_{q \in H_i}{\Phi_i(q)}$].
 
-. We write latexmath:[$D_i$] for the set of other processes.  We write
-latexmath:[$\Phi_i(D_i)$] for *_the total potential of the processes
+. We write latexmath:[$D_i$] for the set of other workers.  We write
+latexmath:[$\Phi_i(D_i)$] for *_the total potential of the workers
 latexmath:[$D_i$]_*, latexmath:[$\Phi_i(D_i) = \sum_{q \in
 D_i}{\Phi_i(q)}$].
 
@@ -579,9 +582,9 @@ zero.
 .Lemma[Top-Heavy Deques]
 ************************
 
-Consider any round latexmath:[$i$] and any process latexmath:[$q \in
+Consider any round latexmath:[$i$] and any worker latexmath:[$q \in
 D_i$].  The topmost vertex in latexmath:[$q$]'s deque contributes at
-least latexmath:[$3/4$] of the potential of process latexmath:[$q$].
+least latexmath:[$3/4$] of the potential of worker latexmath:[$q$].
 
 ************************
 
@@ -589,7 +592,7 @@ least latexmath:[$3/4$] of the potential of process latexmath:[$q$].
 ****
 This lemma follows directly from the structural lemma.  The case in
 which the topmost vertex latexmath:[$v$] contributes the least of the
-process is when the assigned vertex and latexmath:[$v$] have the same
+worker is when the assigned vertex and latexmath:[$v$] have the same
 parent.  In this case, both vertices have the same depth and thus we
 have
 
@@ -607,7 +610,7 @@ $$
 
 Consider any round latexmath:[$i$] and let latexmath:[$v$] be a vertex
 that is ready but not assigned at the beginning of that round. Suppose
-that the scheduler assigns latexmath:[$v$] to a process in that round.
+that the scheduler assigns latexmath:[$v$] to a worker in that round.
 In this case, the potential decreases by latexmath:[$2/3 \cdot \phi_i(v)$].
 
 ****
@@ -642,7 +645,7 @@ Let's now consider how the potential changes during each round.
 There are two cases to consider based on scheduler actions.
 
 *Case 1:* Suppose that the scheduler assign a vertex latexmath:[$v$]
-to a process. By the Vertex Assignment Lemma, we know that the
+to a worker. By the Vertex Assignment Lemma, we know that the
 potential decreases by latexmath:[$2/3 \cdot \phi_i(v)$]. Since
 latexmath:[$\phi_i(v)$] is positive, the potential decreases.
 
@@ -692,7 +695,7 @@ both cases.  Note that, it is safe to assume that the children remain
 in the deque until the next round, because assignment of a vertex
 decreases the potential further.
 
-In each round each process performs none, one, or both of these
+In each round each worker performs none, one, or both of these
 actions.  Thus the potential never increases.
 
 ****
@@ -747,11 +750,11 @@ $$
 ****
 
 *First* we use the Top-Heavy Deques Lemma to establish the
-following. If a steal attempt targets a process with a nonempty deque as its
+following. If a steal attempt targets a worker with a nonempty deque as its
 victim, then the potential decreases by at least of a half of the
 potential of the victim.
 
-Consider any process latexmath:[$q$] in latexmath:[$D_i$] and let
+Consider any worker latexmath:[$q$] in latexmath:[$D_i$] and let
 latexmath:[$v$] denote the vertex at the top of its deque at round
 latexmath:[$i$].  By Top-Heavy Deques Lemma, we have 
 latexmath:[$\phi_i(v) \ge \frac{3}{4} \Phi_i(q)$].
@@ -778,7 +781,7 @@ been assigned or possibly executed by the end of round latexmath:[$k$]
 and thus, potential decreases by latexmath:[$\frac{2}{3}\, \phi_i(v)$].
 
 
-Thus, we conclude that if a thief targets a process latexmath:[$q \in
+Thus, we conclude that if a thief targets a worker latexmath:[$q \in
 D_i$] as victim at round latexmath:[$k \ge i$], then the potential
 decreases by at least
 
@@ -793,10 +796,10 @@ $$
 *Second*, we use Ball and Bins Lemma to establish the total decrease
  in potential.
 
-Consider now all latexmath:[$P$] processes and latexmath:[$P$] steal
+Consider now all latexmath:[$P$] workers and latexmath:[$P$] steal
 attempts that occur at or after round latexmath:[$i$].  For each
-process latexmath:[$q$] in latexmath:[$D_i$], assign a weight of
-latexmath:[$\frac{1}{2}\Phi_i(q)$] and for each process in
+worker latexmath:[$q$] in latexmath:[$D_i$], assign a weight of
+latexmath:[$\frac{1}{2}\Phi_i(q)$] and for each worker in
 latexmath:[$H_i$], assign a weight of latexmath:[$0$].  The total
 weight is thus latexmath:[$\frac{1}{2} \Phi_i(D_i)$].  Using the
 Balls-and-Bins Lemma with latexmath:[$\beta = 1/2$], we conclude that
@@ -810,8 +813,8 @@ the potential decreases by at least latexmath:[$\beta W = \frac{1}{4}
 IMPORTANT: For this lemma to hold, it is crucial that a steal attempt
 does not fail unless the deque is empty or the vertex being targeted
 at the time is popped from the deque is some other way.  This is why,
-we required the `popTop` operation called by a process to fail only if
-the top vertex is removed from the deque by another process.
+we required the `popTop` operation called by a worker to fail only if
+the top vertex is removed from the deque by another worker.
 
 
 .Theorem[Run-Time Bound]
@@ -819,7 +822,7 @@ the top vertex is removed from the deque by another process.
 
 Consider any multithreaded computation with work latexmath:[$W$] and
 span latexmath:[$S$] and execute it with non-blocking work stealing
-with latexmath:[$P$] processes in a dedicated environment.  The
+with latexmath:[$P$] workers in a dedicated environment.  The
 exection time is
 
 . latexmath:[$O(W/P + S)$] in expectation, and 
@@ -860,17 +863,17 @@ latexmath:[$P$] Steal Attempts Lemma, we know that latexmath:[$P \lbrack
 \Phi_i - \Phi_j \ge \frac{1}{4} \Phi_i(D_i) \rbrack > \frac{1}{4}$].
 
 . We need to show that the potential also drops by a constant fraction
-of latexmath:[$\Phi_i(H_i)$].  Consider some process latexmath:[$q$]
+of latexmath:[$\Phi_i(H_i)$].  Consider some worker latexmath:[$q$]
 in latexmath:[$H_i$].  If latexmath:[$q$] does not have an assigned
 vertex, then latexmath:[$\Phi_i(q) = 0$].  If latexmath:[$q$] has an
 assigned vertex latexmath:[$v$], then latexmath:[$\Phi_i(q) =
-\phi_i(v)$].  In this case, process latexmath:[$q$] executes
+\phi_i(v)$].  In this case, worker latexmath:[$q$] executes
 latexmath:[$v$] at round latexmath:[$i$] and the potential decreases
 by at least latexmath:[$\frac{1}{3} \phi_i(u)$] by an argument
 included in the proof of <<lem:work-stealing::potential-decrease,
 Decreasing Potential Lemma>>.
 
-Summing over all processes in latexmath:[$H_i$], we have
+Summing over all workers in latexmath:[$H_i$], we have
 latexmath:[$\Phi_i - \Phi_j \ge \frac{1}{3} \Phi_i(H_i)$].
 
 Thus we conclude that latexmath:[$P \lbrack \Phi_i - \Phi_j \ge

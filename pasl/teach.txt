@@ -350,44 +350,64 @@ small scale.
    . Parallelism = property of execution/hardware
    . Concurrency = property of application.
 
-Executing parallel programs
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+== Work stealing
 
-SKIP THIS SECTION. WE SHALL COVER THIS MATERIAL LATER IN MULTITHREADED
-PROGRAMMING.
+Let's see a truly concurrent program that is actually very useful.
+Suppose that we want to execute one of the programs that you have
+written in parallel.  For example consider your parenLab or bigNumLab
+or PASLLab.  The code that you wrote in these labs actually run in
+parallel and can show very good speedups, especially considering the
+limitations of the hardware.  So how does it work? 
 
-. Example program: array increment.
-
-. The basic idea: partition computation into "units", each of which
-execute sequentially and map those that can be run in parallel. 
-  
-. A thread is a sequence of instructions that execute serially.  This
-means that they don't include a `fork2`.
-
-. Scheduling: map threads to processors/cores.
-
-. When doing this, we have to observe dependencies.  So use DAG's.
-Show example DAG.
+The basic idea is actually very simple, though the details are
+complex, in fact, I would say devilishly so.  Let's talk about this:
 
 
-. Offline scheduling: you are given a DAG and want to map the DAG to
-processors.  
+Basically, what we do is that we have a pThreads program very much
+like the hello program that you have seen.  Instead of the hello
+function, however, each thread runs a function that we might call
+"doWorkObsessively".  This is what each thread does:
 
-. Give the example schedule.
+Write the function
 
-. Theorem: Any greedy schudule is good.
+Go through it.
 
-. Scheduler: computes this schedule.  Challenges:
+Enabling tree.
 
-  .. You don't know the DAG, it unfolds as it executes.
+Deques.
 
-  .. It takes time to create threads, find work, and distribute.  This
-  we call *_scheduling friction_*.
+Run an example.
 
-. Example scheduler: centralized scheduler.  Does not scale.
+Key Property of work stealing: if you look at the vertices in any dag,
+then you see that they are all related in a very interesting way:
+their parents are all related.  Draw a picture.
 
-. Example scheduler: work stealing.  Works well. Minimal friction.
- 
+What this means:
+
+1) each processor executes a lot like a sequential one.
+working on the most recent computation first.
+
+2) the oldest vertices are stolen first.  this means that a steal
+takes off large chunks of work
+
+Second key property: if you have P bins and you through P balls,
+changes are high that there will be a ball in a constant fraction of
+the bins. Specifically, 1/2 the bins will have a ball with probability
+0.25.  This means that it does not take too long to find a piece of
+work. 
+
+Third property: if a process is busy stealing but not finding
+anything, then this means that we are "making progress" along the
+span.  So there cannot be too many such steals.
+
+Total steal attempts = PS
+
+Total work = W
+
+T_P = W/P + S.
+
+We won't go through the analysis is detail.  You can see it if you are
+interested.
 
 
 

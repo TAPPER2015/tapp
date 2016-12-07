@@ -99,12 +99,12 @@ dag, the vertex latexmath:[$u$] is executed before vertex
 latexmath:[$v$].  
 
 
+
 For any step in the execution, we call a vertex *_ready_* if all the
 ancestors of the vertex in the dag are executed prior to that step.
 Similarly, we say that a thread is ready if it contains a ready
 vertex.  Note that a thread can contain only one ready vertex at any
 time.
-
 
 .Schedule
 ====
