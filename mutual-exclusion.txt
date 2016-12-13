@@ -203,7 +203,7 @@ struct args {
 void *hello(void *a)
 {  
   args* myargs = (args*) a;
-	int tid = myargs->tid;
+  int tid = myargs->tid;
 
   cout << "Hello world! It is me, Thread " << tid << endl;
 
@@ -215,8 +215,8 @@ int main ()
   pthread_t threads[NTHREADS];
 	
   for(int i=0; i < NTHREADS; i++ ){
-		args* a = new args;
-		a->tid = i;
+    args* a = new args;
+    a->tid = i;
 		
     cout << "main: creating thread 00" << i << endl;
 
@@ -274,7 +274,7 @@ void takeBigLock () {
   while (1) {
     bool flag = false;
     if (BigLock.compare_exchange_strong(flag,true)) {
-		  return;
+      return;
 		}		
 	}
 }
@@ -284,7 +284,7 @@ void releaseBigLock () {
   while (1) {
     bool flag = true;
     if (BigLock.compare_exchange_strong(flag,false)) {
-		  return;
+      return;
 		}		
 	}
 }
@@ -294,9 +294,9 @@ void *hello(void *a)
   args* myargs = (args*) a;
 	int tid = myargs->tid;
 
-	takeBigLock ();
+  takeBigLock ();
   cout << "Hello world! It is me, Thread " << tid << endl;
-	releaseBigLock ();
+  releaseBigLock ();
 
   pthread_exit(NULL);
 }
@@ -307,10 +307,10 @@ int main ()
   BigLock.store(false);
 	
   for(int i=0; i < NTHREADS; i++ ){
-		args* a = new args;
-		a->tid = i;
+    args* a = new args;
+    a->tid = i;
 		
-  	takeBigLock ();
+    takeBigLock ();
     cout << "main: creating thread 00" << i << endl;
     releaseBigLock ();
     int error = pthread_create(&threads[i], NULL, hello, (void *) a);
@@ -564,21 +564,25 @@ public:
   void push (int v);
 };
 
-
 int Stack::pop () {
-  if (top.load() == NULL) {
-    cout << "Stack is Empty" << endl;
-    return -12;
-  }
-  else {
-    while (1) { 
-      Node* oldTop = top.load();
-      int oldTopValue = oldTop->value;
-      Node* next = oldTop->next;
+  while (1) { 
+		
+    /* take picture */
+    Node* oldTop = top.load();
+
+    if (oldTop == NULL) {
+      cout << "Stack is Empty" << endl;
+      return -12;
+    }
+
+    int oldTopValue = oldTop->value;
+
+    /* local change */
+    Node* next = oldTop->next;
       
-      if (top.compare_exchange_strong(oldTop,next)) {
-        return oldTopValue;
-      }
+    /* compare and commit */
+    if (top.compare_exchange_strong(oldTop,next)) {
+      return oldTopValue;
     }
   }
 }
@@ -719,28 +723,37 @@ public:
   void push (int v);
 };
 
+
 int Stack::pop () {
   state_t oldState = state.load();
+ 
 
-  if (oldState.top == NULL) {
-    cout << "Stack is Empty" << endl;
-    return -12;
-  }
-  else {
-    while (1) { 
-      oldState = state.load ();
-      Node* oldTop = oldState.top;
-      int oldTopValue = oldTop->value;
-      Node* next = oldTop->next;
+    // ALTERNATE: This should also work
+    // oldState = state.load ();
+    // because oldState is updated by compare_and_exchange_strong
+	
+  while (1) { 
 
-      /* new state */
-      state_t newState;
-      newState.top = next;
-      newState.nPops = oldState.nPops+1;
+    // This won't be needed in the ALTERNATE
+    oldState = state.load ();
+			 
+    Node* oldTop = oldState.top;
+
+    if (oldTop == NULL) {
+      cout << "Stack is Empty" << endl;
+      return -12;
+    } 
+
+    int oldTopValue = oldTop->value;
+    Node* next = oldTop->next;
+
+    /* new state */
+    state_t newState;
+    newState.top = next;
+    newState.nPops = oldState.nPops+1;
       
-      if (state.compare_exchange_strong(oldState,newState)) {       
-        return oldTopValue;
-      }
+    if (state.compare_exchange_strong(oldState,newState)) {       
+      return oldTopValue;
     }
   }
 }
@@ -764,9 +777,6 @@ void Stack::push(const int value)
 }
 
 ----
-
-
-
 
 === Memory Management
 

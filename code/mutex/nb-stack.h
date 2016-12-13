@@ -38,32 +38,34 @@ public:
 
 int Stack::pop () {
   state_t oldState = state.load();
+ 
 
-  if (oldState.top == NULL) {
-    cout << "Stack is Empty" << endl;
-    return -12;
-  }
-  else {
-
-    // This should also work
+  	// ALTERNATE: This should also work
 		// oldState = state.load ();
+    // because oldState is updated by compare_and_exchange_strong
+	
+  while (1) { 
 
-    while (1) { 
-
-   	  oldState = state.load ();
+	  // This won't be needed in the ALTERNATE
+   	oldState = state.load ();
 			 
-      Node* oldTop = oldState.top;
-      int oldTopValue = oldTop->value;
-      Node* next = oldTop->next;
+    Node* oldTop = oldState.top;
 
-      /* new state */
-      state_t newState;
-      newState.top = next;
-      newState.nPops = oldState.nPops+1;
+    if (oldTop == NULL) {
+      cout << "Stack is Empty" << endl;
+      return -12;
+    } 
+
+    int oldTopValue = oldTop->value;
+    Node* next = oldTop->next;
+
+    /* new state */
+    state_t newState;
+    newState.top = next;
+    newState.nPops = oldState.nPops+1;
       
-      if (state.compare_exchange_strong(oldState,newState)) {       
-        return oldTopValue;
-      }
+    if (state.compare_exchange_strong(oldState,newState)) {       
+      return oldTopValue;
     }
   }
 }
