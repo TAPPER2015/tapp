@@ -6,7 +6,7 @@ using namespace std;
 
 class Node {
 
- public:
+  public:
 
   int value;
   Node* next;
@@ -24,10 +24,10 @@ class Node {
 
 class Stack {
 
- private: 
+  private: 
 	std::atomic<Node*> top;
 
- public: 
+  public: 
   Stack () {
     top = NULL;
   };

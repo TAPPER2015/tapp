@@ -62,9 +62,7 @@ int main ()
     releaseBigLock ();
     int error = pthread_create(&threads[i], NULL, hello, (void *) a);
     if (error) {
-	  	takeBigLock ();
       cout << "Error: unable to create thread," << error << endl;
-      releaseBigLock ();
       exit(-1);
     }
   }

@@ -3,30 +3,14 @@ Several mutual exclusion examples.
 ** COMPILING
 Use C++11
 
-g++ -std=c++11  nb-stack-int.h
+g++ -std=c++11  *.cpp
 
 
 
-** STACKS
-Generic versions are not in working order.  The rest should be correct.
 
 FILES
 The main files are
-stack-int.h  (serial)
-nb-stack-int-aba.h (nonblocking, with the aba problem)
-nb-stack-int.h (nonblocking)
-
-and 
-main-int.cpp
-stack-driver.cpp
+biglock-driver.cpp
+cas-driver.cpp
 
 
-** TEACH
-
-*** Big Lock example for the screen 
-g++ -std=c++11  biglock-driver.cpp 
-
-
-** stack-driver
-g++ -std=c++11  stack-driver.cpp 
-change the stack used 

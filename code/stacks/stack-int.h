@@ -3,25 +3,35 @@
 
 using namespace std;
 
+// A stack node
 class Node {
-  int value;
+  public:
+
+	int value;
   Node* next;
 
-  Node (int v) {
+  // Node constructor
+  Node (int v, Node* u) {
     value = v;
-    next = NULL;
+    next = u;
   }
 };
 
 class Stack {
-
+  public:
+	
+	// Top of the stack
   Node* top;
 
+  // Stack constructor
   Stack () {
     top = NULL;
   };
 
+  // Pop the top item and return
   int pop ();
+
+	// Push the provided item on top of the stack
   void push (int v);
 };
 
@@ -37,7 +47,7 @@ int Stack::pop () {
   }
 }
 
-void Stack::push (int value) {
-  top = new Node (value,top); 
+void Stack::push (int v) {
+  top = new Node (v,top); 
   return ;  
 }

@@ -1,13 +1,14 @@
 #include <iostream>
 #include <cstdlib>
 #include <pthread.h>
+#include <unistd.h>
 #include <atomic>
-#include "stack-int.h"
+#include "nb-stack-int-aba.h"
 
 using namespace std;
 
 #define NTHREADS 8
-#define NPUSHPOP 1
+#define NPUSHPOP 100
 
 std::atomic<bool> BigLock;
 
@@ -49,7 +50,7 @@ void *pushPop(void *a)
 	
   for (int i = 0; i < NPUSHPOP; ++i) {
     int j = NPUSHPOP * tid + i;
-    sharedStack->push (j)
+    sharedStack->push (j);
     takeLock ();
     cout << "Thread " << tid << " pushed " << j << "+" << endl;
     releaseLock ();
