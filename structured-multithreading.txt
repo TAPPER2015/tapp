@@ -96,7 +96,6 @@ WHERE DOES NESL FIT IN THIS?
 WAS NESL THE INVENTOR OF DATA PARALLELISM? 
 
 HOW DOES IT COMPARE TO MULTILISP?
-
 ////
 
 
@@ -394,12 +393,10 @@ another thread) since it was loaded.  This guarantees that the
 missing an update from another thread.
 
 //////////////////////////////////////////////////////////////////////
-
 WARNING: Naama: Is fetch-and-add a hardware primitive? If so,
 fetch-and-add would solve the problem in the fib example without the
 busy-wait loop; F&A always succeeds.
-
 /////////////////////////////////////////////////////////////////////
 
-================
 
+============

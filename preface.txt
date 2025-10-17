@@ -6,7 +6,7 @@ The goal of this book is to cover the fundamental concepts of parallel
 computing, including models of computation, parallel algorithms, and
 techniques for implementing and evaluating parallel algorithms.
 
-Our primany focus will be hardware-shared memory parallelism.
+Our primary focus will be (hardware) shared memory parallelism.
 
 For implementations, we use a Clatexmath:[++] library, called *PASL*,
 which we have been developing over the past 5 years. PASL stands for
@@ -37,8 +37,9 @@ This code-base includes the examples presented in the book,  see file
 Some of the material in this book is based on the course,
 http://www.cs.cmu.edu/\~15210/[15-210], co-taught with
 http://www.cs.cmu.edu/\~guyb/[Guy Blelloch] at CMU.  
-The interested reader can find more details on this material in
-http://www.parallel-algorithms-book.com/[this book.]
 
-Starting point for this book was 
-http://www.cs.cmu.edu/~15210/pasl.html[this book on PASL.]
+The interested reader can find more details on this material in
+https://www.umut-acar.org/algorithms-book/[this book.]
+
+Starting point for this book was
+https://www.cs.cmu.edu/afs/cs/academic/class/15210-f15/www/pasl.html[this book on PASL.]

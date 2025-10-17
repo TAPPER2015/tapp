@@ -1,6 +1,7 @@
-= Parallel Computing: Theory and Practice
+= Parallel Computing: Theory and Practice 
 
-v1.0 2016-01
+== Umut A. Acar (umut@cs.cmu.edu)
+
 
 :author: Umut A. Acar
 :doctype: book
@@ -11,7 +12,7 @@ v1.0 2016-01
 :cplusplus: Clatexmath:[++]
 
 
-Copyright: {author}
+Copyright: {author} 2025
 
 include::preface.txt[]
 
