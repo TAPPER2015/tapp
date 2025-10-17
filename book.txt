@@ -1,18 +1,17 @@
-= Parallel Computing: Theory and Practice 
-
-== Umut A. Acar (umut@cs.cmu.edu)
-
+= Parallel Computing: Theory and Practice
+Author: Umut A. Acar (umut@cmu.edu)
 
 :author: Umut A. Acar
 :doctype: book
 :imagesdir: ./originals
 :numbered:
-:toc:
+
 :cpp: {basebackend@docbook:c++:cpp}
 :cplusplus: Clatexmath:[++]
 
 
 Copyright: {author} 2025
+
 
 include::preface.txt[]
 
